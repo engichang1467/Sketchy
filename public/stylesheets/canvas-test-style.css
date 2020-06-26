@@ -1,0 +1,16 @@
+#canvas-container{
+
+
+    width: 600px;
+    height: 600px;
+    margin: auto;
+    padding: auto;
+    text-align: center;
+   
+}
+
+#draw-area{
+    border: 1px solid black;
+    width: 600px;
+    height: 600px;
+}
