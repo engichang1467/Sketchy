@@ -1,0 +1,13 @@
+CREATE TABLE User(
+    id INTEGER NOT NULL PRIMARY KEY,
+    userName CHAR(20) NOT NULL,
+    password CHAR(20) NOT NULL,
+    admin BOOLEAN NOT NULL
+);
+
+
+SELECT * FROM User;
+
+
+INSERT INTO USER VALUES (123, "yeahBoi", "1234", FALSE);
+
