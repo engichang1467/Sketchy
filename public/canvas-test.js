@@ -1,13 +1,18 @@
 const canvas = document.getElementById('draw-area');
 let isMouseDown = false;
 const context = canvas.getContext('2d');
-var colourWheel = document.getElementById('colour-wheel')
+var eraser = document.getElementById('eraser-tool');
+var colourWheel = document.getElementById('colour-wheel');
 var selectedColor = colourWheel.value
 var colour = selectedColor;
 let x,y = 0;
 
 colourWheel.addEventListener('input', function(evt){
     colour = this.value;
+})
+
+eraser.addEventListener('click', function(evt){
+    colour = 'white';
 })
 canvas.addEventListener('mousedown',(evt)=>{
 
