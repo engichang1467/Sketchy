@@ -5,12 +5,20 @@ var eraser = document.getElementById('eraser-tool');
 var colourWheel = document.getElementById('colour-wheel');
 var selectedColor = colourWheel.value
 var colour = selectedColor;
+var slider = document.getElementById('brush-size');
+var clear = document.getElementById('clear')
+var brushSize = 1;
 let x,y = 0;
 
+slider.addEventListener('input',function(evt){
+    brushSize = this.value;
+})
 colourWheel.addEventListener('input', function(evt){
     colour = this.value;
 })
-
+clear.addEventListener('click',function(evt){
+    context.clearRect(0,0,canvas.width,canvas.height)
+})
 eraser.addEventListener('click', function(evt){
     colour = 'white';
 })
@@ -49,7 +57,7 @@ window.addEventListener('mouseup',(evt)=>{
 function draw(context,x,y,x2,y2){
     context.beginPath();
     context.strokeStyle = colour;
-    context.lineWidth = 1;
+    context.lineWidth = brushSize;
     context.moveTo(x, y);
     context.lineTo(x2, y2);
     context.stroke();
