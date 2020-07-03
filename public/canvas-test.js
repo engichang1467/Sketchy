@@ -63,3 +63,4 @@ function draw(context,x,y,x2,y2){
     context.stroke();
     context.closePath();
 }
+
