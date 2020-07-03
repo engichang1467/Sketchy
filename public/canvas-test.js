@@ -1,7 +1,16 @@
 const canvas = document.getElementById('draw-area');
 let isMouseDown = false;
 const context = canvas.getContext('2d');
+var colour = 'black';
 let x,y = 0;
+let colours = document.querySelectorAll('#colour-picker > *');
+
+for(let i = 0; i < colours.length; i++){
+    colours[i].addEventListener('click',function(evt){
+        colour = this.id
+    }
+    )
+}
 canvas.addEventListener('mousedown',(evt)=>{
 
     x = evt.offsetX;
@@ -36,7 +45,7 @@ window.addEventListener('mouseup',(evt)=>{
 
 function draw(context,x,y,x2,y2){
     context.beginPath();
-    context.strokeStyle = 'black';
+    context.strokeStyle = colour;
     context.lineWidth = 1;
     context.moveTo(x, y);
     context.lineTo(x2, y2);
