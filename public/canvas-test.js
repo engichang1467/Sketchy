@@ -1,16 +1,14 @@
 const canvas = document.getElementById('draw-area');
 let isMouseDown = false;
 const context = canvas.getContext('2d');
-var colour = 'black';
+var colourWheel = document.getElementById('colour-wheel')
+var selectedColor = colourWheel.value
+var colour = selectedColor;
 let x,y = 0;
-let colours = document.querySelectorAll('#colour-picker > *');
 
-for(let i = 0; i < colours.length; i++){
-    colours[i].addEventListener('click',function(evt){
-        colour = this.id
-    }
-    )
-}
+colourWheel.addEventListener('input', function(evt){
+    colour = this.value;
+})
 canvas.addEventListener('mousedown',(evt)=>{
 
     x = evt.offsetX;

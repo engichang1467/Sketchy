@@ -76,12 +76,18 @@
     height: 50px;
     float: left;
 }
-#colour-wheel input{
+#colour-wheel-div{
     
     width: 50px;
     height: 50px;
     float: left;
 }
+#colour-wheel{
+    
+    width: 50px;
+    height: 50px;
+}
+
 
 #body-container{
     width: auto;
