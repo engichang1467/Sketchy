@@ -27,6 +27,7 @@ canvas.addEventListener('mousedown',(evt)=>{
     x = evt.offsetX;
     y = evt.offsetY;
     isMouseDown = true;
+    context.lineJoin = context.lineCap = 'round'
 
 
 })
