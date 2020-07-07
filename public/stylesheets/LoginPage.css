@@ -2,6 +2,7 @@ body {
 	text-align: center;
 	background-image: url("/skribble.io background.png"); 
 	font-size: 30px;
+	font-family: cursive;
 }
 
 form {
@@ -27,4 +28,9 @@ input {
 
 input[type="submit"] {
 	font-weight: bold;
+}
+
+#tryAgainText, #createAccount, #successText {
+	color: white;
+	font-size: 20px;
 }
