@@ -10,8 +10,8 @@ app.set('views', path.join(__dirname, 'views'))
   
 app.set('view engine', 'ejs')
   
-app.get('/', (req, res) => res.render('pages/index'))
+// app.get('/', (req, res) => res.render('pages/index'))
 
-app.get('/sketchy', (req, res) => res.render('pages/login'))
+app.get('/', (req, res) => res.render('pages/login'))
   
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))

@@ -1,0 +1,30 @@
+body {
+	text-align: center;
+	background-image: url("/skribble.io background.png"); 
+	font-size: 30px;
+}
+
+form {
+	display: inline-block;
+}
+
+#signUp {
+	border: none;
+	background: none;
+	text-decoration: underline;
+	cursor: pointer;
+	color: white;
+	text-underline-position: under;
+	font-weight: bold;
+}
+
+input {
+	border-radius: 4px;
+	padding: 3px;
+	font-family: cursive;
+	font-size: 15px;
+}
+
+input[type="submit"] {
+	font-weight: bold;
+}
