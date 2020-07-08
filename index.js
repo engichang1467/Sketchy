@@ -5,8 +5,8 @@ const PORT = process.env.PORT || 5000
 const { Pool } = require('pg'); 
 var pool; 
 pool = new Pool ({
-	connectionString: 'postgres://postgres:root@localhost/users' 
-	// connectionString: process.env.DATABASE_URL
+	// connectionString: 'postgres://postgres:root@localhost/users' 
+	connectionString: process.env.DATABASE_URL
 });
 
 var app = express()
@@ -41,10 +41,10 @@ app.post('/login', (req, res) => {
 			adminName = (Object.values(result.rows[0])[0]).trim();
 			if (pwd == password && uname == adminName) {
 				// direct: admin page
-				res.send("Admin!");
+				res.send("Admin Login!")
 			}
 			else if (pwd == password && uname != adminName) {
-				res.send("Not Admin!"); 
+				res.render('pages/canvas-test');
 			}
 			// case: wrong password
 			res.render('pages/tryAgainPage');
