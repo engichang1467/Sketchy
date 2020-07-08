@@ -1,16 +1,143 @@
+*{
+    background-color: lightgray;
+}
+
 #canvas-container{
 
 
-    width: 600px;
-    height: 600px;
+    width: 602px;
+    height: 1200px;
     margin: auto;
     padding: auto;
     text-align: center;
-   
+    
 }
 
 #draw-area{
     border: 1px solid black;
     width: 600px;
     height: 600px;
+    background-color: white;
 }
+#tool-container{
+    width: 600px;
+    height: 100px;
+    
+}
+#tool-container div{
+    float: left;
+}
+#colour-picker{
+    width: auto;
+    height: 50px;
+    float: left;
+}
+
+#colour-wheel-div{
+    
+    width: 50px;
+    height: 50px;
+    float: left;
+    padding-right: 10px;
+}
+#colour-wheel{
+    
+    width: 50px;
+    height: 50px;
+    padding: 0px;
+    border: 0px;
+}
+
+
+#body-container{
+    width: auto;
+    height: auto;
+}
+
+#eraser-tool{
+    float: left;
+    width: 49px;
+    height: 49px;
+    padding-left: 3px;
+    padding-top: 1px;
+    border: 1px solid black;
+}
+
+#brush-size-div{
+    width: 150px;
+    height: 50px;
+    float: left;
+
+}
+#brush-size{
+    width: 150px;
+    height: 50px;
+}
+
+#clear-div{
+    width: 100px;
+    height: 50px;
+    text-align: center;
+    justify-content: center;
+}
+
+#clear{
+    padding: auto;
+    margin: auto;
+    justify-content: center;
+
+}
+
+
+
+
+
+
+/* This is just for my reference. Delete later in the future before release
+
+#red{
+    background-color: red;
+    width: 50px;
+    height: 50px;
+    margin: 0px;
+    padding: 0px;
+    float: left;
+}
+#green{
+    background-color: green;
+    width: 50px;
+    height: 50px;
+    float: left;
+}
+#blue{
+    background-color: blue;
+    width: 50px;
+    height: 50px;
+    float: left;
+}
+#yellow{
+    background-color: yellow;
+    width: 50px;
+    height: 50px;
+    float: left;
+}
+
+#white{
+    background-color: white;
+    width: 50px;
+    height: 50px;
+    float: left;
+}
+
+#purple{
+    background-color: purple;
+    width: 50px;
+    height: 50px;
+    float: left;
+}
+#black{
+    background-color: black;
+    width: 50px;
+    height: 50px;
+    float: left;
+} */
