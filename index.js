@@ -20,18 +20,35 @@ app.set('view engine', 'ejs');
 app.get('/', (req, res) => res.render('pages/login'))
 
 app.post('/login', (req, res) => {
-	var uname = req.body.uname;
+	var uname = (req.body.uname).trim();
 	var password = req.body.pwd; 
 	var query = 'SELECT Password FROM usr WHERE userName = \''
 	var getPasswordQuery = query.concat(uname, '\''); 
+	var checkAdminQuery = 'SELECT userName FROM usr WHERE admin = true'
+	var i; 
+	var adminName; // store admin (unique) name for comparison
+
+	// check password
 	pool.query(getPasswordQuery, (error, result)=>{
 		if (error)
 			res.end(error);
 		var pwd = (Object.values(result.rows[0])[0]).trim();
-		if (pwd == password) {
-			res.send("Correct Password"); 
-		}
-		res.render('pages/tryAgainPage');
+
+		// check if user is admin 
+		pool.query(checkAdminQuery, (error, result) => {
+			if (error) 
+				res.end(error); 
+			adminName = (Object.values(result.rows[0])[0]).trim();
+			if (pwd == password && uname == adminName) {
+				// direct: admin page
+				res.send("Admin!");
+			}
+			else if (pwd == password && uname != adminName) {
+				res.send("Not Admin!"); 
+			}
+			// case: wrong password
+			res.render('pages/tryAgainPage');
+		})
 	})
 })
 
