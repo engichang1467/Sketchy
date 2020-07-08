@@ -29,8 +29,7 @@ app.post('/login', (req, res) => {
 			res.end(error);
 		var pwd = (Object.values(result.rows[0])[0]).trim();
 		if (pwd == password) {
-			// ** should direct to the canvas from here
-			res.send("Password Correct!");
+			res.send("Correct Password"); 
 		}
 		res.render('pages/tryAgainPage');
 	})
