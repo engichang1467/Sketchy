@@ -1,0 +1,51 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-align: center;
+    color: black;
+    font-size: 18px;
+    font-family: 'Roboto Mono', monospace;
+}
+html{
+    font-family: 'Roboto Mono', monospace;
+    font-size: 14px;
+    color: #B0B0B0;
+    background-color: #080808;
+    justify-content: middle;
+}
+
+
+
+/*--------Containers for Content---------*/
+
+.content{
+    background-color: #808080;
+    justify-content: center;
+    text-align: center;
+    height: auto;
+    margin: auto auto auto auto;
+    padding-bottom: 20px;
+    color: black;
+    border: 0
+}
+
+
+
+
+/*--------Change Table Looks --------*/
+
+#tableContainer{
+    padding-top: 10px;
+}
+table{
+    text-align: center;
+    margin: auto;
+    padding: auto;
+    padding-top: 0px;
+}
+
+ th, td{
+    border: 1px solid black;
+    padding: 20px;
+}

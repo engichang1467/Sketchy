@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>View Users</title>
+
+  <link rel="stylesheet" href="./stylesheets/adminDb.css">
+
+</head>
+<body>
+
+
+    
+    <div class = "content" id = "tableContainer">
+        <h1>All Users</h1>
+        <table>
+            <tr>
+                <th>Username</th>
+                <th>Password</th>
+                <th>Admin</th>
+            </tr>
+            <% rows.forEach(function(r) { %>
+                <tr>
+                    <td><%= r.username%></td>
+                    <td><%= r.password%></td>
+                    <td><%= r.admin %></td>
+                </tr>
+            <% }); %>
+        </table>
+
+    </div>
+
+
+
+
+
+
+</body>
+</html>
