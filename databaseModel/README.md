@@ -11,9 +11,14 @@ The schema will look something like this in sql
 ```psql
 CREATE TABLE usr(
     userName CHAR(20) UNIQUE NOT NULL PRIMARY KEY,
-    password CHAR(20) NOT NULL,
+    Password CHAR(20) NOT NULL,
     admin BOOLEAN NOT NULL
 );
+```
+
+Create table
+```psql
+create table usr(userName char(20) unique not null primary key, Password char(20) not null, admin boolean not null);
 ```
 
 To insert a user
@@ -32,6 +37,10 @@ Find master user
 
 ```psql
 select * from usr where admin is true;
+
+       username       |       password       | admin
+----------------------+----------------------+-------
+ master               | imurfather           | t
 ```
 
 
