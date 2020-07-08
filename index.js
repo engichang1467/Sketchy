@@ -41,6 +41,7 @@ app.post('/signup',  (req, res) => res.render('pages/signUpPage'))
 app.post('/addUser', (req, res) => {
 	var uname = (req.body.add_userName).trim(); 
 	var password = req.body.add_password; 
+	var confirmed = req.body.confirm_password; 
 	var name_list = [];
 	var i; 
 
@@ -53,11 +54,17 @@ app.post('/addUser', (req, res) => {
 			name_list.push((Object.values(result.rows[i])[0]).trim());
 		}
 		if (name_list.includes(uname)) {
-			// *** Needs more testing 
 			res.render('pages/userNameTaken');
 		}
 	})
-	var insert_query = 'INSERT INTO usr VALUES (0, \'';
+
+	// check if the user typed the same passward twice
+	if (password != confirmed) {
+		res.render('pages/passwordNotMatch')
+	}
+
+	// if not, add user to database
+	var insert_query = 'INSERT INTO usr VALUES (\'';
 	var addUserQuery = insert_query.concat(uname, '\', \'', password, '\', False)'); 
 	pool.query(addUserQuery, (error, result)=>{
 		if (error)
