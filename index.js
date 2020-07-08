@@ -5,7 +5,7 @@ const PORT = process.env.PORT || 5000
 const { Pool } = require('pg'); 
 var pool; 
 pool = new Pool ({
-	connectionString: 'postgres://postgres:Ianmicro32@localhost/users' 
+	connectionString: 'postgres://postgres:root@localhost/users' 
 	// connectionString: process.env.DATABASE_URL
 });
 
@@ -22,7 +22,7 @@ app.get('/', (req, res) => res.render('pages/login'))
 app.post('/login', (req, res) => {
 	var uname = req.body.uname;
 	var password = req.body.pwd; 
-	var query = 'SELECT password FROM usr WHERE userName = \''
+	var query = 'SELECT Password FROM usr WHERE userName = \''
 	var getPasswordQuery = query.concat(uname, '\''); 
 	pool.query(getPasswordQuery, (error, result)=>{
 		if (error)
