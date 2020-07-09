@@ -5,7 +5,7 @@ const PORT = process.env.PORT || 5000
 const { Pool } = require('pg'); 
 var pool; 
 pool = new Pool ({
-	connectionString: 'postgres://postgres:Ianmicro32@localhost/users' 
+	connectionString: 'postgres://postgres:root@localhost/users' 
 	// connectionString: process.env.DATABASE_URL
 });
 

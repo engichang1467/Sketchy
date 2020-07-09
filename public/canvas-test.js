@@ -64,7 +64,7 @@ canvas.addEventListener('mousemove',(evt)=>{
         draw(context,x,y,evt.offsetX, evt.offsetY);
         x = evt.offsetX;
         y = evt.offsetY;
-        tempStack.push({x,y})
+        tempStack.push({x,y,colour,brushSize})
     }
 
 
