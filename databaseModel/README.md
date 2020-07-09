@@ -33,7 +33,7 @@ To see everything in the table
 select * from usr;
 ```
 
-Find master user
+Find master user (the actual username and password for the master user)
 
 ```psql
 select * from usr where admin is true;
@@ -48,7 +48,7 @@ Example Table (There will only be one admin)
 
 | Username | Password | Admin | 
 |----------|----------|-------|
-| theRealAdmin | imtherealAdmin | True
+| master | imurfather | True
 | yeahBoi7 | youHeardthatRight  | False |
 | Jeez1234 | OhJeezRick | False |
 | OhRightYa | OhMyGod |  False |
