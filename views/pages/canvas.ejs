@@ -56,11 +56,11 @@
           </div>
           
         </div>
-        
+        <% if (rows[0].admin) { %>
         <form action = "/adminDb" method = "get">
           <input type = "submit" value = "View Database">
         </form>
-        <!-- <%=rows[0].username%> -->
+        <%}%>
       </div>
 
   </div>    
