@@ -22,7 +22,7 @@ app.get('/', (req, res) => res.render('pages/login'))
 app.post('/login', (req, res) => {
 	var uname = (req.body.uname).trim();
 	var password = req.body.pwd; 
-	var query = 'SELECT Password FROM usr WHERE userName = \''
+	var query = 'SELECT * FROM usr WHERE userName = \''
 	var getPasswordQuery = query.concat(uname, '\''); 
 	var checkAdminQuery = 'SELECT userName FROM usr WHERE admin = true'
 	var i; 
@@ -30,26 +30,52 @@ app.post('/login', (req, res) => {
 
 	// check password
 	pool.query(getPasswordQuery, (error, result)=>{
+
+		
 		if (error)
 			res.end(error);
-		var pwd = (Object.values(result.rows[0])[0]).trim();
 
-		// check if user is admin 
-		pool.query(checkAdminQuery, (error, result) => {
-			if (error) 
-				res.end(error); 
-			adminName = (Object.values(result.rows[0])[0]).trim();
-			if (pwd == password && uname == adminName) {
-				// direct: admin page
-				res.send("Admin Login!")
-			}
-			else if (pwd == password && uname != adminName) {
-				res.render('pages/canvas-test');
-			}
-			// case: wrong password
-			res.render('pages/tryAgainPage');
-		})
+		var pwd = (result.rows[0].password).trim();
+		if (pwd == password) {
+			var results = {'rows':result.rows}
+			res.render('pages/canvas',results); 
+		}
+		res.render('pages/tryAgainPage');
+
+// 		var pwd = (Object.values(result.rows[0])[0]).trim();
+
+// 		// check if user is admin 
+// 		pool.query(checkAdminQuery, (error, result) => {
+// 			if (error) 
+// 				res.end(error); 
+// 			adminName = (Object.values(result.rows[0])[0]).trim();
+// 			if (pwd == password && uname == adminName) {
+// 				// direct: admin page
+// 				res.send("Admin Login!")
+// 			}
+// 			else if (pwd == password && uname != adminName) {
+// 				res.render('pages/canvas-test');
+// 			}
+// 			// case: wrong password
+// 			res.render('pages/tryAgainPage');
+// 		})
+
 	})
+})
+
+app.get('/adminDb', (req,res) =>{
+
+	var getAllQuery = `SELECT * FROM usr`
+	pool.query(getAllQuery, (error,results)=>{
+		if (error)
+			res.end(error);
+		var results = {'rows':results.rows}
+		res.render('pages/adminDb',results)
+		
+		
+	}
+	)
+
 })
 
 app.post('/signup',  (req, res) => res.render('pages/signUpPage'))

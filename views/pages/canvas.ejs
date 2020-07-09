@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title></title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="./stylesheets/canvas-test-style.css">
+  
+
+</head>
+
+
+<body>
+    <div id = "body-container">
+      <div id="canvas-container">
+            <h1>Draw Test Area</h1>
+            <canvas id = "draw-area" width="600" height="600"></canvas>
+        <div id="tool-container">
+          <div id = "colour-picker">
+            <!-- <div id = "red">
+            </div>
+            <div id = "green">
+            </div>
+            <div id = "blue">
+            </div>
+            
+            <div id = "yellow">
+
+            </div>
+            
+            <div id = "purple">
+            </div>
+            <div id = "white">
+            </div>
+            <div id = "black">
+            </div> -->
+            <div id = "colour-wheel-div">
+              <input type = "color" id = "colour-wheel">
+  
+            </div>
+            <div id="eraser-tool">
+              <i class= "fa fa-eraser" style = "font-size:40px"></i>
+            </div>
+            
+          </div>
+          <div id="brush-size-div">
+            <input type="range" min="1" max="10" value="1" id="brush-size">
+          </div>
+          <div id="clear-div">
+            <input type="button" class="slider" id="clear" value="RESET">
+          </div>
+          <div id="undo-div">
+            <input type="button" class="slider" id="undo" value="UNDO">
+          </div>
+          
+        </div>
+        <% if (rows[0].admin) { %>
+        <form action = "/adminDb" method = "get">
+          <input type = "submit" value = "View Database">
+        </form>
+        <%}%>
+      </div>
+
+  </div>    
+</body>
+<script src="./canvas-test.js"></script>
+</html>

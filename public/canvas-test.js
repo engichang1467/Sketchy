@@ -32,7 +32,10 @@ undoButton.addEventListener('click', (evt)=>{
 
     context.clearRect(0,0,canvas.width,canvas.height)
     undoStack.forEach(path=>{
+        // context.lineJoin = context.lineCap = 'round';
         context.beginPath();
+        context.strokeStyle = path[0].colour;
+        context.lineWidth = path[0].brushSize;
         context.moveTo(path[0].x,path[0].y);
         for(let i = 1; i < path.length; i++){
             context.lineTo(path[i].x,path[i].y);
@@ -47,7 +50,9 @@ canvas.addEventListener('mousedown',(evt)=>{
     isMouseDown = true;
     context.lineJoin = context.lineCap = 'round'
     tempStack = [];
-    tempStack.push({x,y})
+
+    tempStack.push({x,y,colour,brushSize})
+
 
 
 
@@ -61,7 +66,8 @@ canvas.addEventListener('mousemove',(evt)=>{
         draw(context,x,y,evt.offsetX, evt.offsetY);
         x = evt.offsetX;
         y = evt.offsetY;
-        tempStack.push({x,y})
+        tempStack.push({x,y,colour,brushSize})
+
     }
 
 
