@@ -50,7 +50,9 @@ canvas.addEventListener('mousedown',(evt)=>{
     isMouseDown = true;
     context.lineJoin = context.lineCap = 'round'
     tempStack = [];
+
     tempStack.push({x,y,colour,brushSize})
+
 
 
 
@@ -65,6 +67,7 @@ canvas.addEventListener('mousemove',(evt)=>{
         x = evt.offsetX;
         y = evt.offsetY;
         tempStack.push({x,y,colour,brushSize})
+
     }
 
 
