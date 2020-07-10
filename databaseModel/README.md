@@ -37,10 +37,6 @@ Find master user (the actual username and password for the master user)
 
 ```psql
 select * from usr where admin is true;
-
-       username       |       password       | admin
-----------------------+----------------------+-------
- master               | imurfather           | t
 ```
 
 
@@ -48,7 +44,7 @@ Example Table (There will only be one admin)
 
 | Username | Password | Admin | 
 |----------|----------|-------|
-| master | imurfather | True
+| hellyeah | hellyeah | False
 | yeahBoi7 | youHeardthatRight  | False |
 | Jeez1234 | OhJeezRick | False |
 | OhRightYa | OhMyGod |  False |
