@@ -1,0 +1,12 @@
+<script>
+$(document).ready(function () {
+    $('.alert').on('click', '.close-icon', function(e) {
+        $('.close-icon').parent().fadeOut();
+    });
+});
+</script>
+<div class="alert <%= type %>">
+<i class="alert-icon fas fa-<%= icon %>"></i>
+<span><%= message %></span>
+<i class="close-icon fas fa-times"></i>
+</div>

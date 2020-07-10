@@ -17,7 +17,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'views')); 
 app.set('view engine', 'ejs');
 
-app.get('/', (req, res) => res.render('pages/login'))
+app.get('/', (req, res) => res.render('pages/account/login'))
+
+app.get('/home', (req, res) => res.render('pages/home'))
 
 app.post('/login', (req, res) => {
 	var uname = (req.body.uname).trim();
@@ -40,7 +42,7 @@ app.post('/login', (req, res) => {
 			var results = {'rows':result.rows}
 			res.render('pages/canvas',results); 
 		}
-		res.render('pages/tryAgainPage');
+		res.render('pages/account/tryAgainPage');
 
 // 		var pwd = (Object.values(result.rows[0])[0]).trim();
 
@@ -78,7 +80,7 @@ app.get('/adminDb', (req,res) =>{
 
 })
 
-app.post('/signup',  (req, res) => res.render('pages/signUpPage'))
+app.post('/signup',  (req, res) => res.render('pages/account/signUpPage'))
 
 app.post('/addUser', (req, res) => {
 	var uname = (req.body.add_userName).trim(); 
@@ -96,13 +98,13 @@ app.post('/addUser', (req, res) => {
 			name_list.push((Object.values(result.rows[i])[0]).trim());
 		}
 		if (name_list.includes(uname)) {
-			res.render('pages/userNameTaken');
+			res.render('pages/account/userNameTaken');
 		}
 	})
 
 	// check if the user typed the same passward twice
 	if (password != confirmed) {
-		res.render('pages/passwordNotMatch')
+		res.render('pages/account/passwordNotMatch')
 	}
 
 	// if not, add user to database
@@ -111,7 +113,7 @@ app.post('/addUser', (req, res) => {
 	pool.query(addUserQuery, (error, result)=>{
 		if (error)
 			res.end(error);
-		res.render('pages/signUpSuccessful');
+		res.render('pages/account/signUpSuccessful');
 	})
 })
 
