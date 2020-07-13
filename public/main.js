@@ -10,6 +10,7 @@ socket.emit('joinRoom',{username, room});
 
 
 // Message from server
+
 socket.on('message',message => {
   console.log(message);
   outputMessage(message);
