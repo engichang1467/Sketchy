@@ -2,4 +2,4 @@
 
 ![logo](img/logo.png)
 
-multiplayer drawing and guessing web game
+Checkout public folder - canvas_test.js file
