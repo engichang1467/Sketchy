@@ -2,52 +2,61 @@ const express = require('express')
 const path = require('path')
 const PORT = process.env.PORT || 5000
 
-const { Pool } = require('pg'); 
-var pool; 
+const io = require('socket.io')(3000);
+io.on('connection',socket => {
+  socket.on('mouse', (data) => {socket.broadcast.emit('mouse', data)});
+  socket.on('clear', () => {socket.broadcast.emit('clear')});
+  socket.on('undo', (stack) => {socket.broadcast.emit('undo',stack)});
+
+
+})
+
+const { Pool } = require('pg');
+var pool;
 pool = new Pool ({
-	// connectionString: 'postgres://postgres:root@localhost/users' 
-	connectionString: process.env.DATABASE_URL
+	connectionString: 'postgres://postgres:root@localhost/users'
+	// connectionString: process.env.DATABASE_URL
 });
 
 var app = express()
 
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
-app.use(express.static(path.join(__dirname, 'public'))); 
-app.set('views', path.join(__dirname, 'views')); 
+app.use(express.static(path.join(__dirname, 'public')));
+app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.get('/', (req, res) => res.render('pages/login'))
 
 app.post('/login', (req, res) => {
 	var uname = (req.body.uname).trim();
-	var password = req.body.pwd; 
+	var password = req.body.pwd;
 	var query = 'SELECT * FROM usr WHERE userName = \''
-	var getPasswordQuery = query.concat(uname, '\''); 
+	var getPasswordQuery = query.concat(uname, '\'');
 	var checkAdminQuery = 'SELECT userName FROM usr WHERE admin = true'
-	var i; 
+	var i;
 	var adminName; // store admin (unique) name for comparison
 
 	// check password
 	pool.query(getPasswordQuery, (error, result)=>{
 
-		
+
 		if (error)
 			res.end(error);
 
 		var pwd = (result.rows[0].password).trim();
 		if (pwd == password) {
 			var results = {'rows':result.rows}
-			res.render('pages/canvas',results); 
+			res.render('pages/canvas',results);
 		}
 		res.render('pages/tryAgainPage');
 
 // 		var pwd = (Object.values(result.rows[0])[0]).trim();
 
-// 		// check if user is admin 
+// 		// check if user is admin
 // 		pool.query(checkAdminQuery, (error, result) => {
-// 			if (error) 
-// 				res.end(error); 
+// 			if (error)
+// 				res.end(error);
 // 			adminName = (Object.values(result.rows[0])[0]).trim();
 // 			if (pwd == password && uname == adminName) {
 // 				// direct: admin page
@@ -71,8 +80,8 @@ app.get('/adminDb', (req,res) =>{
 			res.end(error);
 		var results = {'rows':results.rows}
 		res.render('pages/adminDb',results)
-		
-		
+
+
 	}
 	)
 
@@ -81,14 +90,14 @@ app.get('/adminDb', (req,res) =>{
 app.post('/signup',  (req, res) => res.render('pages/signUpPage'))
 
 app.post('/addUser', (req, res) => {
-	var uname = (req.body.add_userName).trim(); 
-	var password = req.body.add_password; 
-	var confirmed = req.body.confirm_password; 
+	var uname = (req.body.add_userName).trim();
+	var password = req.body.add_password;
+	var confirmed = req.body.confirm_password;
 	var name_list = [];
-	var i; 
+	var i;
 
 	// check if the username has already been taken
-	var getNamesQuery = 'SELECT DISTINCT userName FROM usr' 
+	var getNamesQuery = 'SELECT DISTINCT userName FROM usr'
 	pool.query(getNamesQuery, (error, result)=>{
 		if (error)
 			res.end(error);
@@ -107,7 +116,7 @@ app.post('/addUser', (req, res) => {
 
 	// if not, add user to database
 	var insert_query = 'INSERT INTO usr VALUES (\'';
-	var addUserQuery = insert_query.concat(uname, '\', \'', password, '\', False)'); 
+	var addUserQuery = insert_query.concat(uname, '\', \'', password, '\', False)');
 	pool.query(addUserQuery, (error, result)=>{
 		if (error)
 			res.end(error);
