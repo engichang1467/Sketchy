@@ -105,6 +105,11 @@ body {
     margin-top: 10px;
 }
 
+.login-divider {
+    text-align: center;
+    margin: 50px 0px;
+}
+
 .login-button:hover {
     background-color: #E16A94;
     color: #fff;
@@ -175,6 +180,18 @@ input:focus {
     color: #50B84E;
 }
 
+.alert-failure {
+    background-color: #ffdddd;
+    border: 1px solid #ff4444;
+    color: #ff1111;
+}
+
+.alert-warning {
+    background-color: #faf1d3;
+    border: 1px solid #eba92e;
+    color: #eba92e; 
+}
+
 .close-icon {
     justify-self: flex-end;
     margin-left: auto;
@@ -203,7 +220,7 @@ input:focus {
     align-items: center;
     min-width: 900px;
     min-height: 700px;
-    max-width: 1100px;
+    
     border-radius: 5px;
     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
@@ -223,6 +240,69 @@ input:focus {
     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
     box-sizing: border-box;
 }
+
+#browse-wrapper {
+    margin: 0px 15px 0px 0px;
+    min-height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    flex-grow: 1;
+    align-items: center;
+    min-width: 900px;
+    min-height: 700px;
+    
+    border-radius: 5px;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;
+}
+
+#browse-container {
+    background-color: #fff;
+    width: 100%;
+    min-height: 650px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.lobby-card {
+    background-color: #fafafa;
+    height: calc(100% - 2 * 55px);
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    margin: 55px;
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.lobby-2 {
+    margin: 55px 0px;
+}
+
+.lobby-details {
+    margin-bottom: 10%;
+    text-align: center;
+}
+
+.lobby-name {
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.lobby-status {
+    
+}
+
+
+
 
 #canvas-container {
     background-color: #fff;
@@ -280,3 +360,131 @@ input:focus {
     color: #E16A94;
     transition: all 0.2s cubic-bezier(.49,1.09,.89,1.01);
 }
+
+#round-timer {
+    color: #222;
+    display: flex;
+    width: 110px;
+    height: 110px;
+    background: #E8C300;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: 900;
+    font-size: 46px;
+    margin: 10px;
+}
+
+.center-flex {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    flex-direction: column;
+
+}
+
+#round-number {
+    margin: 10px;
+    font-size: 24px;
+    color: #222;
+}
+
+.medal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    position: relative;
+    text-align: center;
+  }
+  .medal:before,
+ .medal:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 40px;
+    width: 40px;
+  }
+  .medal:before {
+    transform: rotate(30deg);
+  }
+ .medal:after {
+    transform: rotate(60deg);
+  }
+
+  .gold, .gold:after, .gold:before {
+    background: #E8C300;
+  }
+  .silver, .silver:after, .silver:before {
+    background: #D6ECF3;
+  }
+  .bronze, .bronze:after, .bronze:before {
+    background: #CC9872;
+  }
+  .runner-up, .runner-up:before, .runner-up:after {
+    background: #CBCBCB;
+  }
+
+  .medal span {
+    color: #222;
+    position: absolute;
+    z-index: 1;
+    font-size: 28px;
+    font-weight: 900;
+    text-align: center;
+  }
+  
+  #players-list {
+      display: flex;
+      flex-direction: column;
+      justify-content: start;
+      align-items: flex-start;
+      width: 90%;
+      margin-top: 15px;
+  }
+
+  .player-list-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0px;
+    width: 100%;
+    border-top: 1px solid #CBCBCB;
+  }
+  
+  .player-details {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: center;
+    font-weight: 500;
+    color: #222;
+   
+  }
+
+  .player-details-points {
+    font-size: 16px;
+  }
+
+  .player-details-name {
+    font-size: 18px;;
+  }
+
+  .place {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-basis: 55px;
+    height: 55px;
+    flex-grow: 0;
+    margin-right: 20px;
+  }
+
+
+
+  .bold {
+      font-weight: bold;
+  }
