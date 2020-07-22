@@ -2,10 +2,12 @@ const express = require('express')
 const path = require('path')
 const PORT = process.env.PORT || 5000
 
+require('dotenv/config')
+
 const { Pool } = require('pg'); 
 var pool; 
 pool = new Pool ({
-	// connectionString: 'postgres://postgres:root@localhost/users' 
+	// connectionString: process.env.LOCALDB
 	connectionString: process.env.DATABASE_URL
 });
 
