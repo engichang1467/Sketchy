@@ -44,35 +44,30 @@ const fetch = require("node-fetch");
 // get_data(query)
 
 
-// /** urban-dictionary */
-// const Filter = require('bad-words')
-// const ud = require('urban-dictionary')
+/* reference on implmenting the urban dictionary api: 
+   https://rapidapi.com/community/api/urban-dictionary */
 
-// const filter = new Filter()
+function get_definition(word) {
+	var req = unirest("GET", "https://mashape-community-urban-dictionary.p.rapidapi.com/define");
+	req.headers({
+		"x-rapidapi-host": "mashape-community-urban-dictionary.p.rapidapi.com",
+		"x-rapidapi-key": "d5e2d819d4msh7bcc051da537e83p1d5625jsn81ee7cc88779",
+		"useQueryString": true
+	});
+	
+	req.query({
+		"term": word
+	});
+	
+	req.end(function (result1) {
+		if (result1.error) throw new Error(result1.error);
+		definitions.push(result1.body.list[0].definition);
+	});
+}	
 
-// // Callback example.
-// ud.random((error, entry) => {
-//   if (error) {
-// 	console.error(error.message)
-// } else {
-// 	// console.log(filter.clean(entry.word))
-// 	var w = filter.clean(entry.word)
-
-// 	// console.log(filter.clean(entry.definition))
-// 	var d = filter.clean(entry.definition)
-
-//     // console.log(entry.example)
-// 	var g = {w: d}
-//   }
-// })
-
-// make list of 3 random words
-
-// insert those words through the api
-
-// output it as json
-
-// take those output to the ejs to get display on
+for (let i = 0; i < 3; i++) {
+	get_definition(words[i]); 
+}
 
 express()
 	.use(session({
@@ -88,7 +83,7 @@ express()
 
 	// Authentication Routes 
 	/* Authenticate User */ .post('/login', auth.loginUser)
-	/* Signup User */ .post('/signup', auth.signupUser)
+	/* Signup User */       .post('/signup', auth.signupUser)
 
 	// Routes 
 	/* Home */ .get('/', auth.loadHome)
