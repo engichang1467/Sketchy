@@ -7,6 +7,13 @@
 //     password: 'admin'
 //   })
 
+const { Pool } = require('pg'); 
+var pool; 
+//   postgres://postgres:6757@localhost/usr'
+pool = new Pool ({
+	connectionString: 'process.env.DATABASE_URL'
+});
+
 const loginUser = (request, response) => {
 	var username = request.body.uname.trim();
     var password = request.body.pwd.trim(); 
