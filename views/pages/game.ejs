@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
     <% include ../partials/header.ejs %>   
     
 </head>
@@ -23,13 +24,22 @@
         
             <div id='canvas-wrapper'>
                 <div class='card' id='canvas-container'>
-                    <canvas id="draw-area" width="840" height="640"><script src="./canvas-drawing.js"></script></canvas>
+                    <canvas id="draw-area" width="840" height="640"><script src="./canvas-drawing.js" crossorigin="anonymous"></script></canvas>
                     
                 </div>
                 <div class='card'id='canvas-toolbar'>
-                    <div class='tool'>
+                    <div class='tool' id = "tool-color">
                         <i class="fas fa-palette"></i>
                         <span>Color</span>
+                    </div>
+                    <div class='tool' id = "tool-eraser">
+                        <i class="fa fa-eraser"></i>
+                        <span>Eraser</span>
+                    </div>
+                    <div class='tool' id = "tool-fill">
+                        <i class="fas fa-fill-drip"></i>
+                        <span>Fill</span>
+                        
                     </div>
                     <div class='tool'>
                         <i class="fas fa-pencil-alt"></i>
@@ -49,12 +59,13 @@
                     </div>
                 </div>
             </div>
-
             <div class='card' id='chat-wrapper'></div>
-
+            <!-- <input type="text" class="colorpicker-input" /> -->
         
       </div>
       <script type='text/javascript' src='http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.4.0/fabric.min.js'></script>
+      
+      
       
 </body>
 
