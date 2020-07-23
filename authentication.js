@@ -1,17 +1,17 @@
-// const { Pool } = require('pg'); 
-// var pool; 
-// var connectionStrings = {dev: 'postgres://postgres:6757@localhost/usr', prod: 'process.env.DATABASE_URL'}
-// pool = new Pool ({
-// 	connectionString: 'postgres://postgres:6757@localhost/usr'
-// });
+const { Pool } = require('pg'); 
+var pool; 
+//var connectionStrings = {dev: 'postgres://postgres:6757@localhost/usr', prod: 'process.env.DATABASE_URL'}
+pool = new Pool ({
+	connectionString: 'process.env.DATABASE_URL'
+});
 
-const Pool = require('pg').Pool
-const pool = new Pool({
-    user: 'sketchyadmin',
-    host: 'localhost',
-    database: 'usr',
-    password: 'admin'
-  })
+// const Pool = require('pg').Pool
+// const pool = new Pool({
+//     user: 'sketchyadmin',
+//     host: 'localhost',
+//     database: 'usr',
+//     password: 'admin'
+//   })
 
 const loginUser = (request, response) => {
 	var username = request.body.uname.trim();
