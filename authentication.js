@@ -47,6 +47,7 @@ const signupUser = (request, response) => {
     if (username && password && confirm && (password === confirm)) {
 		pool.query('INSERT into usr values ($1, $2, false)', [username, password], (error, result, fields) => {
             if (error) {
+                console.log(error)
                 response.render('pages/home', {alerts: [['Signup Failed', 'alert-failure', 'exclamation-triangle']], session});
             } else {
             response.render('pages/home', {alerts: [['Signup Successful!', 'alert-success', 'check']], session});
