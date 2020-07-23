@@ -2,7 +2,7 @@ const express = require('express')
 const session = require('express-session');
 const path = require('path');
 const PORT = process.env.PORT || 5000
-
+const auth = require('./authentication')
 const app = express()
 	app.use(session({
 		secret: '276isthebest',
@@ -17,12 +17,16 @@ const app = express()
 	app.set('view engine', 'ejs')
 
 	// Authentication Routes 
-	/* Authenticate User */ .post('/login', auth.loginUser)
-	/* Signup User */ .post('/signup', auth.signupUser)
+	/* Authenticate User */
+	app.post('/login', auth.loginUser)
+	/* Signup User */
+	app.post('/signup', auth.signupUser)
 
 	// Routes 
-	/* Home */ .get('/', auth.loadHome)
-	/* Game */ .get('/game/:id', loadGame)
+	/* Home */
+	app.get('/', auth.loadHome)
+	/* Game */
+	app.get('/game/:id', loadGame)
 
 
 	// Start Listening 
@@ -31,8 +35,6 @@ const app = express()
 
 
 const io = require('socket.io').listen(app);
-
-const auth = require('./authentication')
 
 
 io.on('connection', (socket) => {
