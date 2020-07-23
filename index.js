@@ -1,8 +1,7 @@
 const express = require('express')
 const session = require('express-session');
 const path = require('path');
-const PORT = process.env.PORT || 5000
-const auth = require('./authentication')
+const PORT = process.env.PORT || 80
 
 
 const loadGame = (request, response) => { // Path: /game/:id
@@ -58,7 +57,7 @@ const app = express()
 	// Start Listening 
 	const server = app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
 
-
+const auth = require('./authentication')
 
 const io = require('socket.io')(server);
 
