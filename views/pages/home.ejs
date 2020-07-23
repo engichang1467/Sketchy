@@ -21,19 +21,19 @@
         
             <div id='browse-wrapper'>
                 <div class='card' id='browse-container'>
-                    <div class='lobby-card'>
+                    <div id="lobby-1" class='lobby-card'>
                         <div class='lobby-details'>
                             <div class='lobby-name'>Game 1</div>
                             <div class='lobby-status'>Open</div>
                         </div>
                     </div>
-                    <div class='lobby-card lobby-2'>
+                    <div id="lobby-2" class='lobby-card lobby-2'>
                         <div class='lobby-details'>
                             <div class='lobby-name'>Game 2</div>
                             <div class='lobby-status'>Open</div>
                         </div>
                     </div>
-                    <div class='lobby-card'>
+                    <div id="lobby-3" class='lobby-card'>
                         <div class='lobby-details'>
                             <div class='lobby-name'>Game 3</div>
                             <div class='lobby-status'>Open</div>
@@ -44,7 +44,24 @@
 
         
       </div>
-      
+      <script>
+
+        var room1 = document.getElementById('lobby-1');
+        var room2 = document.getElementById('lobby-2');
+        var room3 = document.getElementById('lobby-3');
+
+        room1.addEventListener('click',function(evt){
+            window.location.href = 'https://sketchy-app-production.herokuapp.com/game/1';
+        })
+        room2.addEventListener('click',function(evt){
+            window.location.href = 'https://sketchy-app-production.herokuapp.com/game/2';
+        })
+        room3.addEventListener('click',function(evt){
+            window.location.href = 'https://sketchy-app-production.herokuapp.com/game/3';
+        })
+
+
+      </script>
 </body>
 
 </html>
