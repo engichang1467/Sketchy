@@ -24,6 +24,7 @@ express()
 	// Routes 
 	/* Home */ .get('/', auth.loadHome)
 	/* Game */ .get('/game', (req, res) => res.render('pages/game'))
+	/* Word */ .get('/choose_word', (req, res) => res.render('pages/word_list'))
 
 
 	// Start Listening 
