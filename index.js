@@ -6,7 +6,6 @@ const PORT = process.env.PORT || 5000
 const io = require('socket.io').listen(app);
 
 const auth = require('./authentication')
-//const sketchy = require('./sketchy')
 
 
 io.on('connection', (socket) => {
