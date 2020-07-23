@@ -56,11 +56,11 @@ const app = express()
 
 
 	// Start Listening 
-	app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
+	const server = app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
 
 
 
-const io = require('socket.io').listen(app);
+const io = require('socket.io')(server);
 
 
 io.on('connection', (socket) => {
