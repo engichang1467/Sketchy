@@ -1,9 +1,3 @@
-const { Pool } = require('pg'); 
-var pool; 
-//   postgres://postgres:6757@localhost/usr'
-pool = new Pool ({
-	connectionString: 'process.env.DATABASE_URL'
-});
 
 // const Pool = require('pg').Pool
 // const pool = new Pool({

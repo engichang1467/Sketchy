@@ -3,6 +3,15 @@ const session = require('express-session');
 const path = require('path');
 const PORT = process.env.PORT || 80
 
+const auth = require('./authentication')
+
+const { Pool } = require('pg'); 
+var pool; 
+//   postgres://postgres:6757@localhost/usr'
+pool = new Pool ({
+	connectionString: 'process.env.DATABASE_URL'
+});
+
 
 const loadGame = (request, response) => { // Path: /game/:id
 
@@ -57,7 +66,7 @@ const app = express()
 	// Start Listening 
 	const server = app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
 
-const auth = require('./authentication')
+
 
 const io = require('socket.io')(server);
 
