@@ -18,7 +18,7 @@ const loginUser = (request, response) => {
     var password = request.body.pwd.trim(); 
     
     if (username && password) {
-		pool.query('SELECT * FROM users WHERE userName = $1 AND Password = $2', [username, password], (error, result, fields) => {
+		pool.query('SELECT * FROM usr WHERE userName = $1 AND Password = $2', [username, password], (error, result, fields) => {
             if (error) throw error;
 			if (!(result.rows.length === 0)) {
 				request.session.loggedin = true;
@@ -44,7 +44,7 @@ const signupUser = (request, response) => {
     var session = request.session
     
     if (username && password && confirm && (password === confirm)) {
-		pool.query('INSERT into users values ($1, $2, false)', [username, password], (error, result, fields) => {
+		pool.query('INSERT into usr values ($1, $2, false)', [username, password], (error, result, fields) => {
             if (error) {
                 response.render('pages/home', {alerts: [['Signup Failed', 'alert-failure', 'exclamation-triangle']], session});
             } else {
