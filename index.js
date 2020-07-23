@@ -3,7 +3,7 @@ const session = require('express-session');
 const path = require('path');
 const PORT = process.env.PORT || 5000
 
-const io = require('socket.io')(3000);
+const io = require('socket.io').listen(app);
 
 const formatMessage = require('./messages.js');
 const auth = require('./authentication')
@@ -75,18 +75,18 @@ const initRooms = (roomCount) => {
 }
 
 
-express()
-	.use(session({
+const app = express()
+	app.use(session({
 		secret: '276isthebest',
 		resave: true,
 		saveUninitialized: true
 	}))
-	.use(express.json())
-	.use(express.urlencoded({extended:false}))
-	.use(express.static(path.join(__dirname, '/public')))
+	app.use(express.json())
+	app.use(express.urlencoded({extended:false}))
+	app.use(express.static(path.join(__dirname, '/public')))
 	
-	.set('views', path.join(__dirname, 'views'))
-	.set('view engine', 'ejs')
+	app.set('views', path.join(__dirname, 'views'))
+	app.set('view engine', 'ejs')
 
 	// Authentication Routes 
 	/* Authenticate User */ .post('/login', auth.loginUser)
@@ -98,4 +98,4 @@ express()
 
 
 	// Start Listening 
-	.listen(PORT, () => console.log(`Listening on ${ PORT }`))
+	app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
