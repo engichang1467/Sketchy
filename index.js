@@ -5,7 +5,6 @@ const PORT = process.env.PORT || 5000
 
 const io = require('socket.io').listen(app);
 
-const formatMessage = require('./messages.js');
 const auth = require('./authentication')
 //const sketchy = require('./sketchy')
 
