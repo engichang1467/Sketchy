@@ -19,6 +19,7 @@
     "fs": "0.0.1-security",
     "pg": "^8.2.1",
     "random-words": "^1.1.1",
+    "unirest": "^0.6.0",
     "urban-dictionary": "^2.2.1"
   },
   "devDependencies": {
