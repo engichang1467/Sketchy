@@ -23,6 +23,9 @@
         
             <div id='canvas-wrapper'>
                 <div class='card' id='canvas-container'>
+                    <% words.words.forEach(function(word){ %>
+                      <span><%= word %></span>
+                    <% }); %>
                     <canvas id="draw-area" width="840" height="640"></canvas>
                     
                 </div>

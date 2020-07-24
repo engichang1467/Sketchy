@@ -5,6 +5,32 @@ const PORT = process.env.PORT || 80
 
 const auth = require('./authentication')
 
+const wordListPath = require('word-list');
+const fs = require('fs');
+const fetch = require("node-fetch");
+const wordArray = fs.readFileSync(wordListPath, 'utf8').split('\n');
+
+// function getRandWords()
+// {
+// 	var n = Math.floor(Math.random() * Math.floor(wordArray.length - 1))
+//     return wordArray[n]
+// }
+
+function getRandomWords(word_count)
+{
+	words = []
+	for (let i = 0; i < word_count; i++) {
+		var n = Math.floor(Math.random() * Math.floor(wordArray.length - 1));
+		random_word = wordArray[n]
+		let word_data = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${word}`).json();
+
+		let word = {word: random_word, link: word_data[3][1]}
+		
+		words.push(word)
+	}
+	
+}
+
 
 const loadGame = (request, response) => { // Path: /game/:id
 
@@ -12,9 +38,17 @@ const loadGame = (request, response) => { // Path: /game/:id
 	room_id = request.params.id; // Grab room ID from URL path parameters.
 	request.session.currentRoom = room_id;
 
+	try {
+		let word_count = 3
+		let word_array = getRandomWords(word_count) // get words array
+		words = {word_count: word_count, words: word_array};
+	} catch (error) {
+		console.log(error);
+	}
+
 	// If logged in:
     if (request.session.loggedin) {
-		response.render('pages/game', {session: request.session}); // Render game EJS template with data from the user's session.
+		response.render('pages/game', {session: request.session, words: words}); // Render game EJS template with data from the user's session.
 		
     } else {
 	//If logged out, redirect back to home with warning alert.
