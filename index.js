@@ -32,8 +32,7 @@ async function getRandomWords(word_count) {
 	return word_test;
 }
 
-
-const loadGame = (request, response) => { // Path: /game/:id
+const loadGame = async (request, response) => { // Path: /game/:id
 
 	username = request.session.username; // Grab username from session.
 	room_id = request.params.id; // Grab room ID from URL path parameters.
@@ -41,9 +40,9 @@ const loadGame = (request, response) => { // Path: /game/:id
 
 	try {
 		let word_count = 3
-		word_array = getRandomWords(word_count) // get words array
+		word_array = await getRandomWords(word_count) // get words array
 		//response.send(word_array)
-		word_object = {word_count: word_count, words: [{word: 'test word', link: 'test-link'}]};
+		word_object = {word_count: word_count, words: word_array};
 	} catch (error) {
 		console.log(error);
 	}
