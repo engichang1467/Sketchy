@@ -24,6 +24,9 @@
             <div id='canvas-wrapper'>
                 <div class='card' id='canvas-container'>
                       <%= JSON.stringify(word_object) %>
+                      <% word_object.words.forEach(function(word){ %>
+                        <span><%= word.word %></span>
+                      <% }); %>
                     <canvas id="draw-area" width="840" height="640"></canvas>
                     
                 </div>
