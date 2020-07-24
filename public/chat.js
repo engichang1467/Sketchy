@@ -12,7 +12,6 @@ socket.emit('addUserToRoom', {session})
 // Message from server
 
 socket.on('message',message => {
-  console.log(message);
   outputMessage(message);
 
   //Scroll down the chatbox automatically
