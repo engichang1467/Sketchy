@@ -5,6 +5,9 @@ const chatMessages = document.querySelector('.chat-messages');
 
 socket.emit('addUserToRoom', {session})
 
+var chime = new Audio('/sound/positive-alert.wav')
+chime.play();
+
 
 // Message from server
 

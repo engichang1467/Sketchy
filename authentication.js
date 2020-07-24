@@ -29,12 +29,13 @@ const loginUser = (request, response) => {
                 request.session.alerts = [[`Login successful! Welcome back!`, 'alert-success', 'exclamation-triangle']]
                 response.redirect('/');
 			} else {
+                request.session.alerts = [[`Account not found!`, 'alert-warning', 'exclamation-triangle']]
                 response.redirect('/');
 			}			
 			response.end();
 		});
 	} else {
-        request.session.alerts = [[`Account not found.`, 'alert-warning', 'exclamation-triangle']]
+        request.session.alerts = [[`Please enter your details!`, 'alert-warning', 'exclamation-triangle']]
         response.redirect('/');
         return false;
 	}

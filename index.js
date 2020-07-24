@@ -95,9 +95,10 @@ const app = express()
 	// Start Listening 
 	const server = app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
 
-
-
-const io = require('socket.io')(server);
+	// for heroku deployment:
+	//const io = require('socket.io')(server);
+	// must also change socket.js
+	const io = require('socket.io')(3000);
 
 
 io.on('connection', (socket) => {
