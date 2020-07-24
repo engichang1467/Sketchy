@@ -26,7 +26,7 @@ async function getRandomWords(word_count) {
 
 		let word = {word: random_word, link: word_data_json[3][1]}
 		
-		words.push(word)
+		words.push([word])
 	}
 	return words;
 }
