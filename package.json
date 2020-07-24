@@ -12,14 +12,12 @@
     "devStart": "nodemon index.js"
   },
   "dependencies": {
-    "bad-words": "^3.0.3",
     "ejs": "^2.7.4",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "fs": "0.0.1-security",
     "node-fetch": "^2.6.0",
     "pg": "^8.2.1",
-    "urban-dictionary": "^2.2.1",
     "word-list": "^3.1.0"
   },
   "devDependencies": {
