@@ -16,7 +16,7 @@ const wordArray = fs.readFileSync(wordListPath, 'utf8').split('\n');
 //     return wordArray[n]
 // }
 
-const getRandomWords = async (word_count) => {
+async function getRandomWords(word_count) {
 	words = []
 	for (let i = 0; i < word_count; i++) {
 		var n = Math.floor(Math.random() * Math.floor(wordArray.length - 1));
@@ -27,7 +27,7 @@ const getRandomWords = async (word_count) => {
 		
 		words.push(word)
 	}
-	
+	return words;
 }
 
 
