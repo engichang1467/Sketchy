@@ -21,9 +21,10 @@ async function getRandomWords(word_count) {
 	for (let i = 0; i < word_count; i++) {
 		var n = Math.floor(Math.random() * Math.floor(wordArray.length - 1));
 		random_word = wordArray[n]
-		let word_data = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${random_word}`).json();
+		let word_data = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${random_word}`);
+		let word_data_json = word_data.json();
 
-		let word = {word: random_word, link: word_data[3][0]}
+		let word = {word: random_word, link: word_data_json[3][0]}
 		
 		words.push(word)
 	}
