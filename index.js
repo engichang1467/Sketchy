@@ -18,7 +18,6 @@ const wordArray = fs.readFileSync(wordListPath, 'utf8').split('\n');
 
 async function getRandomWords(word_count) {
 	words = []
-	word_test = [{word: 'test word', link: 'test-link'}]
 	for (let i = 0; i < word_count; i++) {
 		var n = Math.floor(Math.random() * Math.floor(wordArray.length - 1));
 		random_word = wordArray[n]
@@ -29,7 +28,7 @@ async function getRandomWords(word_count) {
 		
 		words.push(word)
 	}
-	return word_test;
+	return words;
 }
 
 const loadGame = async (request, response) => { // Path: /game/:id
