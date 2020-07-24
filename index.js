@@ -67,17 +67,17 @@ express()
 														var data0 = getRandWords()
 														const response = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${data0}`);
 														const json = await response.json();
-														const dataInfo0 = await json[3][1]
+														const dataInfo0 = await json[3][0]
 
 														var data1 = getRandWords()
 														const response1 = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${data1}`);
 														const json1 = await response1.json();
-														const dataInfo1 = await json1[3][1]
+														const dataInfo1 = await json1[3][0]
 
 														var data2 = getRandWords()
 														const response2 = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${data2}`);
 														const json2 = await response2.json();
-														const dataInfo2 = await json2[3][1]
+														const dataInfo2 = await json2[3][0]
 													
 														res.render('pages/word_list.ejs', {data0: data0, data1: data1, data2: data2, dataInfo0: dataInfo0, dataInfo1: dataInfo1, dataInfo2: dataInfo2})
 													} catch (error) {
