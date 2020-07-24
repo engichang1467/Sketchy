@@ -75,12 +75,13 @@
                     <a href="https://sketchy-app-production.herokuapp.com/" class="btn">Leave Game</a>
 
             </div>
-
-          <span id='sessionJSON' hidden>
-              <%= JSON.stringify(session); %>
-          </span>
-        
       </div>
+
+        <span id='sessionJSON' hidden>
+            <%= JSON.stringify(session); %>
+        </span>
+        <script src="/parse-session.js"></script>
+
       <script src="/socket.js"></script>
       <script src="/canvas.js"></script>
       <script src="/chat.js"></script>

@@ -1,6 +1,3 @@
-var session = JSON.parse($('#sessionJSON').text());
-$('#sessionJSON').remove();
-
 const chatForm = document.getElementById('chat-form');
 const chatMessages = document.querySelector('.chat-messages');
 

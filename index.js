@@ -1,7 +1,7 @@
 const express = require('express')
 const session = require('express-session');
 const path = require('path');
-const PORT = process.env.PORT || 80
+const PORT = process.env.PORT || 5000
 
 const auth = require('./authentication')
 
@@ -15,6 +15,7 @@ const wordArray = fs.readFileSync(wordListPath, 'utf8').split('\n');
 // 	var n = Math.floor(Math.random() * Math.floor(wordArray.length - 1))
 //     return wordArray[n]
 // }
+
 
 async function getRandomWords(word_count) {
 	words = []
@@ -52,7 +53,8 @@ const loadGame = async (request, response) => { // Path: /game/:id
 		
     } else {
 	//If logged out, redirect back to home with warning alert.
-        response.render('pages/home', {alerts: [['Please login before joining!', 'alert-warning', 'exclamation-triangle']], session});
+		request.session.alerts = [['Please login before joining!', 'alert-warning', 'exclamation-triangle']]
+        response.redirect('/');
     }
 }
 

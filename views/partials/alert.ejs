@@ -1,9 +1,18 @@
 <script>
+if ('<%= type %>' == ('alert-warning' || 'alert-failure')) {
+    var chime = new Audio('/sound/negative-alert.wav')
+} else {
+    var chime = new Audio('/sound/positive-alert.wav')
+}
+chime.play();
+
+setTimeout(function() { $('.alert').fadeOut(); }, 5000);
 $(document).ready(function () {
     $('.alert').on('click', '.close-icon', function(e) {
         $('.close-icon').parent().fadeOut();
     });
 });
+
 </script>
 <div class="alert <%= type %>">
 <i class="alert-icon fas fa-<%= icon %>"></i>

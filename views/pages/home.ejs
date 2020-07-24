@@ -8,15 +8,26 @@
 	<div class="page-container">
         <div class="card sidebar">
             
-            <% if(session.loggedin){ %>
-                <% alerts.forEach(function(alert){ %>
+            <% if(session.loggedin){ %> <!-- Display logged-in user content. -->
+
+                <!-- Alert Rendering -->
+                <% session.alerts.forEach(function(alert){ %>
                     <%- include('../partials/alert.ejs', {message: alert[0], type: alert[1], icon: alert[2]}); %>
                 <% }); %>
-                <% include ../partials/profile.ejs %>
+
+                <div id='profile-card'>
+                    <div id='profile-icon'><i class="fas fa-user"></i></div>
+                    <div id='profile-text'>
+                        <div id='profile-username'><span><%- session.username %></span></div>
+                    </div>
+                </div>    
+
             <% } %>
-            <% if(!session.loggedin){ %>
+
+            <% if(!session.loggedin){ %> <!-- Or the login/signup for logged out users. -->
                 <% include ../partials/login.ejs %>
             <% } %>
+
         </div>
         
             <div id='browse-wrapper'>
@@ -44,24 +55,14 @@
 
         
       </div>
-      <script>
 
-        var room1 = document.getElementById('lobby-1');
-        var room2 = document.getElementById('lobby-2');
-        var room3 = document.getElementById('lobby-3');
+    <!-- Get session data from server. -->
+    <span id='sessionJSON' hidden>
+        <%= JSON.stringify(session); %>
+    </span>
+    <script src="/parse-session.js"></script>
 
-        room1.addEventListener('click',function(evt){
-            window.location.href = 'https://sketchy-app-production.herokuapp.com/game/1';
-        })
-        room2.addEventListener('click',function(evt){
-            window.location.href = 'https://sketchy-app-production.herokuapp.com/game/2';
-        })
-        room3.addEventListener('click',function(evt){
-            window.location.href = 'https://sketchy-app-production.herokuapp.com/game/3';
-        })
+    <script src="/home.js"></script>
 
-
-      </script>
 </body>
-
 </html>

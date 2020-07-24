@@ -1,9 +1,9 @@
+<% session.alerts.forEach(function(alert){ %>
+    <%- include('../partials/alert.ejs', {message: alert[0], type: alert[1], icon: alert[2]}); %>
+<% }); %>
 <h1>Welcome!</h1>
 <h3>Login or Register to start playing.</h3>
 <div class="account-form-wrapper">
-    <% alerts.forEach(function(alert){ %>
-        <%- include('../partials/alert.ejs', {message: alert[0], type: alert[1], icon: alert[2]}); %>
-    <% }); %>
     <form action="/login" method="post" class='login-form'>
         <input type="text" name="uname" placeholder="Username" class="login-text-input">
         <input type="password" name="pwd" placeholder="Password" class="login-text-input">
