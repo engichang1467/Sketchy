@@ -23,7 +23,8 @@
         
             <div id='canvas-wrapper'>
                 <div class='card' id='canvas-container'>
-                    <% words.words.forEach(function(word){ %>
+                    <% let word_array = word_object.words %>
+                    <% word_array.forEach(function(word){ %>
                       <%= word.word %>
                     <% }); %>
                     <canvas id="draw-area" width="840" height="640"></canvas>
