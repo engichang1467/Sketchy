@@ -41,9 +41,9 @@ const loadGame = (request, response) => { // Path: /game/:id
 
 	try {
 		let word_count = 3
-		let word_array = getRandomWords(word_count) // get words array
+		word_array = getRandomWords(word_count) // get words array
 		//response.send(word_array)
-		word_object = {word_count: word_count, words: word_array};
+		word_object = {word_count: word_count, words: [{word: 'test word', link: 'test-link'}]};
 	} catch (error) {
 		console.log(error);
 	}
