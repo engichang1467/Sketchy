@@ -16,13 +16,12 @@ const wordArray = fs.readFileSync(wordListPath, 'utf8').split('\n');
 //     return wordArray[n]
 // }
 
-function getRandomWords(word_count)
-{
+const getRandomWords = async (word_count) => {
 	words = []
 	for (let i = 0; i < word_count; i++) {
 		var n = Math.floor(Math.random() * Math.floor(wordArray.length - 1));
 		random_word = wordArray[n]
-		let word_data = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${word}`).json();
+		let word_data = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${random_word}`).json();
 
 		let word = {word: random_word, link: word_data[3][1]}
 		
