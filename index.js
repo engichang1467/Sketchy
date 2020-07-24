@@ -26,7 +26,7 @@ async function getRandomWords(word_count) {
 
 		let word = {word: random_word, link: word_data_json[3][1]}
 		
-		words.push([word])
+		words.push(word)
 	}
 	return words;
 }
@@ -41,14 +41,14 @@ const loadGame = (request, response) => { // Path: /game/:id
 	try {
 		let word_count = 3
 		let word_array = getRandomWords(word_count) // get words array
-		words = {word_count: word_count, words: word_array};
+		word_object = {word_count: word_count, words: word_array};
 	} catch (error) {
 		console.log(error);
 	}
 
 	// If logged in:
     if (request.session.loggedin) {
-		response.render('pages/game', {session: request.session, words: words}); // Render game EJS template with data from the user's session.
+		response.render('pages/game', {session: request.session, word_object: word_object}); // Render game EJS template with data from the user's session.
 		
     } else {
 	//If logged out, redirect back to home with warning alert.
