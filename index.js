@@ -23,7 +23,7 @@ async function getRandomWords(word_count) {
 		random_word = wordArray[n]
 		let word_data = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${random_word}`).json();
 
-		let word = {word: random_word, link: word_data[3][1]}
+		let word = {word: random_word, link: word_data[3][0]}
 		
 		words.push(word)
 	}
