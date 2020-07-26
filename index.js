@@ -101,25 +101,36 @@ const app = express()
 	const io = require('socket.io')(3000);
 
 
+String.prototype.capitalize = function() {
+	return this.charAt(0).toUpperCase() + this.slice(1);
+}
+	  
+
 io.on('connection', (socket) => {
 	console.log(`${socket.id} connected.`)
+
+	disconnectMessage = {};
+
 
 	// Listen for addUserToRoom event from client.
 	socket.on('addUserToRoom', ({session}) => {
 		
 		socket.username = session.username;
 		socket.room_id = session.currentRoom;
+		
 
 		socket.join(socket.room_id)
 		console.log(`${socket.username} (${socket.id}) joined Room ${socket.room_id}`)
 
-		message = {username: socket.username, content: 'Welcome ' + socket.username + '!'}
-		socket.emit('message', message); //To single client
+		disconnectMessage = {username: socket.username, content: `${socket.username.capitalize()} has left the game!`, style: 'm-red'}
+
+		message = {username: socket.username, content: socket.username.capitalize() + ' has joined the game!', style: 'm-green'}
+		socket.emit('welcome-message', message); //To single client
 		//Broadcast when a user connects: broadcast all clients except user itself
-		joinedMessage = {username: socket.username, content: `${socket.username} has joined the game.`}
-		socket.broadcast.to(socket.room_id).emit('message', message);
+		socket.broadcast.to(socket.room_id).emit('welcome-message', message);
 
 	});
+
 
 	socket.on('mouse', (data) => {socket.broadcast.emit('mouse', data)});
 	socket.on('clear', () => {socket.broadcast.emit('clear')});
@@ -128,14 +139,13 @@ io.on('connection', (socket) => {
 	// Listen for chatMessage
 	socket.on('chatMessage', (msg) => {
 		// Send back the message to all Clients
-		message = {username: socket.username, content: msg}
+		message = {username: socket.username, content: msg, style: ''}
 		io.to(socket.room_id).emit('message', message);
 	});
 	//Runs when client disconnects
 	socket.on('disconnect', ()=> {
-		disconnectMessage = {username: socket.username, content: `${socket.username} has left the game!`}
 		//To everyone included itself
-		io.emit('message', disconnectMessage);
+		io.emit('disconnect-message', disconnectMessage);
 	});
 })
 

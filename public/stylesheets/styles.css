@@ -74,15 +74,25 @@ body {
 }
 
 .sidebar {
-    padding: 30px;
+    padding: 20px;
     flex-grow: 0;
     flex-basis: 15%;
     min-width: 360px;
     margin: 0px 15px 0px 0px;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
+
+}
+
+.space-between {
+    justify-content: space-between;
+}
+
+#game-info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 #profile-card {
@@ -110,12 +120,7 @@ body {
     margin-left: 20px;
 }
 
-#welcome-message {
-    font-size: 18px;
-    color: #09b309;
-    font-weight: 500;
-    align-self: flex-start;
-}
+
 
 #profile-username {
     text-transform: capitalize;
@@ -134,11 +139,17 @@ body {
     box-shadow: 0px 1.425px 2.85px rgba(0, 0, 0, 0.25);
     cursor: pointer;
     transition: all 0.4s cubic-bezier(.49,1.09,.89,1.01);
+    text-decoration: none;
 }
 
 .button:hover {
     box-shadow: 0px 1.6px 3px rgba(0, 0, 0, 0.45);
     transition: all 0.4s cubic-bezier(.49,1.09,.89,1.01);
+}
+
+.button:active, .button:focus {
+    border: 0px;
+    outline: none;
 }
 
 .login-button {
@@ -320,10 +331,64 @@ input:focus {
     flex-grow: 0;
     flex-basis: 380px;
     min-width: 380px;
-    padding: 10px;
+    padding: 20px;
     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
     box-sizing: border-box;
+}
+
+.m-green {
+    background-color: #eeffee;
+    font-weight: bold;
+}
+
+.m-red {
+    background-color: #fdd9d9;
+    font-weight: bold;
+}
+
+.message {
+    padding-left: 10px;
+    line-height: 2;
+}
+
+.send-button {
+    background-color: #E8C300;
+    color: #222;
+    height: 70px;
+    font-size: 18px;
+    margin-top: 15px;
+}
+
+.send-button:active {
+    background-color: #d6a502;
+}
+
+.text-field {
+    background: #eee;
+    outline: none;
+    height: 60px;
+    border: 0px;
+    padding: 0px 20px;
+    font-size: 16px;
+}
+
+.leave-button {
+    align-self: flex-end;
+    justify-self: flex-end;
+    color: #222;
+    background-color: #ddd;
+    height: 50px;
+    width: 100%;
+}
+
+#options {
+    width: 100%;
+}
+
+#chat-form {
+    display: flex;
+    flex-direction: column;
 }
 
 #browse-wrapper {
@@ -472,7 +537,6 @@ input:focus {
 .center-flex {
     display: flex;
     align-items: center;
-    justify-content: start;
     flex-direction: column;
 
 }

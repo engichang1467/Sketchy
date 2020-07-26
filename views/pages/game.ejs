@@ -7,19 +7,21 @@
 <body>
     <div id="header"><div class="logo"><% include ../partials/logo.ejs %></div></div>
 	<div class="page-container">
-        <div class="card sidebar center-flex">
-            <div id='round-timer'><span>53</span></div>
-            <div id='round-number'><span>Round <strong>1</strong> of <strong>3</strong></span></div>
-            
-            <div id='players-list'>
-                <% var places = ['gold','silver','bronze','runner-up','runner-up']; %>
-                <% places.forEach(function(place){ %>
-                    <%- include('../partials/player-list-item.ejs', {place: place}); %>
-                  <% }); %>
-            </div>
-            
-
+      <div class="card sidebar center-flex space-between">
+        <div id='game-info'>
+          <div id='round-timer'><span>53</span></div>
+          <div id='round-number'><span>Round <strong>1</strong> of <strong>3</strong></span></div>
+          <div id='players-list'>
+              <% var places = ['gold','silver','bronze','runner-up','runner-up']; %>
+              <% places.forEach(function(place){ %>
+                  <%- include('../partials/player-list-item.ejs', {place: place}); %>
+                <% }); %>
+          </div>
         </div>
+        <div id='options'>
+          <button class="button leave-button">Leave Game</button>
+        </div>
+      </div>
         
             <div id='canvas-wrapper'>
                 <div class='card' id='canvas-container'>
@@ -63,17 +65,14 @@
                       <form id="chat-form">
                         <input
                           id="msg"
+                          class='text-field'
                           type="text"
-                          placeholder="Enter Message"
-                          required
+                          placeholder="Enter message"
                           autocomplete="off"
                         />
-                        <button class="btn"><i class="fas fa-paper-plane"></i> Send</button>
+                        <button class="button send-button"><i class="fas fa-paper-plane"></i> Send</button>
                       </form>
                     </div>
-
-                    <a href="/" class="btn">Leave Game</a>
-
             </div>
       </div>
 
