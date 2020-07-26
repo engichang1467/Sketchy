@@ -4,6 +4,10 @@ html, body, input {
     font-family: 'Articulat CF';
 }
 
+p {
+    margin: 0px;
+}
+
 h1 {
     font-weight: 800;
     font-size: 36px;
@@ -349,7 +353,9 @@ input:focus {
 
 .message {
     padding-left: 10px;
-    line-height: 2;
+    line-height: 1.8;
+    border-radius: 3px;
+    margin: 4px 0px;
 }
 
 .send-button {
@@ -389,6 +395,10 @@ input:focus {
 #chat-form {
     display: flex;
     flex-direction: column;
+}
+
+.chat-messages {
+    margin-bottom: 15px;
 }
 
 #browse-wrapper {
