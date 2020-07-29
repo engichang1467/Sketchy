@@ -26,7 +26,7 @@ const loginUser = (request, response) => {
 			if (!(result.rows.length === 0)) {
 				request.session.loggedin = true;
                 request.session.username = username;
-                request.session.alerts = [[`Login successful! Welcome back!`, 'alert-success', 'exclamation-triangle']]
+                request.session.alerts = [[`Login successful!`, 'alert-success', 'exclamation-triangle']]
                 response.redirect('/');
 			} else {
                 request.session.alerts = [[`Account not found!`, 'alert-warning', 'exclamation-triangle']]

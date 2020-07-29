@@ -1,12 +1,14 @@
 <script>
 if ('<%= type %>' == ('alert-warning' || 'alert-failure')) {
     var chime = new Audio('/sound/negative-alert.wav')
+    chime.volume = 0.5
 } else {
     var chime = new Audio('/sound/Notification.wav')
+    chime.volume = 0.2
 }
 chime.play();
 
-setTimeout(function() { $('.alert').fadeOut(); }, 5000);
+setTimeout(function() { $('.alert').fadeOut(); }, 4000);
 $(document).ready(function () {
     $('.alert').on('click', '.close-icon', function(e) {
         $('.close-icon').parent().fadeOut();

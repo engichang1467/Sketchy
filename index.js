@@ -1,21 +1,22 @@
 const express = require('express')
 const session = require('express-session');
 const path = require('path');
+var favicon = require('serve-favicon');
 const PORT = process.env.PORT || 5000
 
 const auth = require('./authentication')
+const { Player, Game, Round, Turn } = require('./gamelogic')
+
+var game = [
+	new Game(1, 3), // Game 1 - games[1]
+	new Game(2, 3), // Game 2 - games[2]
+	new Game(3, 3), // Game 3 - games[3]
+]
 
 const wordListPath = require('word-list');
 const fs = require('fs');
 const fetch = require("node-fetch");
 const wordArray = fs.readFileSync(wordListPath, 'utf8').split('\n');
-
-// function getRandWords()
-// {
-// 	var n = Math.floor(Math.random() * Math.floor(wordArray.length - 1))
-//     return wordArray[n]
-// }
-
 
 async function getRandomWords(word_count) {
 	words = []
@@ -34,36 +35,33 @@ async function getRandomWords(word_count) {
 
 const loadGame = async (request, response) => { // Path: /game/:id
 
-	username = request.session.username; // Grab username from session.
-	room_id = request.params.id; // Grab room ID from URL path parameters.
-	request.session.currentRoom = room_id;
-
-	try {
-		let word_count = 3
-		word_array = await getRandomWords(word_count) // get words array
-		//response.send(word_array)
-		word_object = {word_count: word_count, words: word_array};
-	} catch (error) {
-		console.log(error);
-	}
-
 	// If logged in:
     if (request.session.loggedin) {
-		response.render('pages/game', {session: request.session, word_object: word_object}); // Render game EJS template with data from the user's session.
+
+		username = request.session.username; // Grab username from session.
+		room_id = request.params.id; // Grab room ID from URL path parameters.
+
+		
+
+		request.session.currentRoom = room_id;
+
+		try {
+			let word_count = 3
+			word_array = await getRandomWords(word_count) // get words array
+			//response.send(word_array)
+			word_object = {word_count: word_count, words: word_array};
+		} catch (error) {
+			console.log(error);
+		}
+		var gameData = game[room_id]
+		response.render('pages/game', {session: request.session, game: gameData, word_object: word_object}); // Render game EJS template with data from the user's session.
 		
     } else {
-	//If logged out, redirect back to home with warning alert.
+	// If logged out, redirect back to home with warning alert.
+	// alerts attribute is cleared are cleared right after displaying them on the home page.
 		request.session.alerts = [['Please login before joining!', 'alert-warning', 'exclamation-triangle']]
         response.redirect('/');
     }
-}
-
-const initRooms = (roomCount) => {
-    var rooms = []
-    for (i = 0; i < roomCount; i++) {
-        rooms[i] = 'room' + (i+1).toString;
-    }
-    return rooms;
 }
 
 const app = express()
@@ -78,6 +76,8 @@ const app = express()
 	
 	app.set('views', path.join(__dirname, 'views'))
 	app.set('view engine', 'ejs')
+
+	app.use(favicon(__dirname + '/public/images/favicon.ico'));
 
 	// Authentication Routes 
 	/* Authenticate User */
@@ -104,20 +104,19 @@ const app = express()
 String.prototype.capitalize = function() {
 	return this.charAt(0).toUpperCase() + this.slice(1);
 }
-	  
 
 io.on('connection', (socket) => {
 	console.log(`${socket.id} connected.`)
 
 	disconnectMessage = {};
 
-
 	// Listen for addUserToRoom event from client.
 	socket.on('addUserToRoom', ({session}) => {
 		
 		socket.username = session.username;
 		socket.room_id = session.currentRoom;
-		
+
+		game[socket.room_id].playerAdd(new Player(username));
 
 		socket.join(socket.room_id)
 		console.log(`${socket.username} (${socket.id}) joined Room ${socket.room_id}`)
@@ -125,11 +124,23 @@ io.on('connection', (socket) => {
 		disconnectMessage = {username: socket.username, content: `${socket.username.capitalize()} has left the game!`, style: 'm-red'}
 
 		message = {username: socket.username, content: socket.username.capitalize() + ' has joined the game!', style: 'm-green'}
-		socket.emit('welcome-message', message); //To single client
-		//Broadcast when a user connects: broadcast all clients except user itself
+		socket.emit('welcome-message', message);
 		socket.broadcast.to(socket.room_id).emit('welcome-message', message);
 
+		socket.emit('update', game[socket.room_id]);
+		socket.broadcast.to(socket.room_id).emit('update', game[socket.room_id]);
+
 	});
+
+	socket.on('getUpdate', ({session}) => {
+		
+		socket.username = session.username;
+		socket.room_id = session.currentRoom;
+
+		socket.emit('update', game[socket.room_id]);
+
+	});
+
 
 
 	socket.on('mouse', (data) => {socket.broadcast.emit('mouse', data)});
@@ -144,6 +155,8 @@ io.on('connection', (socket) => {
 	});
 	//Runs when client disconnects
 	socket.on('disconnect', ()=> {
+		game[socket.room_id].playerRemove(socket.username);
+		socket.broadcast.to(socket.room_id).emit('update', game[socket.room_id]);
 		//To everyone included itself
 		io.emit('disconnect-message', disconnectMessage);
 	});

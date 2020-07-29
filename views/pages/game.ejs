@@ -10,13 +10,8 @@
       <div class="card sidebar center-flex space-between">
         <div id='game-info'>
           <div id='round-timer'><span>53</span></div>
-          <div id='round-number'><span>Round <strong>1</strong> of <strong>3</strong></span></div>
-          <div id='players-list'>
-              <% var places = ['gold','silver','bronze','runner-up','runner-up']; %>
-              <% places.forEach(function(place){ %>
-                  <%- include('../partials/player-list-item.ejs', {place: place}); %>
-                <% }); %>
-          </div>
+          <div id='round-number'><span>Round <strong><%= game.current_round_id %></strong> of <strong>3</strong></span></div>
+          <div id='players-list'></div>
         </div>
         <div id='options'>
           <button class="button leave-button">Leave Game</button>
@@ -25,9 +20,9 @@
         
             <div id='canvas-wrapper'>
                 <div class='card' id='canvas-container'>
-                      <% word_object.words.forEach(function(word){ %>
+                      <!--<% word_object.words.forEach(function(word){ %>
                         <span><%= word.word %>: <%= word.link %></span><br>
-                      <% }); %>
+                      <% }); %> -->
                     <canvas id="draw-area" width="840" height="640"></canvas>
                     
                 </div>
@@ -79,11 +74,9 @@
         <span id='sessionJSON' hidden>
             <%= JSON.stringify(session); %>
         </span>
-        <script src="/parse-session.js"></script>
 
       <script src="/socket.js"></script>
-      <script src="/canvas.js"></script>
-      <script src="/chat.js"></script>
+      <script src="/app.js"></script>
       
 </body>
 
