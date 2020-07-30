@@ -9,11 +9,13 @@
 
 const { Pool } = require('pg'); 
 const session = require('express-session');
+require('dotenv/config')
+
 var pool; 
 //   'postgres://postgres:6757@localhost/usr'
 // process.env.DATABASE_URL
 pool = new Pool ({
-	connectionString: 'postgres://postgres:6757@localhost/usr'
+	connectionString:  process.env.DATABASE_URL
 });
 
 const loginUser = (request, response) => {
