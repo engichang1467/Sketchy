@@ -8,32 +8,43 @@
 	<div class="page-container">
         <div class="card sidebar">
             
-            <% if(session.loggedin){ %>
-                <% alerts.forEach(function(alert){ %>
+            <% if(session.loggedin){ %> <!-- Display logged-in user content. -->
+
+                <!-- Alert Rendering -->
+                <% session.alerts.forEach(function(alert){ %>
                     <%- include('../partials/alert.ejs', {message: alert[0], type: alert[1], icon: alert[2]}); %>
                 <% }); %>
-                <% include ../partials/profile.ejs %>
+
+                <div id='profile-card'>
+                    <div id='profile-icon'><i class="fas fa-user"></i></div>
+                    <div id='profile-text'>
+                        <div id='profile-username'><span><%- session.username %></span></div>
+                    </div>
+                </div>    
+
             <% } %>
-            <% if(!session.loggedin){ %>
+
+            <% if(!session.loggedin){ %> <!-- Or the login/signup for logged out users. -->
                 <% include ../partials/login.ejs %>
             <% } %>
+
         </div>
         
             <div id='browse-wrapper'>
                 <div class='card' id='browse-container'>
-                    <div class='lobby-card'>
+                    <div id="lobby-1" class='lobby-card'>
                         <div class='lobby-details'>
                             <div class='lobby-name'>Game 1</div>
                             <div class='lobby-status'>Open</div>
                         </div>
                     </div>
-                    <div class='lobby-card lobby-2'>
+                    <div id="lobby-2" class='lobby-card lobby-2'>
                         <div class='lobby-details'>
                             <div class='lobby-name'>Game 2</div>
                             <div class='lobby-status'>Open</div>
                         </div>
                     </div>
-                    <div class='lobby-card'>
+                    <div id="lobby-3" class='lobby-card'>
                         <div class='lobby-details'>
                             <div class='lobby-name'>Game 3</div>
                             <div class='lobby-status'>Open</div>
@@ -44,7 +55,14 @@
 
         
       </div>
-      <script type='text/javascript' src='http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.4.0/fabric.min.js'></script>
-</body>
 
+    <!-- Get session data from server. -->
+    <span id='sessionJSON' hidden>
+        <%= JSON.stringify(session); %>
+    </span>
+    <script src="/parse-session.js"></script>
+
+    <script src="/home.js"></script>
+
+</body>
 </html>

@@ -1,39 +1,42 @@
-// const { Pool } = require('pg'); 
-// var pool; 
-// var connectionStrings = {dev: 'postgres://postgres:6757@localhost/usr', prod: 'process.env.DATABASE_URL'}
-// pool = new Pool ({
-// 	connectionString: 'postgres://postgres:6757@localhost/usr'
-// });
 
-const Pool = require('pg').Pool
-const pool = new Pool({
-    user: 'sketchyadmin',
-    host: 'localhost',
-    database: 'usr',
-    password: 'admin'
-  })
+// const Pool = require('pg').Pool
+// const pool = new Pool({
+//     user: 'sketchyadmin',
+//     host: 'localhost',
+//     database: 'usr',
+//     password: 'admin'
+//   })
+
+const { Pool } = require('pg'); 
+const session = require('express-session');
+var pool; 
+//   'postgres://postgres:6757@localhost/usr'
+// process.env.DATABASE_URL
+pool = new Pool ({
+	connectionString: 'postgres://postgres:6757@localhost/usr'
+});
 
 const loginUser = (request, response) => {
 	var username = request.body.uname.trim();
     var password = request.body.pwd.trim(); 
-    session = request.session
     
     if (username && password) {
-		pool.query('SELECT * FROM users WHERE userName = $1 AND Password = $2', [username, password], (error, result, fields) => {
+		pool.query('SELECT * FROM usr WHERE username = $1 AND password = $2', [username, password], (error, result, fields) => {
             if (error) throw error;
 			if (!(result.rows.length === 0)) {
-				session.loggedin = true;
-                session.username = username;
-                response.render('pages/home', {alerts: [['Login Successful!', 'alert-success', 'check']], session});
-                return false;
+				request.session.loggedin = true;
+                request.session.username = username;
+                request.session.alerts = [[`Login successful!`, 'alert-success', 'exclamation-triangle']]
+                response.redirect('/');
 			} else {
-                response.render('pages/home', {alerts: [['Login Failed', 'alert-failure', 'exclamation-triangle']], session});
-                return false;
+                request.session.alerts = [[`Account not found!`, 'alert-warning', 'exclamation-triangle']]
+                response.redirect('/');
 			}			
 			response.end();
 		});
 	} else {
-        response.render('pages/home', {alerts: [['Enter Your Details', 'alert-warning', 'exclamation-triangle']], session});
+        request.session.alerts = [[`Please enter your details!`, 'alert-warning', 'exclamation-triangle']]
+        response.redirect('/');
         return false;
 	}
 }
@@ -42,32 +45,46 @@ const signupUser = (request, response) => {
 	var username = request.body.uname.trim();
     var password = request.body.pwd.trim();
     var confirm = request.body.confirmpwd.trim(); 
-    session = request.session
     
     if (username && password && confirm && (password === confirm)) {
-		pool.query('INSERT into users values ($1, $2, false)', [username, password], (error, result, fields) => {
+		pool.query('INSERT INTO usr VALUES ($1, $2, false)', [username, password], (error, result, fields) => {
             if (error) {
-                response.render('pages/home', {alerts: [['Signup Failed', 'alert-failure', 'exclamation-triangle']], session});
+                console.log(error)
+                request.session.alerts = [['This username is already taken!', 'alert-failure', 'exclamation-triangle']]
+                response.redirect('/');
             } else {
-            response.render('pages/home', {alerts: [['Signup Successful!', 'alert-success', 'check']], session});
-            return false;
+                request.session.alerts = [['Signup Successful! Please login below.', 'alert-success', 'check']]
+                response.redirect('/');
             }
 		
 			response.end();
 		});
 	} else {
-        response.render('pages/home', {alerts: [['Enter Your Details', 'alert-warning', 'exclamation-triangle']], session});
+        request.session.alerts = [[`Please enter your details.`, 'alert-warning', 'exclamation-triangle']]
+        response.redirect('/');
         return false;
 	}
 }
 
 
 const loadHome = (request, response) => {
-    session = request.session
+    request.session.alerts = (request.session.alerts) ? request.session.alerts : []
     if (request.session.loggedin == true) {
-        response.render('pages/home', {alerts: [], session})
+        response.render('pages/home', {session: request.session})
+        request.session.alerts.length = 0;
+        request.session.save(err => {
+            if (err) {
+              throw err;
+            };
+          });
     } else {
-        response.render('pages/home', {alerts: [], session})
+        response.render('pages/home', {session: request.session})
+        request.session.alerts.length = 0;
+        request.session.save(err => {
+            if (err) {
+              throw err;
+            };
+          });
     }
     
 }
