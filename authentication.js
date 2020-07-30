@@ -13,7 +13,7 @@ var pool;
 //   'postgres://postgres:6757@localhost/usr'
 // process.env.DATABASE_URL
 pool = new Pool ({
-	connectionString: 'postgres://postgres:6757@localhost/usr'
+	connectionString: 'postgres://postgres:root@localhost/users'
 });
 
 const loginUser = (request, response) => {

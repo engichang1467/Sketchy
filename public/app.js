@@ -137,12 +137,13 @@ function outputDisconnectMessage(message) {
 var canvas = new fabric.Canvas('draw-area');
 var canvasHtml = document.getElementById('draw-area');
 var context = canvasHtml.getContext("2d");
-var color = "#ff0000"
+
+var brushWidth = 5;
 var clearEl = $(document.getElementById('tool-clear'));
 
 canvas.isDrawingMode = true;
-canvas.freeDrawingBrush.width = 5;
-canvas.freeDrawingBrush.color = color;
+canvas.freeDrawingBrush.width = brushWidth;
+
 fabric.Object.prototype.selectable = false;
 
 //Initializing tools for the undo and redo items
@@ -153,21 +154,27 @@ var redoStatus = false; //A lock for the undo status to solve some concurrency i
 var undoButton = $(document.getElementById('tool-undo'));
 var redoButton = $(document.getElementById('tool-redo'));
 var fillButton = $(document.getElementById('tool-fill'));
-var colorButton = $(document.getElementById('tool-color'));
+var colorButton = document.getElementById('tool-color-wheel');
 var eraserButton = $(document.getElementById('tool-eraser'));
+var sizeSlider = document.getElementById('tool-size-slider');
 var undoLock =true; //A lock for the undo status to solve the spamming of undo
 var redoLock =true; //A lock for the redo status to solve the spamming of redo
 var isFillOn = false;
-var canvasLock = false;
+var canvasLock = false; 
+var color = colorButton.value;
+
+canvas.freeDrawingBrush.color = color;
 
 
-      // canvas.on('mouse:up', function() {
-//     canvas.getObjects().forEach(o => {
-//       o.fill = 'blue'
-//     });
-//     canvas.renderAll();
-//   })
 
+colorButton.addEventListener('input', function(evt){
+
+    canvas.freeDrawingBrush.color = this.value;
+})
+
+sizeSlider.addEventListener('input', function(evt){
+  canvas.freeDrawingBrush.width = this.value;
+} )
 
 //This function updates the canvas status and stores it
 var updateCanvasState = function() {
@@ -213,7 +220,9 @@ var undo = function() {
           indexTracker -= 1;
         }
       }
+      
     }
+    
   }
 }
 
@@ -239,30 +248,40 @@ var redo = function() {
 }
 
 
-//Updates the canvas state everytime a pixel is added
+//Updates the canvas state everytime a line is added
+
+var mouseDown = 0
+document.body.onmousedown = function(){
+  ++mouseDown;
+}
+document.body.onmouseup = function(){
+  --mouseDown;
+}
+
 canvas.on(
-  'object:added', function(){
-      updateCanvasState();
-      if(canvasLock === false)
-      {
+  'mouse:move', function(){
+      // updateCanvasState();
+      // if(mouseDown)
+      // {
         
         var data = canvas.toJSON()
+
         socket.emit('mouse',data)
+      // }
+  }
+);
+
+canvas.on(
+  'object:added', function(){
+    if(canvasLock === false)
+      {
+      updateCanvasState();
+      // var data = canvas.toJSON()
+      // socket.emit('mouse',data)
       }
   }
 );
 
-// function updateBoard(shouldEmit){
-//   updateCanvasState();
-//   if(shouldEmit)
-//   {
-//   var data = canvas.JSON()
-//   socket.emit('mouse',data)
-//   }
-// }
-
-
-  
 undoButton.click(function(){
   undo();
 });
@@ -286,17 +305,13 @@ clearEl.click(function() {
    canvas.freeDrawingBrush.width = 10;
  })
 
- colorButton.click(function(){
-  canvas.freeDrawingBrush.color = "#ff0000";
-  canvas.freeDrawingBrush.width = 5;
-  
-})
 
 socket.on('mouse',(data)=>{
-  canvasLock = true
-  var canvasAsJson = JSON.stringify(data);
-  canvas.loadFromJSON(canvasAsJson)
-  canvas.renderAll();
+  console.log("HELLO")
+  // canvasLock = true
+  // var canvasAsJson = JSON.stringify(data);
+  // canvas.loadFromJSON(canvasAsJson)
+  // canvas.renderAll();
 })
 
 // socket.on('mouse',(data) =>{
