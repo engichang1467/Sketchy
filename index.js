@@ -40,9 +40,6 @@ const loadGame = async (request, response) => { // Path: /game/:id
 
 		username = request.session.username; // Grab username from session.
 		room_id = request.params.id; // Grab room ID from URL path parameters.
-
-		
-
 		request.session.currentRoom = room_id;
 
 		try {
@@ -123,27 +120,28 @@ io.on('connection', (socket) => {
 
 		disconnectMessage = {username: socket.username, content: `${socket.username.capitalize()} has left the game!`, style: 'm-red'}
 
-		message = {username: socket.username, content: socket.username.capitalize() + ' has joined the game!', style: 'm-green'}
+		message = {username: socket.username, content: socket.username + ' has joined the game!', style: 'm-green'}
 		socket.emit('welcome-message', message);
 		socket.broadcast.to(socket.room_id).emit('welcome-message', message);
 
-		socket.emit('update', game[socket.room_id]);
-		socket.broadcast.to(socket.room_id).emit('update', game[socket.room_id]);
+		socket.emit('uiUpdate', game[socket.room_id]);
+		socket.broadcast.to(socket.room_id).emit('uiUpdate', game[socket.room_id]);
 
 	});
 
-	socket.on('getUpdate', ({session}) => {
+	socket.on('getUiUpdate', ({session}) => {
 		
 		socket.username = session.username;
 		socket.room_id = session.currentRoom;
 
-		socket.emit('update', game[socket.room_id]);
+		socket.emit('uiUpdate', game[socket.room_id]);
 
 	});
 
 
 
 	socket.on('mouse', (data) => {socket.broadcast.emit('mouse', data)});
+	
 	socket.on('clear', () => {socket.broadcast.emit('clear')});
 	socket.on('undo', (stack) => {socket.broadcast.emit('undo',stack)});
 

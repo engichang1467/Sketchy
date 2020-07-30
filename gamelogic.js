@@ -61,20 +61,6 @@ Game.prototype.gameEnd = function() {
 	// if only 1 player left in game, winner = the last player left
 }
 
-Game.prototype.playerLeftGame = function(player_id) {
-
-	round_id = this.current_round_id
-	round = this.rounds.round_id
-
-	delete round.turns.player_id // This player will no longer have a turn drawing this round as they have left.
-	delete this.players.player_id // This player is no longer in the game.
-
-	if (Object.keys(this.players).length < 2 && this.phase == 'midgame') {
-		this.phaseNext();
-	}
-
-}
-
 Game.prototype.gameStart = function() {
 	// Start Game from Lobby (pregame stage)
 	if (this.phase == 'pregame' && this.players.length > 1 ) {
@@ -108,3 +94,21 @@ module.exports = {
 	Round,
 	Turn
   }
+
+
+
+
+
+  // Game.prototype.playerLeftGame = function(player_id) {
+
+// 	round_id = this.current_round_id
+// 	round = this.rounds.round_id
+
+// 	delete round.turns.player_id // This player will no longer have a turn drawing this round as they have left.
+// 	delete this.players.player_id // This player is no longer in the game.
+
+// 	if (Object.keys(this.players).length < 2 && this.phase == 'midgame') {
+// 		this.phaseNext();
+// 	}
+
+// }

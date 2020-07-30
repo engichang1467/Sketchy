@@ -1,37 +1,60 @@
-const chatForm = document.getElementById('chat-form');
-const chatMessages = document.querySelector('.chat-messages');
+// ================
+//    Game UI
 
+// Parse the user session that was passed from the server into the HTML ...
+var session = JSON.parse($('#sessionJSON').text());
+$('#sessionJSON').remove(); // .. then remove the JSON from the document.
+
+
+/* Tell the server to add the client to the session room
+and add the player object to the game.players object */
+socket.emit('addUserToRoom', {session})
+
+// UI Update Loop - runs every 0.5 seconds to update the state of client's UI.
+// e.g. updating player scores, or changing the view from artist to guesser.
+// setInterval(function(){ 
+// 	socket.emit('getUiUpdate', {session})
+// }, 500);
+socket.emit('getUiUpdate', {session})
+
+// Function to update the player list in the game sidebar.
+function updatePlayerList(game) {
+  players_list_container = document.getElementById('players-list')
+  players_list_container.innerHTML = "";
+  Object.keys(game.players).forEach(function(player) {
+    const div = document.createElement('div');
+    div.classList.add('player-list-item');
+    var player_name = game.players[player].id;
+    if (game.players[player].id == session.username) {var player_name = game.players[player].id + ' (You)'}
+    var player_score = game.players[player].score;
+    var player_place = game.players[player].place;
+    div.innerHTML = `<div class="place"> <div class="medal ${player_place}"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1</font></font></span></div></div><div class="player-details"> <div class="player-details-name"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_name}</font></font></span></div><div class="player-details-points"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_score} points</font></font></span></div></div>`;
+    players_list_container.appendChild(div);
+  });
+}
+
+// Receive UI Update event from server, and update client UI accordingly.
+socket.on('uiUpdate', game => {
+    updatePlayerList(game);
+});
+
+// Get the Leave Button object from the page.
 var leaveButton = document.querySelector('.leave-button');
-
+/* Add an event listener that redirects the player to 
+   home page when clicking the leave button. */
 leaveButton.addEventListener('click',function(evt){
     window.location.href = '../';
 })
 
-var session = JSON.parse($('#sessionJSON').text());
-$('#sessionJSON').remove();
-
-socket.emit('addUserToRoom', {session})
+//    END OF GAME LOGIC
+// =======================
 
 
-setInterval(function(){ 
-	socket.emit('getUpdate', {session})
-}, 1000);
 
-// Update Game State
-socket.on('update', game => {
-    players_list_container = document.getElementById('players-list')
-    players_list_container.innerHTML = "";
-    Object.keys(game.players).forEach(function(player) {
-      const div = document.createElement('div');
-      div.classList.add('player-list-item');
-      var player_name = game.players[player].id;
-      var player_score = game.players[player].score;
-      var player_place = game.players[player].place;
-      div.innerHTML = `<div class="place"> <div class="medal ${player_place}"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1</font></font></span></div></div><div class="player-details"> <div class="player-details-name"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_name}</font></font></span></div><div class="player-details-points"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_score} points</font></font></span></div></div>`;
-      players_list_container.appendChild(div);
-    });
-});
-
+// ==========
+//    CHAT
+const chatForm = document.getElementById('chat-form');
+const chatMessages = document.querySelector('.chat-messages');
 
 // Output Chat Message from Server
 socket.on('message',message => {
@@ -103,7 +126,14 @@ function outputDisconnectMessage(message) {
   div.innerHTML = `<p>${message.content}</p>`;
   document.querySelector('.chat-messages').appendChild(div);
 }
+//    END OF CHAT
+// =================
 
+
+
+
+// ============
+//    CANVAS
 
 const canvas = document.getElementById('draw-area');
 let isMouseDown = false;
@@ -243,3 +273,6 @@ socket.on('undo',(stack) =>{
       context.stroke();
   })
 })
+
+//    END OF CANVAS
+// ===================
