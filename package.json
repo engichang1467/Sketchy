@@ -18,7 +18,8 @@
     "fs": "0.0.1-security",
     "node-fetch": "^2.6.0",
     "pg": "^8.2.1",
-    "word-list": "^3.1.0"
+    "word-list": "^3.1.0",
+    "word-pictionary-list": "^1.0.3"
   },
   "devDependencies": {
     "got": "^11.3.0",

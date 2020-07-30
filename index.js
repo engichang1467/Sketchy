@@ -3,19 +3,19 @@ const session = require('express-session');
 const path = require('path');
 const PORT = process.env.PORT || 5000
 const auth = require('./authentication')
-const fs = require('fs');
+// const fs = require('fs');
 const fetch = require("node-fetch");
 
 // Returns the path to the word list which is separated by `\n`
-const wordListPath = require('word-list');
+// const wordListPath = require('word-list');
+var randomPictionaryList = require('word-pictionary-list'); 
+// const wordArray = fs.readFileSync(wordListPath, 'utf8').split('\n');
 
-const wordArray = fs.readFileSync(wordListPath, 'utf8').split('\n');
-
-function getRandWords()
-{
-	var n = Math.floor(Math.random() * Math.floor(wordArray.length - 1))
-    return wordArray[n]
-}
+// function getRandWords()
+// {
+// 	var n = Math.floor(Math.random() * Math.floor(wordArray.length - 1))
+//     return wordArray[n]
+// }
 
 express()
 	.use(session({
@@ -39,17 +39,21 @@ express()
 
 	/* Word */ .get('/choose_word', async (req, res) => {
 													try {
-														var data0 = getRandWords()
+														var dataList = randomPictionaryList(3)
+														// var data0 = getRandWords()
+														var data0 = dataList[0]
 														const response = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${data0}`);
 														const json = await response.json();
 														const dataInfo0 = await json[3][0]
 
-														var data1 = getRandWords()
+														// var data1 = getRandWords()
+														var data1 = dataList[1]
 														const response1 = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${data1}`);
 														const json1 = await response1.json();
 														const dataInfo1 = await json1[3][0]
 
-														var data2 = getRandWords()
+														// var data2 = getRandWords()
+														var data2 = dataList[2]
 														const response2 = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${data2}`);
 														const json2 = await response2.json();
 														const dataInfo2 = await json2[3][0]
