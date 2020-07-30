@@ -3,6 +3,7 @@
 <head>
     <% include ../partials/header.ejs %>
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script type='text/javascript' src='http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.4.0/fabric.min.js'></script>
 </head>
 <body>
     <div id="header"><div class="logo"><% include ../partials/logo.ejs %></div></div>
@@ -35,6 +36,10 @@
                         <i class="fas fa-pencil-alt"></i>
                         <span>Size</span>
                     </div>
+                    <div id='tool-eraser' class='tool'>
+                      <i class="fas fa-eraser"></i>
+                      <span>Eraser</span>
+                  </div>
                     <div id='tool-clear' class='tool'>
                         <i class="fas fa-times"></i>
                         <span>Reset</span>
@@ -43,10 +48,12 @@
                         <i class="fas fa-undo"></i>
                         <span>Undo</span>
                     </div>
-                    <div id='tool-eraser' class='tool'>
-                        <i class="fas fa-eraser"></i>
-                        <span>Eraser</span>
-                    </div>
+                    <div id='tool-redo' class='tool'>
+                      <i class="fa fa-repeat"></i>
+                      <span>Redo</span>
+                  </div>
+                    
+                    
                 </div>
             </div>
 
@@ -77,6 +84,7 @@
 
       <script src="/socket.js"></script>
       <script src="/app.js"></script>
+      
       
 </body>
 
