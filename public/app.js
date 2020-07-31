@@ -12,10 +12,9 @@ socket.emit('addUserToRoom', {session})
 
 // UI Update Loop - runs every 0.5 seconds to update the state of client's UI.
 // e.g. updating player scores, or changing the view from artist to guesser.
-// setInterval(function(){ 
-// 	socket.emit('getUiUpdate', {session})
-// }, 500);
-socket.emit('getUiUpdate', {session})
+setInterval(function(){ 
+	socket.emit('getUiUpdate', {session})
+}, 500);
 
 // Function to update the player list in the game sidebar.
 function updatePlayerList(game) {
@@ -33,9 +32,29 @@ function updatePlayerList(game) {
   });
 }
 
+// Function to update the player list in the game sidebar.
+function updateTimer(game) {
+  var timer_container = document.getElementById('round-timer')
+  var phase_container = document.getElementById('phase')
+  var time_left = game.timer_seconds.toString();
+  var phase = game.phase;
+  timer_container.innerHTML = `<span>${time_left}</span>`;
+  phase_container.innerHTML = `<span>${phase}</span>`;
+}
+
+function updateGameSidebar(game) {
+  updatePlayerList(game);
+  updateTimer(game); // this is going to need the value: (current phase duration - time passed in delay func)
+}
+
 // Receive UI Update event from server, and update client UI accordingly.
 socket.on('uiUpdate', game => {
-    updatePlayerList(game);
+  // game object -> round -> current turn -> artist id
+  // if this clients id == artist id
+  // then: renderArtistUI(updateX...updateY...)
+  // if this clients id =/= artist id
+  // then: renderGuesserUI(updateX...updateY...)
+    updateGameSidebar(game);
 });
 
 // Get the Leave Button object from the page.
@@ -44,6 +63,12 @@ var leaveButton = document.querySelector('.leave-button');
    home page when clicking the leave button. */
 leaveButton.addEventListener('click',function(evt){
     window.location.href = '../';
+})
+
+var startButton = document.querySelector('.start-button');
+startButton.addEventListener('click',function(evt){
+    var game_id = session.currentRoom;
+    socket.emit('startGame', {game_id})
 })
 
 //    END OF GAME LOGIC

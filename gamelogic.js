@@ -1,9 +1,9 @@
 class Player {
 	constructor(player_id) {
 		this.id = player_id
-		this.current_role = 'guesser'
-		this.score = 150
-		this.place = 'gold'
+		this.current_role = 'guesser' // default role
+		this.score = 150 // placeholder
+		this.place = 'gold' // placeholder
 	}	
 }
 
@@ -11,32 +11,37 @@ class Game {
 	constructor(game_id, max_rounds) {
 		this.game_id = game_id;
 		this.phase = 'pregame'
-		this.players = {/* player objects */};
-		this.rounds = [/* round objects */]
+		this.players = {/* player object keys */};
+		this.rounds = {}
 		this.max_rounds = max_rounds;
 		this.current_round_id = 0;
+		this.timer_seconds = 0;
 	}
 }
 
 class Round {
 	constructor(round_id, players) {
 		this.round_id = round_id;
-		this.turns = function() { // = ordered list of turns with an artist id for each one. ordering defined by Game.players ordering
-			turn_array = [];
-			for(var player in players) {
-				turn_array.push(new Turn(players, player_id))
-			}
-			return turn_array;
-		}
+		this.turns = this.getTurns(players);
 		this.current_turn_id = 0;
 	}
+}
+
+Round.prototype.getTurns = function(players) {
+	turn_array = [];
+	for(var player in players) {
+		turn_array.push(new Turn(players, player.id))
+	}
+	return turn_array;
 }
 
 class Turn {
 	constructor(players, artist_id) {
 		this.artist_id = artist_id;
-		this.phase = 'choosing' // transitions after to drawing, then to finishing (where the points gained for the turn are shown)
-		this.duration = 90 //seconds
+		this.phase = 'waiting' // transitions after to drawing, then to finishing (where the points gained for the turn are shown)
+		// choosing phase = picking the word, drawing phase = drawing, ending phase = show the score results
+		this.drawing_duration = 90 //seconds
+		this.choosing_duration = 15 //seconds
 		this.points_this_turn = function() {
 			points = {};
 			for(var player in players) {
@@ -48,45 +53,131 @@ class Turn {
 	}
 }
 
-Game.prototype.playerAdd = function(player) {
-	this.players[player.id] = player; // add new player to the game object
+Game.prototype.delay = function(delayInS) {
+	this.value
+	return new Promise(resolve  => {
+	  setTimeout(() => {
+		resolve(2);
+	  }, delayInS*1000);
+	});
+  }
+
+Game.prototype.ChoosingTimer = function() {
+	if (this.timer_seconds == 0) {
+		clearInterval(countdownTimer);
+		this.turnStartDrawingPhase()
+	} else {
+		this.timer_seconds = this.timer_seconds - 1;
+	}
 }
 
-Game.prototype.playerRemove = function(player_id) {
-	delete this.players[player_id] // remove player from the game object
+Game.prototype.startChoosingTimer = function() {
+	this.timer_seconds = 5
+	console.log(`Starting choosing timer with duration: ${this.timer_seconds}`)
+	countdownTimer = setInterval(this.ChoosingTimer.bind(this), 1000);
 }
 
-Game.prototype.gameEnd = function() {
-	// set winner = player id of winner
-	// if only 1 player left in game, winner = the last player left
+Game.prototype.DrawingTimer = function() {
+	if (this.timer_seconds == 0) {
+		clearInterval(countdownTimer);
+		this.turnStartEndingPhase()
+	} else {
+		this.timer_seconds = this.timer_seconds - 1;
+	}
+}
+
+Game.prototype.startDrawingTimer = function() {
+	this.timer_seconds = 5
+	countdownTimer = setInterval(this.DrawingTimer.bind(this), 1000);
+}
+
+// when the turn starts
+Game.prototype.turnStart = function(round_id) {
+
+	//get current round object
+	current_turn_id = this.rounds[round_id].current_turn_id
+	
+	// get current turn object and switch the phase to choosing
+	this.rounds[round_id].turns[current_turn_id].phase = 'choosing'
+	this.startChoosingTimer() // when it ends, call turnStartDrawingPhase()
+
+}
+
+Game.prototype.turnStartDrawingPhase = function() {
+	current_turn_id = this.rounds[this.current_round_id].current_turn_id
+	this.rounds[this.current_round_id].turns[current_turn_id].phase = 'drawing'
+	this.startDrawingTimer() // when it ends, call turnStartDrawingPhase()
+}
+
+Game.prototype.turnStartEndingPhase = function() {
+	current_turn_id = this.rounds[this.current_round_id].current_turn_id
+	this.rounds[this.current_round_id].turns[current_turn_id].phase = 'ending'
+	// TODO update scores
+
+	if (current_turn_id == this.rounds[this.current_round_id].turns.length() - 1) {
+		// on end of the last turn of the last round
+		this.rounds[this.current_round_id].roundEnd()
+
+	} else {
+		this.rounds[this.current_round_id].current_turn_id++;
+		this.turnStart(this.current_round_id)
+	}
+}
+
+
+Game.prototype.roundEnd = function() {
+	if (this.current_round_id == 3) {
+		this.gameEnd();
+	} else {
+		this.current_round_id++;
+		this.roundStart();
+	}
+}
+
+Game.prototype.roundStart = function() {
+	this.rounds[this.current_round_id] = new Round(this.current_round_id, this.players)
+	this.turnStart(this.current_round_id);
 }
 
 Game.prototype.gameStart = function() {
 	// Start Game from Lobby (pregame stage)
-	if (this.phase == 'pregame' && this.players.length > 1 ) {
-		// create 3 rounds,
+	if (this.phase == 'pregame' && Object.keys(this.players).length > 1 ) {
+		// start first round (0)
+		this.roundStart()
 		this.phase = 'midgame'
 	// End the game, displaying 
 	}
 }
 
-Game.prototype.transition = function() {
-	// Start Game from Lobby (pregame stage)
-	if (this.phase == 'pregame' && this.players.length > 1 ) {
-		this.phase = 'midgame'
-	// End the game, displaying 
-	} else if (this.phase == 'midgame') { //
-		game
-
-	}
+Game.prototype.gameEnd = function() {
+	this.phase = 'ending'
+	// set winner = player id of winner
+	// if only 1 player left in game, winner = the last player left
 }
 
-Game.prototype.callNextRound = function() {
-	next_round = new Round(this.current_round_id + 1, this.players)
-	// set variables for next_round here
-	this.rounds.push(next_round)
-	this.current_round_id++;
-};
+Game.prototype.playerAdd = function(player /* receives new Player object*/) {
+	this.players[player.id] = player; // add new player object to the game object
+}
+
+Game.prototype.playerRemove = function(player_id /* receives id of player to remove */) {
+	delete this.players[player_id] // remove player object from the game object
+}
+
+Game.prototype.playerLeftGame = function(player_id) {
+	var turn_to_remove;
+	for (var turn in this.rounds[this.current_round_id].turns) {
+		if (turn.artist_id == player_id) {
+			delete turn
+		}
+	}
+	delete this.players.player_id // This player is no longer in the game.
+
+	if (Object.keys(this.players).length < 2 && this.phase == 'midgame') {
+		this.gameEnd();
+	}
+
+}
+
 
 module.exports = {
 	Player,
@@ -96,19 +187,4 @@ module.exports = {
   }
 
 
-
-
-
-  // Game.prototype.playerLeftGame = function(player_id) {
-
-// 	round_id = this.current_round_id
-// 	round = this.rounds.round_id
-
-// 	delete round.turns.player_id // This player will no longer have a turn drawing this round as they have left.
-// 	delete this.players.player_id // This player is no longer in the game.
-
-// 	if (Object.keys(this.players).length < 2 && this.phase == 'midgame') {
-// 		this.phaseNext();
-// 	}
-
-// }
+  

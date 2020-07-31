@@ -8,9 +8,9 @@ const auth = require('./authentication')
 const { Player, Game, Round, Turn } = require('./gamelogic')
 
 var game = [
-	new Game(1, 3), // Game 1 - games[1]
-	new Game(2, 3), // Game 2 - games[2]
-	new Game(3, 3), // Game 3 - games[3]
+	new Game(1, 3), // Game 1 - games[0]
+	new Game(2, 3), // Game 2 - games[1]
+	new Game(3, 3), // Game 3 - games[2]
 ]
 
 const wordListPath = require('word-list');
@@ -113,7 +113,7 @@ io.on('connection', (socket) => {
 		socket.username = session.username;
 		socket.room_id = session.currentRoom;
 
-		game[socket.room_id].playerAdd(new Player(username));
+		game[socket.room_id-1].playerAdd(new Player(username));
 
 		socket.join(socket.room_id)
 		console.log(`${socket.username} (${socket.id}) joined Room ${socket.room_id}`)
@@ -124,8 +124,8 @@ io.on('connection', (socket) => {
 		socket.emit('welcome-message', message);
 		socket.broadcast.to(socket.room_id).emit('welcome-message', message);
 
-		socket.emit('uiUpdate', game[socket.room_id]);
-		socket.broadcast.to(socket.room_id).emit('uiUpdate', game[socket.room_id]);
+		socket.emit('uiUpdate', game[socket.room_id-1]);
+		socket.broadcast.to(socket.room_id).emit('uiUpdate', game[socket.room_id-1]);
 
 	});
 
@@ -134,7 +134,13 @@ io.on('connection', (socket) => {
 		socket.username = session.username;
 		socket.room_id = session.currentRoom;
 
-		socket.emit('uiUpdate', game[socket.room_id]);
+		socket.emit('uiUpdate', game[socket.room_id-1]);
+
+	});
+
+	socket.on('startGame', ({game_id}) => {
+
+		game[game_id-1].gameStart()
 
 	});
 
@@ -153,8 +159,8 @@ io.on('connection', (socket) => {
 	});
 	//Runs when client disconnects
 	socket.on('disconnect', ()=> {
-		game[socket.room_id].playerRemove(socket.username);
-		socket.broadcast.to(socket.room_id).emit('update', game[socket.room_id]);
+		game[socket.room_id-1].playerRemove(socket.username);
+		socket.broadcast.to(socket.room_id).emit('update', game[socket.room_id-1]);
 		//To everyone included itself
 		io.emit('disconnect-message', disconnectMessage);
 	});
