@@ -436,9 +436,40 @@ input:focus {
     min-height: 650px;
     flex-grow: 1;
     display: flex;
+    flex-direction: column;
+    
+}
+
+.lobbies {
+    display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    flex-basis: 75%;
+}
+
+.create-game-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.create-game-card {
+    background-color: #fafafa;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    margin: 55px;
+    margin-top: 0px;
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #222;
 }
 
 .lobby-card {

@@ -51,11 +51,32 @@ function updateRoundNumber(game) {
 
 function renderUI(game) {
 
+
+  if(game.phase == 'pregame') {
+    var gameinfo = document.getElementById('game-info')
+    gameinfo.innerHTML = `
+        <div id="players-list"></div>
+      `;
+      updatePlayerList(game);
+  }
+
   if(game.phase == 'midgame') {
+
+    var gameinfo = document.getElementById('game-info')
+    gameinfo.innerHTML = `
+        <div id="round-timer"></div>
+        <div id="round-number"></div>
+        <div id="phase"></div>
+        <div id="players-list"></div>
+      `;
 
     let current_round_id = game.current_round_id
     let current_turn_id = game.rounds[current_round_id].current_turn_id
     let current_artist_id = game.rounds[current_round_id].turns[current_turn_id].artist_id
+    
+    updatePlayerList(game);
+    updateRoundTimer(game);
+    updateRoundNumber(game);
 
     // Render Artist UI
     if (socket.username == current_artist_id) {
@@ -66,16 +87,6 @@ function renderUI(game) {
       // TODO: renderGuesserUI(updateX...updateY...)
     }
 
-    var gameinfo = document.getElementById('game-info')
-    gameinfo.innerHTML = `
-        <div id="round-timer"></div>
-        <div id="round-number"></div>
-        <div id="phase"></div>
-        <div id="players-list"></div>
-      `;
-      updateRoundTimer(game);
-      updateRoundNumber(game);
-      updatePlayerList(game);
   }
 }
 

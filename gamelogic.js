@@ -10,6 +10,7 @@ class Player {
 class Game {
 	constructor(game_id, max_rounds) {
 		this.game_id = game_id;
+		this.host = ''
 		this.phase = 'pregame'
 		this.players = {/* player object keys */};
 		this.rounds = {}
@@ -117,7 +118,7 @@ Game.prototype.turnStartEndingPhase = function() {
 
 
 Game.prototype.roundEnd = function() {
-	if (this.current_round_id == 3) {
+	if (this.current_round_id == this.max_rounds) {
 		this.gameEnd();
 	} else {
 		this.current_round_id++;
@@ -146,21 +147,20 @@ Game.prototype.gameEnd = function() {
 	// if only 1 player left in game, winner = the last player left
 }
 
-Game.prototype.playerAdd = function(player /* receives new Player object*/) {
+Game.prototype.playerAdd = function(player) {
+	if (this.players.length == 0) {
+		this.host = player.id
+	}
 	this.players[player.id] = player; // add new player object to the game object
 }
 
-Game.prototype.playerRemove = function(player_id /* receives id of player to remove */) {
-	delete this.players[player_id] // remove player object from the game object
-}
-
-Game.prototype.playerLeftGame = function(player_id) {
-	var turn_to_remove;
+Game.prototype.playerLeave = function(player_id) {
 	for (var turn in this.rounds[this.current_round_id].turns) {
 		if (turn.artist_id == player_id) {
 			delete turn
 		}
 	}
+
 	delete this.players.player_id // This player is no longer in the game.
 
 	if (Object.keys(this.players).length < 2 && this.phase == 'midgame') {

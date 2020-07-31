@@ -7,11 +7,11 @@ const PORT = process.env.PORT || 5000
 const auth = require('./authentication')
 const { Player, Game, Round, Turn } = require('./gamelogic')
 
-var game = [
-	new Game(1, 3), // Game 1 - games[0]
-	new Game(2, 3), // Game 2 - games[1]
-	new Game(3, 3), // Game 3 - games[2]
-]
+var games = {};
+games['1'] = new Game(1, 3)
+games['2'] = new Game(2, 3)
+games['3'] = new Game(3, 3)
+
 
 const wordListPath = require('word-list');
 const fs = require('fs');
@@ -39,7 +39,7 @@ const loadGame = async (request, response) => { // Path: /game/:id
     if (request.session.loggedin) {
 
 		username = request.session.username; // Grab username from session.
-		room_id = request.params.id; // Grab room ID from URL path parameters.
+		var room_id = request.params.id; // Grab room ID from URL path parameters.
 		request.session.currentRoom = room_id;
 
 		try {
@@ -50,7 +50,8 @@ const loadGame = async (request, response) => { // Path: /game/:id
 		} catch (error) {
 			console.log(error);
 		}
-		var gameData = game[room_id]
+		games[room_id] = new Game(room_id, 3)
+		var gameData = games[room_id]
 		response.render('pages/game', {session: request.session, game: gameData, word_object: word_object}); // Render game EJS template with data from the user's session.
 		
     } else {
@@ -112,8 +113,9 @@ io.on('connection', (socket) => {
 		
 		socket.username = session.username;
 		socket.room_id = session.currentRoom;
+		var game_id = session.currentRoom;
 
-		game[socket.room_id-1].playerAdd(new Player(username));
+		games[game_id].playerAdd(new Player(socket.username));
 
 		socket.join(socket.room_id)
 		console.log(`${socket.username} (${socket.id}) joined Room ${socket.room_id}`)
@@ -124,8 +126,8 @@ io.on('connection', (socket) => {
 		socket.emit('welcome-message', message);
 		socket.broadcast.to(socket.room_id).emit('welcome-message', message);
 
-		socket.emit('uiUpdate', game[socket.room_id-1]);
-		socket.broadcast.to(socket.room_id).emit('uiUpdate', game[socket.room_id-1]);
+		socket.emit('uiUpdate', games[socket.room_id]);
+		socket.broadcast.to(socket.room_id).emit('uiUpdate', games[socket.room_id]);
 
 	});
 
@@ -134,13 +136,13 @@ io.on('connection', (socket) => {
 		socket.username = session.username;
 		socket.room_id = session.currentRoom;
 
-		socket.emit('uiUpdate', game[socket.room_id-1]);
+		socket.emit('uiUpdate', games[socket.room_id]);
 
 	});
 
 	socket.on('startGame', ({game_id}) => {
 
-		game[game_id-1].gameStart()
+		games[game_id-1].gameStart()
 
 	});
 
@@ -159,8 +161,8 @@ io.on('connection', (socket) => {
 	});
 	//Runs when client disconnects
 	socket.on('disconnect', ()=> {
-		game[socket.room_id-1].playerRemove(socket.username);
-		socket.broadcast.to(socket.room_id).emit('update', game[socket.room_id-1]);
+		games[socket.room_id].playerLeave(socket.username);
+		socket.broadcast.to(socket.room_id).emit('update', games[socket.room_id]);
 		//To everyone included itself
 		io.emit('disconnect-message', disconnectMessage);
 	});
