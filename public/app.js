@@ -33,7 +33,7 @@ function updatePlayerList(game) {
 }
 
 // Function to update the player list in the game sidebar.
-function updateTimer(game) {
+function updateRoundTimer(game) {
   var timer_container = document.getElementById('round-timer')
   var phase_container = document.getElementById('phase')
   var time_left = game.timer_seconds.toString();
@@ -42,19 +42,46 @@ function updateTimer(game) {
   phase_container.innerHTML = `<span>${phase}</span>`;
 }
 
-function updateGameSidebar(game) {
-  updatePlayerList(game);
-  updateTimer(game); // this is going to need the value: (current phase duration - time passed in delay func)
+// Function to update the player list in the game sidebar.
+function updateRoundNumber(game) {
+  var round_container = document.getElementById('round-number')
+  round_container.innerHTML = `<div id="round-number"><span>Round <strong>${game.current_round_id}</strong> of <strong>3</strong></span></div>`;
+}
+
+
+function renderUI(game) {
+
+  if(game.phase == 'midgame') {
+
+    let current_round_id = game.current_round_id
+    let current_turn_id = game.rounds[current_round_id].current_turn_id
+    let current_artist_id = game.rounds[current_round_id].turns[current_turn_id].artist_id
+
+    // Render Artist UI
+    if (socket.username == current_artist_id) {
+      // TODO: renderArtistUI(updateX...updateY...)
+      
+    // Render Guesser UI
+    } else {
+      // TODO: renderGuesserUI(updateX...updateY...)
+    }
+
+    var gameinfo = document.getElementById('game-info')
+    gameinfo.innerHTML = `
+        <div id="round-timer"></div>
+        <div id="round-number"></div>
+        <div id="phase"></div>
+        <div id="players-list"></div>
+      `;
+      updateRoundTimer(game);
+      updateRoundNumber(game);
+      updatePlayerList(game);
+  }
 }
 
 // Receive UI Update event from server, and update client UI accordingly.
 socket.on('uiUpdate', game => {
-  // game object -> round -> current turn -> artist id
-  // if this clients id == artist id
-  // then: renderArtistUI(updateX...updateY...)
-  // if this clients id =/= artist id
-  // then: renderGuesserUI(updateX...updateY...)
-    updateGameSidebar(game);
+  renderUI(game);
 });
 
 // Get the Leave Button object from the page.

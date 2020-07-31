@@ -389,6 +389,17 @@ input:focus {
     width: 100%;
 }
 
+.start-button {
+    align-self: flex-end;
+    justify-self: flex-end;
+    color: #fff;
+    background-color: #50B84E;
+    height: 70px;
+    width: 100%;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
 #options {
     width: 100%;
 }

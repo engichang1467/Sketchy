@@ -14,8 +14,10 @@ class Game {
 		this.players = {/* player object keys */};
 		this.rounds = {}
 		this.max_rounds = max_rounds;
-		this.current_round_id = 0;
+		this.current_round_id = 1;
 		this.timer_seconds = 0;
+		this.drawing_duration = 15 //seconds
+		this.choosing_duration = 5 //seconds
 	}
 }
 
@@ -40,8 +42,6 @@ class Turn {
 		this.artist_id = artist_id;
 		this.phase = 'waiting' // transitions after to drawing, then to finishing (where the points gained for the turn are shown)
 		// choosing phase = picking the word, drawing phase = drawing, ending phase = show the score results
-		this.drawing_duration = 90 //seconds
-		this.choosing_duration = 15 //seconds
 		this.points_this_turn = function() {
 			points = {};
 			for(var player in players) {
@@ -53,15 +53,6 @@ class Turn {
 	}
 }
 
-Game.prototype.delay = function(delayInS) {
-	this.value
-	return new Promise(resolve  => {
-	  setTimeout(() => {
-		resolve(2);
-	  }, delayInS*1000);
-	});
-  }
-
 Game.prototype.ChoosingTimer = function() {
 	if (this.timer_seconds == 0) {
 		clearInterval(countdownTimer);
@@ -72,7 +63,7 @@ Game.prototype.ChoosingTimer = function() {
 }
 
 Game.prototype.startChoosingTimer = function() {
-	this.timer_seconds = 5
+	this.timer_seconds = this.choosing_duration
 	console.log(`Starting choosing timer with duration: ${this.timer_seconds}`)
 	countdownTimer = setInterval(this.ChoosingTimer.bind(this), 1000);
 }
@@ -87,7 +78,7 @@ Game.prototype.DrawingTimer = function() {
 }
 
 Game.prototype.startDrawingTimer = function() {
-	this.timer_seconds = 5
+	this.timer_seconds = this.drawing_duration
 	countdownTimer = setInterval(this.DrawingTimer.bind(this), 1000);
 }
 
@@ -114,9 +105,9 @@ Game.prototype.turnStartEndingPhase = function() {
 	this.rounds[this.current_round_id].turns[current_turn_id].phase = 'ending'
 	// TODO update scores
 
-	if (current_turn_id == this.rounds[this.current_round_id].turns.length() - 1) {
+	if (current_turn_id == this.rounds[this.current_round_id].turns.length - 1) {
 		// on end of the last turn of the last round
-		this.rounds[this.current_round_id].roundEnd()
+		this.roundEnd(this.rounds[this.current_round_id])
 
 	} else {
 		this.rounds[this.current_round_id].current_turn_id++;
