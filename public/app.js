@@ -35,11 +35,8 @@ function updatePlayerList(game) {
 // Function to update the player list in the game sidebar.
 function updateRoundTimer(game) {
   var timer_container = document.getElementById('round-timer')
-  var phase_container = document.getElementById('phase')
   var time_left = game.timer_seconds.toString();
-  var phase = game.phase;
   timer_container.innerHTML = `<span>${time_left}</span>`;
-  phase_container.innerHTML = `<span>${phase}</span>`;
 }
 
 // Function to update the player list in the game sidebar.
@@ -48,32 +45,70 @@ function updateRoundNumber(game) {
   round_container.innerHTML = `<div id="round-number"><span>Round <strong>${game.current_round_id}</strong> of <strong>3</strong></span></div>`;
 }
 
+// Function to update the player list in the game sidebar.
+function updateGameStatus(game) {
+
+  var status_container = document.getElementById('game-status')
+
+  if (game.phase == 'pregame') { var status = `<span>Waiting to Start</span>` }
+
+  if (game.phase == 'midgame') {
+
+    let current_round_id = game.current_round_id
+    let current_turn_id = game.rounds[current_round_id].current_turn_id
+    let current_turn_phase = game.rounds[current_round_id].turns[current_turn_id].phase
+    if (current_turn_phase == 'ending') {
+      current_turn_phase = 'drawing'
+    }
+    var status = `<span>${game.current_artist_id} is ${current_turn_phase}!</span>`
+  }
+
+  status_container.innerHTML = status;
+    
+}
+
+function updateGameName(game) {
+  var game_name_container = document.getElementById('game-name')
+  game_name_container.innerHTML = `<span>Game ${game.game_id}</span>`
+}
+
 
 function renderUI(game) {
 
-
   if(game.phase == 'pregame') {
+
+    // Render pregame sidebar containers.
     var gameinfo = document.getElementById('game-info')
     gameinfo.innerHTML = `
+        <div id="game-name"></div>
+        <div id="game-status"></div>
         <div id="players-list"></div>
-      `;
-      updatePlayerList(game);
+    `;
+
+    updateGameName(game);
+    updateGameStatus(game);
+    updatePlayerList(game);
+
   }
 
   if(game.phase == 'midgame') {
 
+    // Render sidebar midgame containers.
     var gameinfo = document.getElementById('game-info')
     gameinfo.innerHTML = `
         <div id="round-timer"></div>
         <div id="round-number"></div>
-        <div id="phase"></div>
+        <div id="game-status"></div>
         <div id="players-list"></div>
       `;
 
+    // Variable mapping so we can get the username of the current artist.
     let current_round_id = game.current_round_id
     let current_turn_id = game.rounds[current_round_id].current_turn_id
-    let current_artist_id = game.rounds[current_round_id].turns[current_turn_id].artist_id
+    let current_artist_id = /* Get Artist ID ---> */ game.rounds[current_round_id].turns[current_turn_id].artist_id
+    game.current_artist_id = current_artist_id
     
+    // Update individual UI components.
     updatePlayerList(game);
     updateRoundTimer(game);
     updateRoundNumber(game);
@@ -100,13 +135,16 @@ var leaveButton = document.querySelector('.leave-button');
 /* Add an event listener that redirects the player to 
    home page when clicking the leave button. */
 leaveButton.addEventListener('click',function(evt){
+    var game_id = session.currentRoom;
+    socket.emit('leaveGame', game_id)
     window.location.href = '../';
+
 })
 
 var startButton = document.querySelector('.start-button');
 startButton.addEventListener('click',function(evt){
     var game_id = session.currentRoom;
-    socket.emit('startGame', {game_id})
+    socket.emit('startGame', game_id)
 })
 
 //    END OF GAME LOGIC

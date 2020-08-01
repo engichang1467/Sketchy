@@ -50,7 +50,9 @@ const loadGame = async (request, response) => { // Path: /game/:id
 		} catch (error) {
 			console.log(error);
 		}
-		games[room_id] = new Game(room_id, 3)
+		if (!(games[room_id])) {
+			games[room_id] = new Game(room_id, 3)
+		}
 		var gameData = games[room_id]
 		response.render('pages/game', {session: request.session, game: gameData, word_object: word_object}); // Render game EJS template with data from the user's session.
 		
@@ -140,9 +142,9 @@ io.on('connection', (socket) => {
 
 	});
 
-	socket.on('startGame', ({game_id}) => {
+	socket.on('startGame', (game_id) => {
 
-		games[game_id-1].gameStart()
+		games[game_id].gameStart()
 
 	});
 
@@ -159,10 +161,32 @@ io.on('connection', (socket) => {
 		message = {username: socket.username, content: msg, style: ''}
 		io.to(socket.room_id).emit('message', message);
 	});
+
+	socket.on('leaveGame', () => {
+		socket.disconnect()
+	});
+
 	//Runs when client disconnects
-	socket.on('disconnect', ()=> {
-		games[socket.room_id].playerLeave(socket.username);
-		socket.broadcast.to(socket.room_id).emit('update', games[socket.room_id]);
+	socket.on('disconnect', () => {
+		var game_id = socket.room_id;
+		var user_id = socket.username;
+		var round_id = games[game_id].current_round_id
+
+		delete games[game_id].players[user_id];
+
+		if (games[game_id].rounds[round_id]) {
+			for (var turn in games[game_id].rounds[round_id].turns) {
+				if (turn.artist_id == user_id) {
+					delete turn
+				}
+			}
+		}
+
+		if (Object.keys(games[game_id].players).length < 2) {
+			games[game_id].gameEnd();
+		}
+
+		socket.broadcast.to(game_id).emit('update', games[game_id]);
 		//To everyone included itself
 		io.emit('disconnect-message', disconnectMessage);
 	});

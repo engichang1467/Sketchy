@@ -24,7 +24,7 @@ const loginUser = (request, response) => {
 		pool.query('SELECT * FROM usr WHERE username = $1 AND password = $2', [username, password], (error, result, fields) => {
             if (error) throw error;
 			if (!(result.rows.length === 0)) {
-				request.session.loggedin = true;
+				        request.session.loggedin = true;
                 request.session.username = username;
                 request.session.alerts = [[`Login successful!`, 'alert-success', 'exclamation-triangle']]
                 response.redirect('/');
