@@ -6,16 +6,15 @@
 //     database: 'usr',
 //     password: 'admin'
 //   })
-
+require('dotenv').config()
 const { Pool } = require('pg'); 
-const session = require('express-session');
 var pool; 
+const session = require('express-session');
 //   'postgres://postgres:6757@localhost/usr'
 // process.env.DATABASE_URL
 pool = new Pool ({
-	connectionString: 'postgres://postgres:6757@localhost/usr'
+	connectionString: process.env.LOCALDB
 });
-
 const loginUser = (request, response) => {
 	var username = request.body.uname.trim();
     var password = request.body.pwd.trim(); 
@@ -26,6 +25,7 @@ const loginUser = (request, response) => {
 			if (!(result.rows.length === 0)) {
 				        request.session.loggedin = true;
                 request.session.username = username;
+                request.session.admin = result.rows[0].admin;
                 request.session.alerts = [[`Login successful!`, 'alert-success', 'exclamation-triangle']]
                 response.redirect('/');
 			} else {

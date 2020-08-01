@@ -1,11 +1,22 @@
+require('dotenv').config()
 const express = require('express')
 const session = require('express-session');
 const path = require('path');
 var favicon = require('serve-favicon');
 const PORT = process.env.PORT || 5000
+const { Pool } = require('pg'); 
+var pool; 
+//   'postgres://postgres:6757@localhost/usr'
+// process.env.DATABASE_URL
+pool = new Pool ({
+	connectionString: process.env.LOCALDB
+});
 
 const auth = require('./authentication')
-const { Player, Game, Round, Turn } = require('./gamelogic')
+const { Player, Game } = require('./gamelogic')
+
+
+
 
 var games = {};
 games['1'] = new Game(1, 3)
@@ -63,6 +74,31 @@ const loadGame = async (request, response) => { // Path: /game/:id
         response.redirect('/');
     }
 }
+const loadAdmin = async (request, response) => { // Path: /game/:id
+	// If logged in:
+    if (request.session.loggedin) {
+		
+
+		if (request.session.admin) {
+			pool.query('SELECT * FROM usr', (error, result) => {
+				if (error) throw error;
+
+				var data = result.rows
+				response.render('pages/admin',{session: request.session, user_data: data});			
+			});
+			
+		} else {
+			request.session.alerts = [[`No Privileges`, 'alert-failure', 'exclamation-triangle']]
+			response.redirect('/');
+		}			
+				
+    } else {
+	// If logged out, redirect back to home with warning alert.
+	// alerts attribute is cleared are cleared right after displaying them on the home page.
+		request.session.alerts = [['No Privileges', 'alert-failure', 'exclamation-triangle']]
+        response.redirect('/');
+    }
+}
 
 const app = express()
 	app.use(session({
@@ -91,7 +127,7 @@ const app = express()
 	/* Game */
 	app.get('/game/:id', loadGame)
 
-
+	app.get('/admin', loadAdmin)
 	// Start Listening 
 	const server = app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
 
