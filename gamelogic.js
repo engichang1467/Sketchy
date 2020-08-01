@@ -24,35 +24,32 @@ class Game {
 	}
 }
 
-class Round {
+class Round {    
 	constructor(round_id, players) {
+		this.players = players
 		this.round_id = round_id;
-		this.turns = this.getTurns(players);
+		this.turns = this.getTurns(this.players);
 		this.current_turn_id = 0;
 	}
 }
 
 Round.prototype.getTurns = function(players) {
 	turn_array = [];
-	for(var player in players) {
-		turn_array.push(new Turn(players, player.id))
-	}
+	Object.keys(players).forEach(function(id) { 
+		// console.log(id)
+		turn_array.push(new Turn(id))
+		 
+	});
+
 	return turn_array;
 }
 
 class Turn {
-	constructor(players, artist_id) {
+	constructor(artist_id) {
 		this.artist_id = artist_id;
 		this.phase = 'choosing' // transitions after to drawing, then to finishing (where the points gained for the turn are shown)
 		// choosing phase = picking the word, drawing phase = drawing, ending phase = show the score results
-		this.points_this_turn = function() {
-			points = {};
-			for(var player in players) {
-				id = player.id
-				points[id] = 0;
-			}
-			return points;
-		}
+
 	}
 }
 
@@ -89,12 +86,13 @@ Game.prototype.startDrawingTimer = function() {
 Game.prototype.EndingTimer = function() {
 	if (this.timer_seconds == 0) {
 		clearInterval(countdownTimer);
-		if (this.rounds[this.current_round_id].current_turn_id == (this.rounds[this.current_round_id].turns.length) - 1) {
+		var round_id = this.current_round_id
+		if (this.rounds[round_id].current_turn_id == (this.rounds[round_id].turns.length) - 1) {
 			// on end of the last turn of the last round
 			this.roundEnd()
 	
 		} else {
-			this.rounds[this.current_round_id].current_turn_id++;
+			this.rounds[round_id].current_turn_id++;
 			this.turnStart()
 		}
 	} else {
@@ -111,12 +109,12 @@ Game.prototype.startEndingTimer = function() {
 // when the turn starts
 Game.prototype.turnStart = function() {
 
-	var current_round_id = this.current_round_id;
+	var round_id = this.current_round_id;
 	//get current round object
-	var current_turn_id = this.rounds[current_round_id].current_turn_id
+	var turn_id = this.rounds[round_id].current_turn_id
 	
 	// get current turn object and switch the phase to choosing
-	this.rounds[current_round_id].turns[current_turn_id].phase = 'choosing'
+	this.rounds[round_id].turns[turn_id].phase = 'choosing'
 	this.startChoosingTimer() // when it ends, call turnStartDrawingPhase()
 
 }

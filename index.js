@@ -186,7 +186,7 @@ io.on('connection', (socket) => {
 
 
 
-	socket.on('mouse', (data) => {socket.broadcast.emit('mouse', data)});
+	socket.on('mouse', (canvas_data) => {socket.broadcast.to(socket.room_id).emit('receive_mouse', canvas_data.data)});
 	
 	socket.on('clear', () => {socket.broadcast.emit('clear')});
 	socket.on('undo', (stack) => {socket.broadcast.emit('undo',stack)});
