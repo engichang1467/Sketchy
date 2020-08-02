@@ -2,15 +2,10 @@ var expect = require('chai').expect;
 var app = require('../index');
 var request = require('supertest');
 
-// for testing login for existing user
+// testing login for existing user
 const userInfo = {
     uname: "test",
     pwd: "test"
-}
-
-// for testing registration for new user
-const signupInfo = {
-    
 }
 
 var loginUser = request.agent(app); 
@@ -31,4 +26,32 @@ describe('Check User Status / Login Function', function(done){
       loginUser.get('/game/:id')
       .expect(200, done);
     });
+});
+
+// testing registration for new user
+const signupInfo = {
+  uname: "12345678", 
+  pwd: "12345678", 
+  confirmpwd: "12345678"
+}
+
+var userRegistration = request.agent(app);
+
+before(function(done) {
+  userRegistration
+    .post('/signup')
+    .send(signupInfo)
+    .end(function(err, response){
+      expect(response.statusCode).to.equal(200);
+      expect('Location', 'pages/home');
+      done();
+    });
+});
+
+describe('User Registration', function(done){
+  it('Log in: successful if registration succeeded', function(done) {
+    userRegistration.post('/login')
+    .send(signupInfo)
+    .expect(200, done);
+  });
 });
