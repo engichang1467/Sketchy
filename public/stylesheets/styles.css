@@ -78,7 +78,7 @@ body {
 }
 
 .sidebar {
-    padding: 20px;
+    padding: 30px;
     flex-grow: 0;
     flex-basis: 15%;
     min-width: 360px;
@@ -96,7 +96,25 @@ body {
     width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
+
+}
+
+#game-name {
+    margin-top: 15px;
+    font-family: 'Articulat CF';
+    font-size: 34px;
+    font-weight: bold;
+    color: #222;
+    text-align: left;
+    align-self: start;
+}
+
+#game-status {
+    margin-bottom: 15px;
+    font-family: 'Articulat CF';
+    font-size: 18px;
+    text-align: left;
+    align-self: start;
 }
 
 #profile-card {
@@ -389,6 +407,17 @@ input:focus {
     width: 100%;
 }
 
+.start-button {
+    align-self: flex-end;
+    justify-self: flex-end;
+    color: #fff;
+    background-color: #50B84E;
+    height: 70px;
+    width: 100%;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
 #options {
     width: 100%;
 }
@@ -425,9 +454,40 @@ input:focus {
     min-height: 650px;
     flex-grow: 1;
     display: flex;
+    flex-direction: column;
+    
+}
+
+.lobbies {
+    display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    flex-basis: 75%;
+}
+
+.create-game-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.create-game-card {
+    background-color: #fafafa;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    margin: 55px;
+    margin-top: 0px;
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #222;
 }
 
 .lobby-card {
@@ -560,6 +620,7 @@ input:focus {
     background: #E8C300;
     align-items: center;
     justify-content: center;
+    align-self: center;
     border-radius: 50%;
     font-weight: 900;
     font-size: 46px;
@@ -577,6 +638,7 @@ input:focus {
     margin: 10px;
     font-size: 24px;
     color: #222;
+    align-self: center;
 }
 
 .medal {
