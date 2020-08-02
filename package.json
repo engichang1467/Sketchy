@@ -8,7 +8,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "node test.js",
+    "test": "mocha",
     "devStart": "nodemon index.js"
   },
   "dependencies": {
@@ -22,7 +22,11 @@
     "socket.io-redis": "^5.3.0"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
     "got": "^11.3.0",
+    "mocha": "^8.1.0",
+    "superagent": "^5.3.1",
+    "supertest": "^4.0.2",
     "tape": "^4.7.0"
   },
   "repository": {

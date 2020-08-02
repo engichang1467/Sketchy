@@ -5,7 +5,6 @@ const PORT = process.env.PORT || 80
 
 const auth = require('./authentication')
 
-
 const loadGame = (request, response) => { // Path: /game/:id
 
 	username = request.session.username; // Grab username from session.
@@ -31,6 +30,7 @@ const initRooms = (roomCount) => {
 }
 
 const app = express()
+	module.exports = app
 	app.use(session({
 		secret: '276isthebest',
 		resave: true,
@@ -101,4 +101,3 @@ io.on('connection', (socket) => {
 		io.emit('message', disconnectMessage);
 	});
 })
-
