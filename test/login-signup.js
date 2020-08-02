@@ -2,9 +2,15 @@ var expect = require('chai').expect;
 var app = require('../index');
 var request = require('supertest');
 
+// for testing login for existing user
 const userInfo = {
     uname: "test",
     pwd: "test"
+}
+
+// for testing registration for new user
+const signupInfo = {
+    
 }
 
 var loginUser = request.agent(app); 
