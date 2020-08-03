@@ -132,29 +132,36 @@ const app = express()
 
 	/* Word */ .get('/choose_word', async (req, res) => {
 													try {
-														var dataList = randomPictionaryList(3)
-														var data0 = dataList[0]
+														var dataList = randomPictionaryList(3) 	// getting a list of 3 words
+														
+														var data0 = dataList[0] // first word
+														// Getting the wiki link for the first word
 														const getLink = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${data0}`)
-														const getDef = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${data0}`)
 														const jsonLink = await getLink.json()
-														const jsonDef = await getDef.json()
 														const dataLink0 = await jsonLink[3][0]
+														// Getting the definition for the first word
+														const getDef = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${data0}`)
+														const jsonDef = await getDef.json()
 														const dataDef0 = await jsonDef[0]['meanings'][0]['definitions'][0]["definition"]
 
-														var data1 = dataList[1]
+														var data1 = dataList[1] // second word
+														// Getting the wiki link for the second word
 														const getLink1 = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${data1}`)
-														const getDef1 = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${data1}`)
 														const jsonLink1 = await getLink1.json();
-														const jsonDef1 = await getDef1.json()
 														const dataLink1 = await jsonLink1[3][0]
+														// Getting the definition for the second word
+														const getDef1 = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${data1}`)
+														const jsonDef1 = await getDef1.json()
 														const dataDef1 = await jsonDef1[0]['meanings'][0]['definitions'][0]["definition"]
 
-														var data2 = dataList[2]
+														var data2 = dataList[2] // third word
+														// Getting the wiki link for the third word
 														const getLink2 = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${data2}`);
-														const getDef2 = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${data2}`)
 														const jsonLink2 = await getLink2.json();
-														const jsonDef2 = await getDef2.json()
 														const dataLink2 = await jsonLink2[3][0]
+														// Getting the definition for the third word
+														const getDef2 = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${data2}`)
+														const jsonDef2 = await getDef2.json()
 														const dataDef2 = await jsonDef2[0]['meanings'][0]['definitions'][0]["definition"]
 													
 														res.render('pages/word_list.ejs', {data0: data0, data1: data1, data2: data2, dataLink0: dataLink0, dataDef0: dataDef0, dataLink1: dataLink1, dataDef1: dataDef1, dataLink2: dataLink2, dataDef2: dataDef2})
