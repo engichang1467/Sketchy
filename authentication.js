@@ -8,7 +8,6 @@
 //   })
 require('dotenv').config()
 const { Pool } = require('pg'); 
-const session = require('express-session');
 require('dotenv/config')
 
 var pool; 
