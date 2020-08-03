@@ -18,9 +18,9 @@ class Game {
 		this.current_round_id = 1;
 		this.timer_seconds = 0;
 
-		this.drawing_duration = 3 //seconds
-		this.choosing_duration = 5 //seconds
-		this.ending_duration = 3
+		this.drawing_duration = 10 //seconds
+		this.choosing_duration = 20 //seconds
+		this.ending_duration = 5
 	}
 }
 
@@ -63,6 +63,7 @@ Game.prototype.ChoosingTimer = function() {
 }
 
 Game.prototype.startChoosingTimer = function() {
+	io.to(this.game_id).emit('clearCanvas');
 	this.timer_seconds = this.choosing_duration
 	console.log(`Starting choosing timer with duration: ${this.timer_seconds}`)
 	countdownTimer = setInterval(this.ChoosingTimer.bind(this), 1000);

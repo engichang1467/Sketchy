@@ -58,9 +58,12 @@ function updateGameStatus(game) {
     let current_round_id = game.current_round_id
     let current_turn_id = game.rounds[current_round_id].current_turn_id
     let current_turn_phase = game.rounds[current_round_id].turns[current_turn_id].phase
+
     if (current_turn_phase == 'ending') {
       current_turn_phase = 'drawing'
-    }
+    } // We don't want to show the user "Ending" as the current status in the UI (its just a backend var)
+      //so instead we say "Drawing"
+
     var status = `<span>${game.current_artist_id} is ${current_turn_phase}!</span>`
   }
 
@@ -108,34 +111,44 @@ function renderUI(game) {
     let turn_id = game.rounds[round_id].current_turn_id
     let artist_id = /* Get Artist ID ---> */ game.rounds[round_id].turns[turn_id].artist_id
     game.current_artist_id = artist_id
+
+    // Set public artist var for other functions in this file.
     artist = artist_id
-    
     
     // Update individual UI components.
     updatePlayerList(game);
     updateRoundTimer(game);
     updateRoundNumber(game);
-    console.log(session.username)
-    console.log(artist_id)
+
     // Render Artist UI
     if (session.username == artist_id) {
-      // TODO: renderArtistUI(updateX...updateY...)
-      // console.log("I am the artist")
       canvas.isDrawingMode = true
+      var toolbar = document.getElementById('canvas-toolbar')
+      if (toolbar.classList.contains('disabled')) {
+        toolbar.classList.remove('disabled')
+      }
+      // TODO: renderArtistUI(updateX...updateY...)
+
     // Render Guesser UI
     } else {
-      // console.log("I am spect")
       canvas.isDrawingMode = false
+      var toolbar = document.getElementById('canvas-toolbar')
+      toolbar.classList.add('disabled')
       // TODO: renderGuesserUI(updateX...updateY...)
     }
 
   }
 }
 
+socket.on('clearCanvas', message => {
+  canvas.clear();
+});
+
 // Receive UI Update event from server, and update client UI accordingly.
 socket.on('uiUpdate', game => {
 
   renderUI(game);
+
 });
 
 // Get the Leave Button object from the page.
@@ -380,16 +393,14 @@ function changeContextTop(input){
 
 canvas.on(
   'object:added', function(){
-    if(artist == session.username)
-      {
+    if(artist == session.username) {
       updateCanvasState();
-      if( undoOrRedoLock === false)
-      { 
+      if( undoOrRedoLock === false) { 
         var data = canvas.toJSON()
         var canvas_data = {data: data, game_id: session.room_id}
         socket.emit('mouse',canvas_data)
       }
-      }
+    }
   }
 );
 

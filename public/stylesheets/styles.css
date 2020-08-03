@@ -721,4 +721,11 @@ input:focus {
       font-weight: bold;
   }
 
+.disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+}
 
+.disabled > div {
+    opacity: 0.5;
+}
