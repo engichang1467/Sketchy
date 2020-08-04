@@ -98,6 +98,6 @@ io.on('connection', (socket) => {
 	socket.on('disconnect', ()=> {
 		disconnectMessage = {username: socket.username, content: `${socket.username} has left the game!`}
 		//To everyone included itself
-		io.emit('message', disconnectMessage);
+		io.to(socket.room_id).emit('message', disconnectMessage);
 	});
 })
