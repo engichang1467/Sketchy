@@ -20,9 +20,13 @@
         
             <div id='canvas-wrapper'>
                 <div class='card' id='canvas-container'>
-                      <!--<% word_object.words.forEach(function(word){ %>
-                        <span><%= word.word %>: <%= word.link %></span><br>
-                      <% }); %> -->
+                      <!-- This is where Ben test them-->
+                      <% word_object.words.forEach(function(word){ %>
+                        <!-- <span><%= word.word %>: <%= word.definition %>: <%= word.link %></span><br> -->
+                        <p><%= word.word %></p> 
+                        <p><%= word.definition %></p> 
+                        <p><a href="<%= word.link %>" target="_blank">More info</a></p><br>
+                      <% }); %>
                     <canvas id="draw-area" width="840" height="640"></canvas>
                     
                 </div>
