@@ -14,7 +14,6 @@ describe('Testing Game Room Sockets', function() {
     var socket1;
     var socket2;
     var socket3;
-    var s3Msgs= 0;
     
     //This will test when a user joins a room and will test the welcome message as well
     it('Users can succesfully join a game room', function(done) {
@@ -133,15 +132,9 @@ describe('Testing Game Room Sockets', function() {
             socket3.on('receive_mouse', function(canva_data){
 
               canvasEmitted3++;
-    
             })
-
             socket2.emit('mouse',"test");
-
-            
           })
-          
-
         })
       })
       setTimeout(function(){
@@ -149,9 +142,51 @@ describe('Testing Game Room Sockets', function() {
         expect(canvasEmitted1).to.equal(1);
         expect(canvasEmitted2).to.equal(0);
         expect(canvasEmitted3).to.equal(0);
+        socket1.disconnect()
+        socket2.disconnect()
+        socket3.disconnect()
         done();
       },300)
     })
+
+    it("Users should be able to leave a game and send a disconnect message to all users in the same game room",function(done){
+
+      var dcMessageCounter = 0;
+      socket1 = io.connect(socket_url,property);
+      socket1.on('connect', function(done){
+
+        var session = {username: "tester1", currentRoom: 1}
+        socket1.emit('addUserToRoom',{session});
+        socket1.on('disconnect-message', function(canva_data){
+
+          dcMessageCounter++;
+
+        })
+        socket2 = io.connect(socket_url, property)
+
+        socket2.on('connect', function(done){
+
+          var session = {username: "tester2", currentRoom: 1}
+          socket2.emit('addUserToRoom',{session});
+          socket3 = io.connect(socket_url, property)
+          socket3.on('connect', function(done){
+
+            var session = {username: "tester3", currentRoom: 2}
+            socket3.emit('addUserToRoom',{session});
+            socket2.emit('leaveGame');
+            socket3.emit('leaveGame');
+          })
+        })
+      })
+      setTimeout(function(){
+
+        expect(dcMessageCounter).to.equal(1);
+        socket1.disconnect()
+        done();
+      },300)
+
+    })
+
 
     
 });
