@@ -210,7 +210,9 @@ Game.prototype.playerAdd = function(player) {
 }
 
 Game.prototype.playerRemove = function(player_id) {
+
 	var round_id = this.current_round_id;
+	var message = {username: this.players[player_id].id, content: this.players[player_id].id + ` has left the game!`, style: 'm-red'}
 
 	// if leaving mid-game
 	if (this.phase == 'midgame') {
@@ -222,7 +224,7 @@ Game.prototype.playerRemove = function(player_id) {
 		}
 
 		// otherwise just remove them from the players list
-		delete this.players.player_id // This player is no longer in the game.
+		delete this.players[player_id] // This player is no longer in the game.
 
 		if (this.rounds[round_id]) {
 			var i = 0;
@@ -233,11 +235,12 @@ Game.prototype.playerRemove = function(player_id) {
 				i++;
 			}
 		}
+	} else {
+		delete this.players[player_id]
 	}
 
+	console.log(JSON.stringify(this.players))
 	io.to(this.game_id).emit('updatePlayerList', this);
-
-	message = {username: this.players.player_id.id, content: this.players.player_id.id + `has left the game!`, style: 'm-red'}
 	io.to(this.game_id).emit('disconnect-message', message);
 
 }
@@ -448,7 +451,7 @@ io.on('connection', (socket) => {
 
 io.sockets.on('connection', function (socket) {
 	//Runs when client disconnects
-	socket.on('disconnect', () => {
+	socket.on('disconnect', function() {
 		var game_id = socket.room_id;
 		var user_id = socket.username;
 
