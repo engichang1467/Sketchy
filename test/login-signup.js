@@ -49,7 +49,12 @@ before(function(done) {
 });
 
 describe('User Registration', function(done){
-  it('Log in: successful if registration succeeded', function(done) {
+  it('Unique username: return error code 302 when name has already been taken', function(done) {
+    userRegistration.post('/signup')
+    .send(signupInfo)
+    .expect(302, done); 
+  });
+  it('Log in: successful if and only if registration succeeded', function(done) {
     userRegistration.post('/login')
     .send(signupInfo)
     .expect(302, done);
