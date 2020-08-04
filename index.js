@@ -15,7 +15,7 @@ pool = new Pool ({
 // for heroku deployment:
 //const io = require('socket.io')(server);
 // must also change socket.js
-const io = require('socket.io')(5000);
+const io = require('socket.io')(3000);
 
 class Player {
 	constructor(player_id) {
