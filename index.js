@@ -1,10 +1,12 @@
 require('dotenv').config()
 const express = require('express')
 const session = require('express-session');
+var randomPictionaryList = require('word-pictionary-list');
 const path = require('path');
 var favicon = require('serve-favicon');
 const PORT = process.env.PORT || 5000
-const { Pool } = require('pg'); 
+const { Pool } = require('pg');
+
 var pool; 
 //   'postgres://postgres:6757@localhost/usr'
 // process.env.DATABASE_URL
@@ -68,7 +70,8 @@ class Turn {
 		this.artist_id = artist_id;
 		this.phase = 'choosing' // transitions after to drawing, then to finishing (where the points gained for the turn are shown)
 		// choosing phase = picking the word, drawing phase = drawing, ending phase = show the score results
-
+		this.word_list = [];
+		this.word_chosen = "";
 	}
 }
 
@@ -135,8 +138,10 @@ Game.prototype.turnStart = function() {
 	
 	// get current turn object and switch the phase to choosing
 	this.rounds[round_id].turns[turn_id].phase = 'choosing'
+	this.createWordList(3);
+	console.log(this.rounds[round_id].turns[turn_id].word_list);
 	this.startChoosingTimer() // when it ends, call turnStartDrawingPhase()
-
+	
 }
 
 Game.prototype.turnStartDrawingPhase = function() {
@@ -198,6 +203,17 @@ Game.prototype.playerAdd = function(player) {
 	this.players[player.id] = player; // add new player object to the game object
 }
 
+Game.prototype.chooseWord = function(){
+	var current_round_id = this.current_round_id;
+	var current_turn_id = this.rounds[current_round_id].current_turn_id
+	
+}
+Game.prototype.createWordList = async function(word_count){
+	var current_round_id = this.current_round_id;
+	var current_turn_id = this.rounds[current_round_id].current_turn_id;
+	this.rounds[current_round_id].turns[current_turn_id].word_list = await getWords(word_count);
+}
+
 
 const auth = require('./authentication')
 //const { Player, Game } = require('./gamelogic')
@@ -216,22 +232,39 @@ const fs = require('fs');
 const fetch = require("node-fetch");
 const wordArray = fs.readFileSync(wordListPath, 'utf8').split('\n');
 
-async function getRandomWords(word_count) {
+async function getWord() {
+	// Getting the wiki link for the first word
+	var word = randomPictionaryList(1);
+	console.log(word);
+	const word_data = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${word}`)
+	const word_data_json = await word_data.json()
+	const link = await word_data_json[3][0]
+	// Getting the definition for the first word
+	const word_def_data = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
+	try {
+		const word_def_data_json = await word_def_data.json()
+		const word_def = await word_def_data_json[0]['meanings'][0]['definitions'][0]["definition"]
+		// Put into an object
+		const output = {word: word[0], definition: word_def, link: link}
+		// console.log(output);
+		return output;
+	} catch (error) {
+		console.log(error);
+	}
+	
+}
+
+async function getWords(word_count){
 	words = []
 	for (let i = 0; i < word_count; i++) {
-		var n = Math.floor(Math.random() * Math.floor(wordArray.length - 1));
-		random_word = wordArray[n]
-		let word_data = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${random_word}`);
-		let word_data_json = await word_data.json();
-
-		let word = {word: random_word, link: word_data_json[3][0]}
-		
+		word = getWord()
 		words.push(word)
 	}
 	return words;
 }
 
-const loadGame = async (request, response) => { // Path: /game/:id
+
+const loadGame = (request, response) => { // Path: /game/:id
 
 	// If logged in:
     if (request.session.loggedin) {
@@ -240,19 +273,12 @@ const loadGame = async (request, response) => { // Path: /game/:id
 		var room_id = request.params.id; // Grab room ID from URL path parameters.
 		request.session.currentRoom = room_id;
 
-		try {
-			let word_count = 3
-			word_array = await getRandomWords(word_count) // get words array
-			//response.send(word_array)
-			word_object = {word_count: word_count, words: word_array};
-		} catch (error) {
-			console.log(error);
-		}
+
 		if (!(games[room_id])) {
 			games[room_id] = new Game(room_id, 3)
 		}
 		var gameData = games[room_id]
-		response.render('pages/game', {session: request.session, game: gameData, word_object: word_object}); // Render game EJS template with data from the user's session.
+		response.render('pages/game', {session: request.session, game: gameData}); // Render game EJS template with data from the user's session.
 		
     } else {
 	// If logged out, redirect back to home with warning alert.
@@ -261,7 +287,7 @@ const loadGame = async (request, response) => { // Path: /game/:id
         response.redirect('/');
     }
 }
-const loadAdmin = async (request, response) => { // Path: /game/:id
+const loadAdmin = (request, response) => { // Path: /game/:id
 	// If logged in:
     if (request.session.loggedin) {
 		
