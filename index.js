@@ -408,7 +408,7 @@ io.on('connection', (socket) => {
 
 		socket.broadcast.to(game_id).emit('update', games[game_id]);
 		//To everyone included itself
-		io.emit('disconnect-message', disconnectMessage);
+		socket.broadcast.to(game_id).emit('disconnect-message', disconnectMessage);
 	});
 })
 
