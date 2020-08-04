@@ -41,9 +41,7 @@ describe('Testing Game Room Sockets', function() {
             });
       
       socket1.on('connect',function(done){
-          
         socket1.on('message', function(msg){
-
           if (counter ==0){
           expect(msg.content).to.equal('Welcome tester1!')
           }
@@ -56,6 +54,7 @@ describe('Testing Game Room Sockets', function() {
           counter++;
           if (counter == 3)
           {
+            socket3.disconnect();
             socket2.disconnect();
             console.log("disconnecting socket2...")
             
@@ -90,25 +89,27 @@ describe('Testing Game Room Sockets', function() {
             socket3.on('message', function(msg){
               s3Msgs++;
               console.log(msg)
+
             })
             var msg = "Hi is this the right room?";
             socket3.emit('chatMessage',msg);
 
-            var session = {username: "tester2", currentRoom: 1}
+            setTimeout(function(){var session = {username: "tester2", currentRoom: 1}
             socket2.emit('addUserToRoom',{session});
             var msg = "Hello There"
-            socket2.emit('chatMessage',msg);
-            
-
-
+            socket2.emit('chatMessage',msg);}, 500)
+          
           })
-
-
 
         })
         
       })
-      done();
+
+      setTimeout(function(){
+        expect(s3Msgs).to.equal(2)
+        done();
+      },1000)
+      
     });
 });
 
