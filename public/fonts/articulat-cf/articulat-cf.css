@@ -1,0 +1,180 @@
+@font-face {
+    font-family: 'Articulat CF';
+    src: url('ArticulatCF-LightOblique.woff2') format('woff2'),
+        url('ArticulatCF-LightOblique.woff') format('woff');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Articulat CF';
+    src: url('ArticulatCF-RegularOblique.woff2') format('woff2'),
+        url('ArticulatCF-RegularOblique.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Articulat CF';
+    src: url('ArticulatCF-ThinOblique.woff2') format('woff2'),
+        url('ArticulatCF-ThinOblique.woff') format('woff');
+    font-weight: 100;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Articulat CF Extra';
+    src: url('ArticulatCF-ExtraBoldOblique.woff2') format('woff2'),
+        url('ArticulatCF-ExtraBoldOblique.woff') format('woff');
+    font-weight: 800;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Articulat CF';
+    src: url('ArticulatCF-Light.woff2') format('woff2'),
+        url('ArticulatCF-Light.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Articulat CF';
+    src: url('ArticulatCF-Heavy.woff2') format('woff2'),
+        url('ArticulatCF-Heavy.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Articulat CF Oblique';
+    src: url('ArticulatCF-BoldOblique.woff2') format('woff2'),
+        url('ArticulatCF-BoldOblique.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Articulat CF';
+    src: url('ArticulatCF-MediumOblique.woff2') format('woff2'),
+        url('ArticulatCF-MediumOblique.woff') format('woff');
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Articulat CF';
+    src: url('ArticulatCF-Regular.woff2') format('woff2'),
+        url('ArticulatCF-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Articulat CF';
+    src: url('ArticulatCF-Bold.woff2') format('woff2'),
+        url('ArticulatCF-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Articulat CF Extra';
+    src: url('ArticulatCF-ExtraBold.woff2') format('woff2'),
+        url('ArticulatCF-ExtraBold.woff') format('woff');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Articulat CF';
+    src: url('ArticulatCF-HeavyOblique.woff2') format('woff2'),
+        url('ArticulatCF-HeavyOblique.woff') format('woff');
+    font-weight: 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Articulat CF Demi';
+    src: url('ArticulatCF-DemiBoldOblique.woff2') format('woff2'),
+        url('ArticulatCF-DemiBoldOblique.woff') format('woff');
+    font-weight: 600;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Articulat CF Demi';
+    src: url('ArticulatCF-DemiBold.woff2') format('woff2'),
+        url('ArticulatCF-DemiBold.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Articulat CF';
+    src: url('ArticulatCF-Medium.woff2') format('woff2'),
+        url('ArticulatCF-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Articulat CF Normal';
+    src: url('ArticulatCF-Normal.woff2') format('woff2'),
+        url('ArticulatCF-Normal.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Articulat CF Normal';
+    src: url('ArticulatCF-NormalOblique.woff2') format('woff2'),
+        url('ArticulatCF-NormalOblique.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Articulat CF Extra';
+    src: url('ArticulatCF-ExtraLight.woff2') format('woff2'),
+        url('ArticulatCF-ExtraLight.woff') format('woff');
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Articulat CF Extra';
+    src: url('ArticulatCF-ExtraLightOblique.woff2') format('woff2'),
+        url('ArticulatCF-ExtraLightOblique.woff') format('woff');
+    font-weight: 200;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Articulat CF';
+    src: url('ArticulatCF-Thin.woff2') format('woff2'),
+        url('ArticulatCF-Thin.woff') format('woff');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
