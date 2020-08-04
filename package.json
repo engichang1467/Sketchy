@@ -12,15 +12,20 @@
     "devStart": "nodemon index.js"
   },
   "dependencies": {
+    "dotenv": "^8.2.0",
     "ejs": "^2.7.4",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "fs": "0.0.1-security",
+    "mocha": "^8.1.0",
     "moment": "^2.27.0",
+    "node-fetch": "^2.6.0",
     "pg": "^8.2.1",
-    "socket-tester": "^1.2.1",
+    "serve-favicon": "^2.5.0",
     "socket.io": "^2.3.0",
-    "socket.io-redis": "^5.3.0"
+    "socket.io-client": "^2.3.0",
+    "socket.io-redis": "^5.3.0",
+    "word-list": "^3.1.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",

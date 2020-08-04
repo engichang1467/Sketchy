@@ -15,7 +15,7 @@ before(function(done) {
     .post('/login')
     .send(userInfo)
     .end(function(err, response){
-      expect(response.statusCode).to.equal(200);
+      expect(response.statusCode).to.equal(302);
       expect('Location', 'pages/home');
       done();
     });
@@ -42,7 +42,7 @@ before(function(done) {
     .post('/signup')
     .send(signupInfo)
     .end(function(err, response){
-      expect(response.statusCode).to.equal(200);
+      expect(response.statusCode).to.equal(302);
       expect('Location', 'pages/home');
       done();
     });
@@ -52,6 +52,6 @@ describe('User Registration', function(done){
   it('Log in: successful if registration succeeded', function(done) {
     userRegistration.post('/login')
     .send(signupInfo)
-    .expect(200, done);
+    .expect(302, done);
   });
 });

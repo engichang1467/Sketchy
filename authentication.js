@@ -6,35 +6,37 @@
 //     database: 'usr',
 //     password: 'admin'
 //   })
-
+require('dotenv').config()
 const { Pool } = require('pg'); 
 var pool; 
-//   postgres://postgres:6757@localhost/usr'
+const session = require('express-session');
+//   'postgres://postgres:6757@localhost/usr'
+// process.env.DATABASE_URL
 pool = new Pool ({
-    // connectionString: process.env.DATABASE_URL
-    connectionString: 'postgres://postgres:root@localhost/users' 
+	connectionString: process.env.LOCALDB
 });
-
 const loginUser = (request, response) => {
 	var username = request.body.uname.trim();
     var password = request.body.pwd.trim(); 
     
     if (username && password) {
-		pool.query('SELECT * FROM usr WHERE userName = $1 AND Password = $2', [username, password], (error, result, fields) => {
+		pool.query('SELECT * FROM usr WHERE username = $1 AND password = $2', [username, password], (error, result, fields) => {
             if (error) throw error;
 			if (!(result.rows.length === 0)) {
-				request.session.loggedin = true;
+				        request.session.loggedin = true;
                 request.session.username = username;
-                response.render('pages/home', {alerts: [['Login Successful!', 'alert-success', 'check']], session: request.session});
-                return false;
+                request.session.admin = result.rows[0].admin;
+                request.session.alerts = [[`Login successful!`, 'alert-success', 'exclamation-triangle']]
+                response.redirect('/');
 			} else {
-                response.render('pages/home', {alerts: [['Account not found, please try again!', 'alert-failure', 'exclamation-triangle']], session: request.session});
-                return false;
+                request.session.alerts = [[`Account not found!`, 'alert-warning', 'exclamation-triangle']]
+                response.redirect('/');
 			}			
 			response.end();
 		});
 	} else {
-        response.render('pages/home', {alerts: [['Enter Your Details', 'alert-warning', 'exclamation-triangle']], session: request.session});
+        request.session.alerts = [[`Please enter your details!`, 'alert-warning', 'exclamation-triangle']]
+        response.redirect('/');
         return false;
 	}
 }
@@ -43,33 +45,46 @@ const signupUser = (request, response) => {
 	var username = request.body.uname.trim();
     var password = request.body.pwd.trim();
     var confirm = request.body.confirmpwd.trim(); 
-    var session = request.session
     
     if (username && password && confirm && (password === confirm)) {
-		pool.query('INSERT into usr values ($1, $2, false)', [username, password], (error, result, fields) => {
+		pool.query('INSERT INTO usr VALUES ($1, $2, false)', [username, password], (error, result, fields) => {
             if (error) {
                 console.log(error)
-                response.render('pages/home', {alerts: [['Signup Failed', 'alert-failure', 'exclamation-triangle']], session});
+                request.session.alerts = [['This username is already taken!', 'alert-failure', 'exclamation-triangle']]
+                response.redirect('/');
             } else {
-            response.render('pages/home', {alerts: [['Signup Successful!', 'alert-success', 'check']], session});
-            return false;
+                request.session.alerts = [['Signup Successful! Please login below.', 'alert-success', 'check']]
+                response.redirect('/');
             }
 		
 			response.end();
 		});
 	} else {
-        response.render('pages/home', {alerts: [['Enter Your Details', 'alert-warning', 'exclamation-triangle']], session});
+        request.session.alerts = [[`Please enter your details.`, 'alert-warning', 'exclamation-triangle']]
+        response.redirect('/');
         return false;
 	}
 }
 
 
 const loadHome = (request, response) => {
-    session = request.session
+    request.session.alerts = (request.session.alerts) ? request.session.alerts : []
     if (request.session.loggedin == true) {
-        response.render('pages/home', {alerts: [], session})
+        response.render('pages/home', {session: request.session})
+        request.session.alerts.length = 0;
+        request.session.save(err => {
+            if (err) {
+              throw err;
+            };
+          });
     } else {
-        response.render('pages/home', {alerts: [], session})
+        response.render('pages/home', {session: request.session})
+        request.session.alerts.length = 0;
+        request.session.save(err => {
+            if (err) {
+              throw err;
+            };
+          });
     }
     
 }
