@@ -10,28 +10,13 @@ $('#sessionJSON').remove(); // .. then remove the JSON from the document.
 and add the player object to the game.players object */
 socket.emit('addUserToRoom', {session})
 
-// UI Update Loop - runs every 0.5 seconds to update the state of client's UI.
-// e.g. updating player scores, or changing the view from artist to guesser.
-setInterval(function(){ 
-	socket.emit('getUiUpdate', {session})
-}, 500);
+// // UI Update Loop - runs every 0.5 seconds to update the state of client's UI.
+// // e.g. updating player scores, or changing the view from artist to guesser.
+// setInterval(function(){ 
+// 	socket.emit('getUiUpdate', {session})
+// }, 500);
 
 var artist = ""
-// Function to update the player list in the game sidebar.
-function updatePlayerList(game) {
-  players_list_container = document.getElementById('players-list')
-  players_list_container.innerHTML = "";
-  Object.keys(game.players).forEach(function(player) {
-    const div = document.createElement('div');
-    div.classList.add('player-list-item');
-    var player_name = game.players[player].id;
-    if (game.players[player].id == session.username) {var player_name = game.players[player].id + ' (You)'}
-    var player_score = game.players[player].score;
-    var player_place = game.players[player].place;
-    div.innerHTML = `<div class="place"> <div class="medal ${player_place}"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1</font></font></span></div></div><div class="player-details"> <div class="player-details-name"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_name}</font></font></span></div><div class="player-details-points"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_score} points</font></font></span></div></div>`;
-    players_list_container.appendChild(div);
-  });
-}
 
 // Function to update the player list in the game sidebar.
 function updateRoundTimer(game) {
@@ -151,6 +136,31 @@ socket.on('uiUpdate', game => {
 
 });
 
+
+
+// Player List Handling //
+socket.on('updatePlayerList', game => {
+  updatePlayerList(game);
+});
+
+function updatePlayerList(game) {
+  players_list_container = document.getElementById('players-list')
+  players_list_container.innerHTML = "";
+  Object.keys(game.players).forEach(function(player) {
+    const div = document.createElement('div');
+    div.classList.add('player-list-item');
+    var player_name = game.players[player].id;
+    if (game.players[player].id == session.username) {var player_name = game.players[player].id + ' (You)'}
+    var player_score = game.players[player].score;
+    var player_place = game.players[player].place;
+    div.innerHTML = `<div class="place"> <div class="medal ${player_place}"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1</font></font></span></div></div><div class="player-details"> <div class="player-details-name"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_name}</font></font></span></div><div class="player-details-points"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_score} points</font></font></span></div></div>`;
+    players_list_container.appendChild(div);
+  });
+}
+// ----------------- //
+
+
+
 // Get the Leave Button object from the page.
 var leaveButton = document.querySelector('.leave-button');
 /* Add an event listener that redirects the player to 
@@ -195,7 +205,7 @@ socket.on('welcome-message',message => {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 });
 
-socket.on('disconnect-message',message => {
+socket.on('disconnect-message', message => {
   outputDisconnectMessage(message);
   var chime = new Audio('/sound/negative-alert.wav')
   chime.volume = 0.5
