@@ -63,15 +63,15 @@ describe('Wikipedia API testing', function(done) {
 
 
 describe('Random-word-generating function', function(done) {
+	this.timeout(5000);
     it('Return type: not null', async () => { 
         const result = await getWord();
         assert.isNotNull(result);
 	});
 	
-	it('Return type: returned words are valid strings (testing with word_count = 3)', async () => { 
-		let word_count = 3; 
-		var test = await getWords(3);
-		console.log(test);
+	it('Return type: returned words are valid strings (testing with word_count = 2)', async () => { 
+		let word_count = 2; 
+		var test = await getWords(word_count);
 		for(let i = 0; i < word_count; i++) {
 
 			assert.isString(test[i].word);
