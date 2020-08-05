@@ -8,7 +8,8 @@ var property = {'reconnection delay':  0
 var socket_url = 'http://localhost:3000';
 var randomPictionaryList = require('word-pictionary-list');
 
-//Test functions start on line 197
+//Test functions start on line 427
+
 
 class Player {
 	constructor(player_id) {
@@ -80,7 +81,7 @@ Game.prototype.ChoosingTimer = function() {
 Game.prototype.startChoosingTimer = function() {
 	// io.to(this.game_id).emit('clearCanvas');
 	this.timer_seconds = this.choosing_duration
-	console.log(`Starting choosing timer with duration: ${this.timer_seconds}`)
+	// console.log(`Starting choosing timer with duration: ${this.timer_seconds}`)
 	countdownTimer = setInterval(this.ChoosingTimer.bind(this), 1000);
 }
 
@@ -97,7 +98,7 @@ Game.prototype.DrawingTimer = function() {
 
 Game.prototype.startDrawingTimer = function() {
 	this.timer_seconds = this.drawing_duration
-	console.log(`Starting drawing timer with duration: ${this.timer_seconds}`)
+	// console.log(`Starting drawing timer with duration: ${this.timer_seconds}`)
 	countdownTimer = setInterval(this.DrawingTimer.bind(this), 1000);
 }
 
@@ -125,7 +126,7 @@ Game.prototype.EndingTimer = function() {
 
 Game.prototype.startEndingTimer = function() {
 	this.timer_seconds = this.ending_duration
-	console.log(`Starting ending timer with duration: ${this.timer_seconds}`)
+	// console.log(`Starting ending timer with duration: ${this.timer_seconds}`)
 	countdownTimer = setInterval(this.EndingTimer.bind(this), 1000);
 }
 
@@ -155,12 +156,43 @@ Game.prototype.turnStart = async function() {
 
 	}
 
+	
+
+
 	// Send event to client to update the sidebar UI
 	// io.to(this.game_id).emit('updateSidebarContainers', this);
 	// io.to(this.game_id).emit('updatePlayerList', this);
 
 	// TODO let client run this.chooseWord(1);
 
+	this.startChoosingTimer(); // when it ends, call turnStartDrawingPhase()
+	
+}
+//Test version of turnStart so that we can avoid front end parts
+Game.prototype.turnStartTest = async function() {
+
+	var round_id = this.current_round_id;
+	//get current round object
+	var turn_id = this.rounds[round_id].current_turn_id
+	
+	await this.createWordListTest(1);
+
+	// get current turn object and switch the phase to choosing
+	this.rounds[round_id].turns[turn_id].phase = 'choosing'
+
+	for (var player in this.players) { // for each player
+
+		// otherwise the player is a guesser.
+		this.players[player].current_role = 'guesser'
+
+		// if player is the artist for the next turn
+		if (player == this.rounds[round_id].turns[turn_id].artist_id) {
+			// then set their role to artist
+			this.players[player].current_role = 'artist'
+			
+		}
+
+	}
 	this.startChoosingTimer(); // when it ends, call turnStartDrawingPhase()
 	
 }
@@ -194,12 +226,27 @@ Game.prototype.roundStart = function() {
 	this.rounds[this.current_round_id] = new Round(this.current_round_id, this.players)
 	this.turnStart();
 }
+//Test version of round start to avoid front end parts
+Game.prototype.roundStartTest = function() {
+	this.rounds[this.current_round_id] = new Round(this.current_round_id, this.players)
+	this.turnStartTest();
+}
 
 Game.prototype.gameStart = function() {
 	// Start Game from Lobby (pregame stage)
 	if (this.phase == 'pregame' && Object.keys(this.players).length > 1 ) {
 		// start first round (0)
 		this.roundStart()
+		this.phase = 'midgame'
+	// End the game, displaying 
+	}
+}
+//Test version of to avoid front end parts
+Game.prototype.gameStartTest = function() {
+	// Start Game from Lobby (pregame stage)
+	if (this.phase == 'pregame' && Object.keys(this.players).length > 1 ) {
+		// start first round (0)
+		this.roundStartTest()
 		this.phase = 'midgame'
 	// End the game, displaying 
 	}
@@ -302,20 +349,74 @@ async function getWords(word_count){
 	return words;
 }
 
+async function getWordTest() {
+	// Getting the wiki link for the first word
+	var word = "A";
+	const word_data = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${word}`)
+	const word_data_json = await word_data.json()
+	const link = await word_data_json[3][0]
+	// Getting the definition for the first word
+	const word_def_data = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
+	const word_def_data_json = await word_def_data.json()
+	const word_def = await word_def_data_json[0]['meanings'][0]['definitions'][0]["definition"]
+	// Put into an object
+	const output = {word: word[0], definition: word_def, link: link}
+	// console.log(output);
+	return output;
+	
+}
+
+async function getWordsTest(word_count){
+	words = []
+	for (let i = 0; i < word_count; i++) {
+		try {
+			word = await getWordTest();
+			words.push(word);
+		} catch {
+			console.log('Error getting word')
+			i--;
+		}
+	}
+	return words;
+}
+
 
 
 Game.prototype.chooseWord = function(word_id){
+
+	//Altered so that it doesn't require the front-end part
 	var round_id = this.current_round_id;
 	var turn_id = this.rounds[round_id].current_turn_id;
 	this.rounds[round_id].turns[turn_id].word_chosen = this.rounds[round_id].turns[turn_id].word_list[word_id].word
-	console.log(`Chosen Word: ${this.rounds[round_id].turns[turn_id].word_chosen}`)
+
+	// console.log(this.rounds[round_id].turns[turn_id].word_list[1])
+	// console.log(`Chosen Word: ${this.rounds[round_id].turns[turn_id].word_chosen}`)
+}
+Game.prototype.chooseWordTest = function(word_id){
+
+	//Altered so that it doesn't require the front-end part
+	var round_id = this.current_round_id;
+	var turn_id = this.rounds[round_id].current_turn_id;
+	this.rounds[round_id].turns[turn_id].word_chosen = "apple"
+
+	// console.log(this.rounds[round_id].turns[turn_id].word_list[1])
+	// console.log(`Chosen Word: ${this.rounds[round_id].turns[turn_id].word_chosen}`)
 }
 
 Game.prototype.createWordList = async function(word_count){
 	var round_id = this.current_round_id;
 	var turn_id = this.rounds[round_id].current_turn_id;
 	this.rounds[round_id].turns[turn_id].word_list = await getWords(word_count);
-	console.log(`Word List: ${JSON.stringify(this.rounds[round_id].turns[turn_id].word_list)}`);
+	// console.log(`Word List: ${JSON.stringify(this.rounds[round_id].turns[turn_id].word_list)}`);
+}
+
+//Test version of createWordList to avoid front end parts.
+//Retreive words tests are part of the word-list-functions
+Game.prototype.createWordListTest = async function(word_count){
+	var round_id = this.current_round_id;
+	var turn_id = this.rounds[round_id].current_turn_id;
+	this.rounds[round_id].turns[turn_id].word_list = await getWordsTest(word_count);
+	// console.log(`Word List: ${JSON.stringify(this.rounds[round_id].turns[turn_id].word_list)}`);
 }
 var games = {};
 games['1'] = new Game(1, 3)
@@ -323,42 +424,20 @@ games['2'] = new Game(2, 3)
 games['3'] = new Game(3, 3)
 
 
-var socket1, socket2, socket3;
-
-// before(function(done) {
-
-//     socket1 = io.connect(socket_url,property);
-//     socket1.on('connect',function(){
-//         socket2 = io.connect(socket_url.property);
-//         socket2.on('connect',function(){
-//             socket3 = io.connect(socket_url.property);
-//             socket3.on('connect', function(){
-//                 var session = {username: "bob", currentRoom: 1}
-//                 socket1.emit('addUserToRoom',{session});
-//                 var session = {username: "joe", currentRoom: 1}
-//                 socket2.emit('addUserToRoom',{session});
-//                 var session = {username: "pop", currentRoom: 1}
-//                 socket3.emit('addUserToRoom',{session});
-//             })
-//         })
-//     })
-//     setTimeout(done(),100);
-//   });
-
-
-// after(function(done){
-//     socket1.disconnect();
-//     socket2.disconnect();
-//     socket3.disconnect();
-//     done();
-// })
-
 describe("Checking creation of game",function(done){
     this.timeout(5000);
     it("Checks if timer and rounds are created",function(done){
         //2 player joins room 1 would call this function
         games['1'].playerAdd(new Player('tester1'));
-        games['1'].playerAdd(new Player('tester2'));
+		games['1'].playerAdd(new Player('tester2'));
+
+		//Checks if players 1 and 2 were added into the game
+		expect(true).to.be.equal('tester1' in games['1'].players);
+		expect(true).to.be.equal('tester2' in games['1'].players);
+		games['1'].playerAdd(new Player('tester3'));
+		games['1'].playerRemove('tester3');
+		//Checks if player will be removed when disconnected
+		expect(false).to.be.equal('tester3' in games['1'].players);
         //See if the rounds are empty at all
         expect(games['1'].rounds).to.deep.equal({});
         //See if the timer is equal to 10 since game hasn't started (default value)
@@ -373,27 +452,38 @@ describe("Checking creation of game",function(done){
         setTimeout(()=>{
             //THis should equal 19 after one second
             expect(games['1'].timer_seconds).to.be.equal(19); 
-            games['1'].start
-            done()
+			// games['1'].start
+
+			
+			done();
         },1010)
         
     })
 })
 
-//I need to double check how to do this
+//I'm honestly not sure what to do with this right now
 
-// describe("Tests the user choosing a word",function(done){
+describe("Tests the user choosing a word",function(done){
 
-//     it("User will choose a word",function(done){
-//         var testGame = new Game(1,2);
-//         testGame.playerAdd(new Player('tester1'));
-//         testGame.playerAdd(new Player('tester2'));
-//         testGame.gameStart();
-//         testGame.chooseWord(1);
-//         var turn_id = testGame.rounds[round_id].current_turn_id;
-//         expect(testGame.rounds[current_round_id].word_chosen).to.be.equal(game.rounds[current_round_id].turns[turn_id].word_list[1].word)
-//     })
-// })
+    it("User will choose a word",function(done){
+        var testGame = new Game(1,2);
+        testGame.playerAdd(new Player('tester1'));
+        testGame.playerAdd(new Player('tester2'));
+        testGame.gameStartTest();
+        setTimeout(()=>{
+			testGame.chooseWordTest('apple'); 
+			
+		},100);
+		setTimeout(()=>{
+			expect(testGame.rounds['1'].turns[0].word_chosen).to.be.equal("apple");
+			done(); 
+			
+		},500);
+		
+        // var turn_id = testGame.rounds[round_id].current_turn_id;
+        // expect(testGame.rounds[current_round_id].word_chosen).to.be.equal(game.rounds[current_round_id].turns[turn_id].word_list[1].word)
+    })
+})
 
 
 
