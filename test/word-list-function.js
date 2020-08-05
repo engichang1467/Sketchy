@@ -22,29 +22,36 @@ async function getRandomWords(word_count) {
 	return words;
 }
 
-describe('Wikipedia API testing', function(done){
+
+describe('Wikipedia API testing', function(done) {
 	it('Fetching API link: API link successfully fetched and returns content', async () => { 
 		const result = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${random_word}`)
 		const result_json = await result.json(); 
 		assert.isNotNull(result_json); 
 		expect(result_json).to.be.an('array'); 
 	}); 
+
 	it('Fetching API link: returned array contains a valid Wikipedia link', async () => { 
 		const result = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${random_word}`)
 		const result_json = await result.json(); 
-		expect(result_json).to.match(/en.wikipedia.org/); 
+		expect(result_json).to.match(/wikipedia.org/); 
 	}); 
 });
+
 
 describe('Random-word-generating function', function(done) {
     it('Return type: not null', async () => { 
         const result = await getRandomWords(3);
         assert.isNotNull(result);
 	});
-	it('Return type: array (of 3 random words to select from)', async () => { 
-		const result = await getRandomWords(3);
-		assert.isArray(result);
-		assert.lengthOf(result, 3);
+	
+	it('Return type: returned words are valid strings (testing with word_count = 3)', async () => { 
+		let word_count = 3; 
+		for(let i = 0; i < word_count; i++) {
+			var n = Math.floor(Math.random() * Math.floor(wordArray.length - 1));
+			random_word = wordArray[n]; 
+			assert.isString(random_word); 
+		}	
 	});
 });
 
