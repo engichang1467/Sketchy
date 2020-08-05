@@ -10,28 +10,13 @@ $('#sessionJSON').remove(); // .. then remove the JSON from the document.
 and add the player object to the game.players object */
 socket.emit('addUserToRoom', {session})
 
-// UI Update Loop - runs every 0.5 seconds to update the state of client's UI.
-// e.g. updating player scores, or changing the view from artist to guesser.
-setInterval(function(){ 
-	socket.emit('getUiUpdate', {session})
-}, 500);
+// // UI Update Loop - runs every 0.5 seconds to update the state of client's UI.
+// // e.g. updating player scores, or changing the view from artist to guesser.
+// setInterval(function(){ 
+// 	socket.emit('getUiUpdate', {session})
+// }, 500);
 
 var artist = ""
-// Function to update the player list in the game sidebar.
-function updatePlayerList(game) {
-  players_list_container = document.getElementById('players-list')
-  players_list_container.innerHTML = "";
-  Object.keys(game.players).forEach(function(player) {
-    const div = document.createElement('div');
-    div.classList.add('player-list-item');
-    var player_name = game.players[player].id;
-    if (game.players[player].id == session.username) {var player_name = game.players[player].id + ' (You)'}
-    var player_score = game.players[player].score;
-    var player_place = game.players[player].place;
-    div.innerHTML = `<div class="place"> <div class="medal ${player_place}"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1</font></font></span></div></div><div class="player-details"> <div class="player-details-name"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_name}</font></font></span></div><div class="player-details-points"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_score} points</font></font></span></div></div>`;
-    players_list_container.appendChild(div);
-  });
-}
 
 // Function to update the player list in the game sidebar.
 function updateRoundTimer(game) {
@@ -58,13 +43,14 @@ function updateGameStatus(game) {
     let current_round_id = game.current_round_id
     let current_turn_id = game.rounds[current_round_id].current_turn_id
     let current_turn_phase = game.rounds[current_round_id].turns[current_turn_id].phase
+    let current_artist_id = game.rounds[current_round_id].turns[current_turn_id].artist_id
 
     if (current_turn_phase == 'ending') {
       current_turn_phase = 'drawing'
     } // We don't want to show the user "Ending" as the current status in the UI (its just a backend var)
       //so instead we say "Drawing"
 
-    var status = `<span>${game.current_artist_id} is ${current_turn_phase}!</span>`
+    var status = `<span>${current_artist_id} is ${current_turn_phase}!</span>`
   }
 
   status_container.innerHTML = status;
@@ -77,27 +63,104 @@ function updateGameName(game) {
 }
 
 
-function renderUI(game) {
+// function renderUI(game) {
 
+//   if(game.phase == 'pregame') {
+
+//     // Render pregame sidebar containers.
+//     var gameinfo = document.getElementById('game-info')
+//     gameinfo.innerHTML = `
+//         <div id="game-name"></div>
+//         <div id="game-status"></div>
+//         <div id="players-list"></div>
+//     `;
+
+//     updateGameName(game);
+//     updateGameStatus(game);
+//     updatePlayerList(game);
+
+//   }
+
+//   if(game.phase == 'midgame') {
+
+//     // Render sidebar midgame containers.
+//     var gameinfo = document.getElementById('game-info')
+//     gameinfo.innerHTML = `
+//         <div id="round-timer"></div>
+//         <div id="round-number"></div>
+//         <div id="game-status"></div>
+//         <div id="players-list"></div>
+//       `;
+
+
+    
+//     // Update individual UI components.
+//     updatePlayerList(game);
+//     updateRoundTimer(game);
+//     updateRoundNumber(game);
+
+//     // Render Artist UI
+//     if (session.username == artist_id) {
+//       canvas.isDrawingMode = true
+//       var toolbar = document.getElementById('canvas-toolbar')
+//       if (toolbar.classList.contains('disabled')) {
+//         toolbar.classList.remove('disabled')
+//       }
+//       // TODO: renderArtistUI(updateX...updateY...)
+
+//     // Render Guesser UI
+//     } else {
+//       canvas.isDrawingMode = false
+//       var toolbar = document.getElementById('canvas-toolbar')
+//       toolbar.classList.add('disabled')
+//       // TODO: renderGuesserUI(updateX...updateY...)
+//     }
+
+//   }
+// }
+
+socket.on('clearCanvas', message => {
+  canvas.clear();
+});
+
+// // Receive UI Update event from server, and update client UI accordingly.
+// socket.on('uiUpdate', game => {
+
+//   renderUI(game);
+
+// });
+
+socket.on('updateTimer', game => {
+  updateRoundTimer(game);
+  updateRoundNumber(game);
+});
+
+socket.on('updatePregameInfo', game => {
+  updateGameStatus(game);
+  updateGameName(game);
+});
+
+
+socket.on('updateSidebarContainers', game => {
+
+  // Render containers for pregame game info sidebar
   if(game.phase == 'pregame') {
-
-    // Render pregame sidebar containers.
     var gameinfo = document.getElementById('game-info')
     gameinfo.innerHTML = `
         <div id="game-name"></div>
         <div id="game-status"></div>
         <div id="players-list"></div>
-    `;
+      `;
 
-    updateGameName(game);
-    updateGameStatus(game);
-    updatePlayerList(game);
+      updatePlayerList(game);
+
+      updateGameStatus(game);
+      updateGameName(game);
 
   }
 
   if(game.phase == 'midgame') {
-
-    // Render sidebar midgame containers.
+    // Render midgame containers.
     var gameinfo = document.getElementById('game-info')
     gameinfo.innerHTML = `
         <div id="round-timer"></div>
@@ -106,50 +169,117 @@ function renderUI(game) {
         <div id="players-list"></div>
       `;
 
-    // Variable mapping so we can get the username of the current artist.
-    let round_id = game.current_round_id
-    let turn_id = game.rounds[round_id].current_turn_id
-    let artist_id = /* Get Artist ID ---> */ game.rounds[round_id].turns[turn_id].artist_id
-    game.current_artist_id = artist_id
+      updateGameStatus(game);
+      updatePlayerList(game);
 
-    // Set public artist var for other functions in this file.
-    artist = artist_id
-    
-    // Update individual UI components.
-    updatePlayerList(game);
-    updateRoundTimer(game);
-    updateRoundNumber(game);
+      renderRoleUI(game);
 
-    // Render Artist UI
-    if (session.username == artist_id) {
-      canvas.isDrawingMode = true
-      var toolbar = document.getElementById('canvas-toolbar')
-      if (toolbar.classList.contains('disabled')) {
-        toolbar.classList.remove('disabled')
+  }
+
+});
+
+
+function renderRoleUI(game) {
+
+  // get players username
+  var round = game.rounds[game.current_round_id]
+  var turn = round.turns[round.current_turn_id]
+  var role = game.players[session.username].current_role
+
+  console.log(`I am ${role}`)
+
+  // If player is a guesser this turn:
+  if ( role == 'guesser') {
+    var word_box = document.querySelector('.word-box')
+    word_box.innerHTML = `
+    <div class="placeholders">
+    `
+  }
+  // If artist: 
+  else if (role == 'artist') {
+
+    if (turn.phase == 'choosing') {
+
+      //Create containers for word box children
+      var word_box = document.querySelector('.word-box')
+      word_box.innerHTML = `
+      <h2>Choose a Word</h2>
+      <div class="word-choices"></div>
+      `
+      var word_choices = document.querySelector('.word-choices')
+
+      // Add word choices to the word box.
+      var i = 0;
+      for (word in turn.word_list) {
+        var choice = document.createElement('div');
+        choice.classList.add('word-choice')
+        choice.setAttribute('data-word', i)
+        choice.innerHTML = `<span>${turn.word_list[word].word}</span>`
+        word_choices.appendChild(choice);
+        i++;
       }
-      // TODO: renderArtistUI(updateX...updateY...)
 
-    // Render Guesser UI
-    } else {
-      canvas.isDrawingMode = false
-      var toolbar = document.getElementById('canvas-toolbar')
-      toolbar.classList.add('disabled')
-      // TODO: renderGuesserUI(updateX...updateY...)
+      // word_choices.addEventListener("click",function(e) {
+      //   if (e.target && e.target.matches("div.word-choice")) {
+      //       word_chosen_id = e.target.getAttribute('data-word')
+      //       socket.emit('wordChosen', word_chosen_id)
+      //     }
+      // });
+
     }
 
+    if (turn.phase == 'drawing') {
+      //Create containers for word box children
+      var word_box = document.querySelector('.word-box')
+      word_box.innerHTML = `
+      <div class="word-info">
+        <div class="word-name"></div>
+        <div class="word-def"></div>
+        <div class="word-link"></div>
+      </div>
+      `
+      var word_name = document.querySelector('.word-name')
+      var word_def = document.querySelector('.word-def')
+      var word_link = document.querySelector('.word-link')
+    }
   }
 }
 
-socket.on('clearCanvas', message => {
-  canvas.clear();
+document.addEventListener("click", function(e) {
+  if((e.target) && (e.target.classList.contains('word-choice'))) {
+    word_chosen_id = e.target.getAttribute('data-word')
+    console.log(`Word chosen event fired`)
+    socket.emit('chooseWord', word_chosen_id)
+  }
 });
 
-// Receive UI Update event from server, and update client UI accordingly.
-socket.on('uiUpdate', game => {
-
-  renderUI(game);
-
+// Player List Handling //
+socket.on('updatePlayerList', game => {
+  updatePlayerList(game);
 });
+
+function updatePlayerList(game) {
+  players_list_container = document.getElementById('players-list')
+  players_list_container.innerHTML = "";
+  Object.keys(game.players).forEach(function(player) {
+    const div = document.createElement('div');
+    div.classList.add('player-list-item');
+    var player_name = game.players[player].id;
+    if (game.players[player].id == session.username) {var player_name = game.players[player].id + ' (You)'}
+    var player_score = game.players[player].score;
+    var player_place = game.players[player].place;
+    div.innerHTML = `<div class="place"> <div class="medal ${player_place}"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1</font></font></span></div></div><div class="player-details"> <div class="player-details-name"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_name}</font></font></span></div><div class="player-details-points"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_score} points</font></font></span></div></div>`;
+    players_list_container.appendChild(div);
+  });
+}
+
+
+
+
+
+// ----------------- //
+
+
 
 // Get the Leave Button object from the page.
 var leaveButton = document.querySelector('.leave-button');
@@ -195,7 +325,7 @@ socket.on('welcome-message',message => {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 });
 
-socket.on('disconnect-message',message => {
+socket.on('disconnect-message', message => {
   outputDisconnectMessage(message);
   var chime = new Audio('/sound/negative-alert.wav')
   chime.volume = 0.5

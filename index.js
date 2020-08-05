@@ -1,10 +1,12 @@
 require('dotenv').config()
 const express = require('express')
 const session = require('express-session');
+var randomPictionaryList = require('word-pictionary-list');
 const path = require('path');
 var favicon = require('serve-favicon');
 const PORT = process.env.PORT || 5000
-const { Pool } = require('pg'); 
+const { Pool } = require('pg');
+
 var pool; 
 //   'postgres://postgres:6757@localhost/usr'
 // process.env.DATABASE_URL
@@ -35,10 +37,10 @@ class Game {
 		this.rounds = {}
 		this.max_rounds = max_rounds;
 		this.current_round_id = 1;
-		this.timer_seconds = 0;
 
-		this.drawing_duration = 10 //seconds
-		this.choosing_duration = 20 //seconds
+		this.timer_seconds = 10;
+		this.choosing_duration = 10 //seconds
+		this.drawing_duration = 20 //seconds
 		this.ending_duration = 5
 	}
 }
@@ -66,17 +68,20 @@ Round.prototype.getTurns = function(players) {
 class Turn {
 	constructor(artist_id) {
 		this.artist_id = artist_id;
-		this.phase = 'choosing' // transitions after to drawing, then to finishing (where the points gained for the turn are shown)
+		this.phase = 'waiting' // transitions after to drawing, then to finishing (where the points gained for the turn are shown)
 		// choosing phase = picking the word, drawing phase = drawing, ending phase = show the score results
-
+		this.word_list = [];
+		this.word_chosen = "";
 	}
 }
 
 Game.prototype.ChoosingTimer = function() {
 	if (this.timer_seconds == 0) {
+		io.to(this.game_id).emit('updateTimer', this);
 		clearInterval(countdownTimer);
 		this.turnStartDrawingPhase()
 	} else {
+		io.to(this.game_id).emit('updateTimer', this);
 		this.timer_seconds = this.timer_seconds - 1;
 	}
 }
@@ -90,9 +95,11 @@ Game.prototype.startChoosingTimer = function() {
 
 Game.prototype.DrawingTimer = function() {
 	if (this.timer_seconds == 0) {
+		io.to(this.game_id).emit('updateTimer', this);
 		clearInterval(countdownTimer);
 		this.turnStartEndingPhase()
 	} else {
+		io.to(this.game_id).emit('updateTimer', this);
 		this.timer_seconds = this.timer_seconds - 1;
 	}
 }
@@ -105,6 +112,7 @@ Game.prototype.startDrawingTimer = function() {
 
 Game.prototype.EndingTimer = function() {
 	if (this.timer_seconds == 0) {
+		io.to(this.game_id).emit('updateTimer', this);
 		clearInterval(countdownTimer);
 		var round_id = this.current_round_id
 		if (this.rounds[round_id].current_turn_id == (this.rounds[round_id].turns.length) - 1) {
@@ -112,10 +120,14 @@ Game.prototype.EndingTimer = function() {
 			this.roundEnd()
 	
 		} else {
-			this.rounds[round_id].current_turn_id++;
+
+			this.rounds[round_id].current_turn_id++; // set current turn # to next turn #
+
+			// start the next turn
 			this.turnStart()
 		}
 	} else {
+		io.to(this.game_id).emit('updateTimer', this);
 		this.timer_seconds = this.timer_seconds - 1;
 	}
 }
@@ -127,29 +139,52 @@ Game.prototype.startEndingTimer = function() {
 }
 
 // when the turn starts
-Game.prototype.turnStart = function() {
+Game.prototype.turnStart = async function() {
 
 	var round_id = this.current_round_id;
 	//get current round object
 	var turn_id = this.rounds[round_id].current_turn_id
 	
+	await this.createWordList(3);
+
 	// get current turn object and switch the phase to choosing
 	this.rounds[round_id].turns[turn_id].phase = 'choosing'
-	this.startChoosingTimer() // when it ends, call turnStartDrawingPhase()
 
+	for (var player in this.players) { // for each player
+
+		// otherwise the player is a guesser.
+		this.players[player].current_role = 'guesser'
+
+		// if player is the artist for the next turn
+		if (player == this.rounds[round_id].turns[turn_id].artist_id) {
+			// then set their role to artist
+			this.players[player].current_role = 'artist'
+			
+		}
+
+	}
+
+	// Send event to client to update the sidebar UI
+	io.to(this.game_id).emit('updateSidebarContainers', this);
+	io.to(this.game_id).emit('updatePlayerList', this);
+
+	// TODO let client run this.chooseWord(1);
+
+	this.startChoosingTimer(); // when it ends, call turnStartDrawingPhase()
+	
 }
 
 Game.prototype.turnStartDrawingPhase = function() {
-	var current_round_id = this.current_round_id;
-	var current_turn_id = this.rounds[current_round_id].current_turn_id
-	this.rounds[current_round_id].turns[current_turn_id].phase = 'drawing'
+	var round_id = this.current_round_id;
+	var turn_id = this.rounds[round_id].current_turn_id
+	this.rounds[round_id].turns[turn_id].phase = 'drawing'
 	this.startDrawingTimer() // when it ends, call turnStartDrawingPhase()
 }
 
 Game.prototype.turnStartEndingPhase = function() {
-	var current_round_id = this.current_round_id;
-	var current_turn_id = this.rounds[current_round_id].current_turn_id
-	this.rounds[current_round_id].turns[current_turn_id].phase = 'ending'
+	var round_id = this.current_round_id;
+	var turn_id = this.rounds[round_id].current_turn_id
+	this.rounds[round_id].turns[turn_id].phase = 'ending'
 	// TODO update scores
 	this.startEndingTimer();
 }
@@ -196,6 +231,63 @@ Game.prototype.playerAdd = function(player) {
 		this.host = player.id
 	}
 	this.players[player.id] = player; // add new player object to the game object
+
+	
+	io.to(this.game_id).emit('updateSidebarContainers', this);
+	io.to(this.game_id).emit('updatePlayerList', this);
+
+	message = {username: player.id, content: player.id + ' has joined the game!', style: 'm-green'}
+	io.to(this.game_id).emit('welcome-message', message);
+}
+
+Game.prototype.playerRemove = function(player_id) {
+
+	var round_id = this.current_round_id;
+	var message = {username: this.players[player_id].id, content: this.players[player_id].id + ` has left the game!`, style: 'm-red'}
+
+	// if leaving mid-game
+	if (this.phase == 'midgame') {
+
+
+		// if one of last two players leaves: 
+		if (Object.keys(this.players).length <= 2) {
+			this.gameEnd(); // then end the game
+		}
+
+		// otherwise just remove them from the players list
+		delete this.players[player_id] // This player is no longer in the game.
+
+		if (this.rounds[round_id]) {
+			var i = 0;
+			for (var turn in this.rounds[round_id].turns) {
+				if (turn.artist_id == player_id) {
+					delete this.rounds[round_id].turns[i]
+				}
+				i++;
+			}
+		}
+	} else {
+		delete this.players[player_id]
+	}
+
+	io.to(this.game_id).emit('updatePlayerList', this);
+	io.to(this.game_id).emit('disconnect-message', message);
+
+}
+
+
+Game.prototype.chooseWord = function(word_id){
+	var round_id = this.current_round_id;
+	var turn_id = this.rounds[round_id].current_turn_id;
+	this.rounds[round_id].turns[turn_id].word_chosen = this.rounds[round_id].turns[turn_id].word_list[word_id].word
+	console.log(`Chosen Word: ${this.rounds[round_id].turns[turn_id].word_chosen}`)
+}
+
+Game.prototype.createWordList = async function(word_count){
+	var round_id = this.current_round_id;
+	var turn_id = this.rounds[round_id].current_turn_id;
+	this.rounds[round_id].turns[turn_id].word_list = await getWords(word_count);
+	console.log(`Word List: ${JSON.stringify(this.rounds[round_id].turns[turn_id].word_list)}`);
 }
 
 
@@ -216,22 +308,39 @@ const fs = require('fs');
 const fetch = require("node-fetch");
 const wordArray = fs.readFileSync(wordListPath, 'utf8').split('\n');
 
-async function getRandomWords(word_count) {
+async function getWord() {
+	// Getting the wiki link for the first word
+	var word = randomPictionaryList(1);
+	const word_data = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${word}`)
+	const word_data_json = await word_data.json()
+	const link = await word_data_json[3][0]
+	// Getting the definition for the first word
+	const word_def_data = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
+	const word_def_data_json = await word_def_data.json()
+	const word_def = await word_def_data_json[0]['meanings'][0]['definitions'][0]["definition"]
+	// Put into an object
+	const output = {word: word[0], definition: word_def, link: link}
+	// console.log(output);
+	return output;
+	
+}
+
+async function getWords(word_count){
 	words = []
 	for (let i = 0; i < word_count; i++) {
-		var n = Math.floor(Math.random() * Math.floor(wordArray.length - 1));
-		random_word = wordArray[n]
-		let word_data = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${random_word}`);
-		let word_data_json = await word_data.json();
-
-		let word = {word: random_word, link: word_data_json[3][0]}
-		
-		words.push(word)
+		try {
+			word = await getWord();
+			words.push(word);
+		} catch {
+			console.log('Error getting word')
+			i--;
+		}
 	}
 	return words;
 }
 
-const loadGame = async (request, response) => { // Path: /game/:id
+
+const loadGame = (request, response) => { // Path: /game/:id
 
 	// If logged in:
     if (request.session.loggedin) {
@@ -240,19 +349,11 @@ const loadGame = async (request, response) => { // Path: /game/:id
 		var room_id = request.params.id; // Grab room ID from URL path parameters.
 		request.session.currentRoom = room_id;
 
-		try {
-			let word_count = 3
-			word_array = await getRandomWords(word_count) // get words array
-			//response.send(word_array)
-			word_object = {word_count: word_count, words: word_array};
-		} catch (error) {
-			console.log(error);
-		}
 		if (!(games[room_id])) {
 			games[room_id] = new Game(room_id, 3)
 		}
 		var gameData = games[room_id]
-		response.render('pages/game', {session: request.session, game: gameData, word_object: word_object}); // Render game EJS template with data from the user's session.
+		response.render('pages/game', {session: request.session, game: gameData}); // Render game EJS template with data from the user's session.
 		
     } else {
 	// If logged out, redirect back to home with warning alert.
@@ -261,7 +362,7 @@ const loadGame = async (request, response) => { // Path: /game/:id
         response.redirect('/');
     }
 }
-const loadAdmin = async (request, response) => { // Path: /game/:id
+const loadAdmin = (request, response) => { // Path: /game/:id
 	// If logged in:
     if (request.session.loggedin) {
 		
@@ -329,27 +430,17 @@ String.prototype.capitalize = function() {
 io.on('connection', (socket) => {
 	console.log(`${socket.id} connected.`)
 
-	disconnectMessage = {};
-
 	// Listen for addUserToRoom event from client.
 	socket.on('addUserToRoom', ({session}) => {
 		
 		socket.username = session.username;
 		socket.room_id = session.currentRoom;
 		var game_id = session.currentRoom;
-		games[game_id].playerAdd(new Player(socket.username));
 
 		socket.join(socket.room_id)
-		console.log(`${socket.username} (${socket.id}) joined Room ${socket.room_id}`)
 
-		disconnectMessage = {username: socket.username, content: `${socket.username.capitalize()} has left the game!`, style: 'm-red'}
+		games[game_id].playerAdd(new Player(socket.username));
 
-		message = {username: socket.username, content: socket.username + ' has joined the game!', style: 'm-green'}
-		socket.emit('welcome-message', message);
-		socket.broadcast.to(socket.room_id).emit('welcome-message', message);
-
-		socket.emit('uiUpdate', games[socket.room_id]);
-		socket.broadcast.to(socket.room_id).emit('uiUpdate', games[socket.room_id]);
 
 	});
 
@@ -365,6 +456,12 @@ io.on('connection', (socket) => {
 	socket.on('startGame', (game_id) => {
 
 		games[game_id].gameStart()
+
+	});
+
+	socket.on('chooseWord', (word_chosen_id) => {
+		console.log(`server received chooseWord event`)
+		games[socket.room_id].chooseWord(word_chosen_id);
 
 	});
 
@@ -386,29 +483,17 @@ io.on('connection', (socket) => {
 		socket.disconnect()
 	});
 
+
+})
+
+io.sockets.on('connection', function (socket) {
 	//Runs when client disconnects
-	socket.on('disconnect', () => {
+	socket.on('disconnect', function() {
 		var game_id = socket.room_id;
 		var user_id = socket.username;
-		var round_id = games[game_id].current_round_id
 
-		delete games[game_id].players[user_id];
+			games[game_id].playerRemove(user_id)
 
-		if (games[game_id].rounds[round_id]) {
-			for (var turn in games[game_id].rounds[round_id].turns) {
-				if (turn.artist_id == user_id) {
-					delete turn
-				}
-			}
-		}
-
-		if (Object.keys(games[game_id].players).length < 2) {
-			games[game_id].gameEnd();
-		}
-
-		socket.broadcast.to(game_id).emit('update', games[game_id]);
-		//To everyone included itself
-		socket.broadcast.to(game_id).emit('disconnect-message', disconnectMessage);
 	});
-})
+});
 

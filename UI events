@@ -1,0 +1,59 @@
+Event-based:
+
+- player joins game 
+    - update the player list for all players ✓
+    - send the chat message (do it from prototypes) ✓
+
+- player leaves game 
+    - update the player list ✓
+    - send the chat message (do it from prototypes) ✓
+
+- player starts game
+
+- round starts
+
+- turn starts
+    - switch the ui for guessers to the midgame-guesser UI.
+        - render containers for all content
+            - letter placeholder
+            - "static" canvas
+
+    - switch the ui for artist to the midgame-artist UI. 
+    - update the current round text
+    - update the game status (x is choosing!)
+
+- turn choosing phase starts
+    - display choosing UI for artist (div overtop of the canvas with clickable word choices)
+    - update the game status (x is choosing!)
+
+- turn drawing phase starts
+    - display drawing UI for artist (canvas, toolbar, word at the top of the screen - with description and link)
+    - display guessing UI for guessers (not interactable canvas, letter placeholders)
+    - update the game status (x is drawing!)
+
+- turn ending phase starts
+    - update the game status (X got the most points!)
+    - display ending UI for all players for the duration of ending phase
+        - replace canvas area with summary of the points each user got that turn
+        - show the word, its definition, and the link
+
+- round ends
+
+- game ends
+ - load pregame UI for all players
+
+- canvas object added by artist
+    - update guesser canvas from json
+
+
+
+Clock-based (update every 500ms):
+- 
+
+
+questions / notes:
+- can someone join midgame, will the turns be automatically increased?
+- if not: then we just kick them back to home page with an alert. 
+
+Rounds -> turns: [a, b, c, d]
+-- player leaving logic, player joining midgame logic

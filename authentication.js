@@ -10,7 +10,6 @@ require('dotenv').config()
 const { Pool } = require('pg'); 
 var pool; 
 const session = require('express-session');
-//   'postgres://postgres:6757@localhost/usr'
 // process.env.DATABASE_URL
 pool = new Pool ({
 	connectionString: process.env.LOCALDB
@@ -26,7 +25,7 @@ const loginUser = (request, response) => {
 				        request.session.loggedin = true;
                 request.session.username = username;
                 request.session.admin = result.rows[0].admin;
-                request.session.alerts = [[`Login successful!`, 'alert-success', 'exclamation-triangle']]
+                request.session.alerts =[[`Login successful!`, 'alert-success', 'exclamation-triangle']]
                 response.redirect('/');
 			} else {
                 request.session.alerts = [[`Account not found!`, 'alert-warning', 'exclamation-triangle']]

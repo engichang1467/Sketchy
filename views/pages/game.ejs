@@ -10,7 +10,7 @@
 	<div class="page-container">
       <div class="card sidebar center-flex space-between">
         <div id='game-info'>
-          <div id="players-list"></div>
+            <div id="players-list"></div>
         </div>
         <div id='options'>
           <button class="button start-button">Start Game</button>
@@ -20,9 +20,6 @@
         
             <div id='canvas-wrapper'>
                 <div class='card' id='canvas-container'>
-                      <!--<% word_object.words.forEach(function(word){ %>
-                        <span><%= word.word %>: <%= word.link %></span><br>
-                      <% }); %> -->
                     <canvas id="draw-area" width="840" height="640"></canvas>
                 </div>
                 <div class='card' id='canvas-toolbar'>
@@ -56,6 +53,8 @@
             </div>
 
             <div class='card' id='chat-wrapper'>
+
+              <div class="word-box"></div>
 
                     <div class="chat-main">
                       <div class="chat-messages"></div>
