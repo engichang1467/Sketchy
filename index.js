@@ -77,9 +77,11 @@ class Turn {
 
 Game.prototype.ChoosingTimer = function() {
 	if (this.timer_seconds == 0) {
+		io.to(this.game_id).emit('updateTimer', this);
 		clearInterval(countdownTimer);
 		this.turnStartDrawingPhase()
 	} else {
+		io.to(this.game_id).emit('updateTimer', this);
 		this.timer_seconds = this.timer_seconds - 1;
 	}
 }
@@ -93,9 +95,11 @@ Game.prototype.startChoosingTimer = function() {
 
 Game.prototype.DrawingTimer = function() {
 	if (this.timer_seconds == 0) {
+		io.to(this.game_id).emit('updateTimer', this);
 		clearInterval(countdownTimer);
 		this.turnStartEndingPhase()
 	} else {
+		io.to(this.game_id).emit('updateTimer', this);
 		this.timer_seconds = this.timer_seconds - 1;
 	}
 }
@@ -108,6 +112,7 @@ Game.prototype.startDrawingTimer = function() {
 
 Game.prototype.EndingTimer = function() {
 	if (this.timer_seconds == 0) {
+		io.to(this.game_id).emit('updateTimer', this);
 		clearInterval(countdownTimer);
 		var round_id = this.current_round_id
 		if (this.rounds[round_id].current_turn_id == (this.rounds[round_id].turns.length) - 1) {
@@ -115,10 +120,14 @@ Game.prototype.EndingTimer = function() {
 			this.roundEnd()
 	
 		} else {
-			this.rounds[round_id].current_turn_id++;
+
+			this.rounds[round_id].current_turn_id++; // set current turn # to next turn #
+
+			// start the next turn
 			this.turnStart()
 		}
 	} else {
+		io.to(this.game_id).emit('updateTimer', this);
 		this.timer_seconds = this.timer_seconds - 1;
 	}
 }
@@ -137,9 +146,30 @@ Game.prototype.turnStart = async function() {
 	var turn_id = this.rounds[round_id].current_turn_id
 	
 	await this.createWordList(3);
+
 	// get current turn object and switch the phase to choosing
 	this.rounds[round_id].turns[turn_id].phase = 'choosing'
+
+	for (var player in this.players) { // for each player
+
+		// otherwise the player is a guesser.
+		this.players[player].current_role = 'guesser'
+
+		// if player is the artist for the next turn
+		if (player == this.rounds[round_id].turns[turn_id].artist_id) {
+			// then set their role to artist
+			this.players[player].current_role = 'artist'
+			
+		}
+
+	}
+
+	// Send event to client to update the sidebar UI
+	io.to(this.game_id).emit('updateSidebarContainers', this);
+	io.to(this.game_id).emit('updatePlayerList', this);
+
 	// TODO let client run this.chooseWord(1);
+
 	this.startChoosingTimer(); // when it ends, call turnStartDrawingPhase()
 	
 }
@@ -203,6 +233,7 @@ Game.prototype.playerAdd = function(player) {
 	this.players[player.id] = player; // add new player object to the game object
 
 	
+	io.to(this.game_id).emit('updateSidebarContainers', this);
 	io.to(this.game_id).emit('updatePlayerList', this);
 
 	message = {username: player.id, content: player.id + ' has joined the game!', style: 'm-green'}
@@ -239,7 +270,6 @@ Game.prototype.playerRemove = function(player_id) {
 		delete this.players[player_id]
 	}
 
-	console.log(JSON.stringify(this.players))
 	io.to(this.game_id).emit('updatePlayerList', this);
 	io.to(this.game_id).emit('disconnect-message', message);
 
@@ -428,6 +458,12 @@ io.on('connection', (socket) => {
 
 	});
 
+	socket.on('chooseWord', (word_chosen_id) => {
+		console.log(`server received chooseWord event`)
+		games[socket.room_id].chooseWord(word_chosen_id);
+
+	});
+
 
 
 	socket.on('mouse', (canvas_data) => {socket.broadcast.to(socket.room_id).emit('receive_mouse', canvas_data.data)});
@@ -455,7 +491,7 @@ io.sockets.on('connection', function (socket) {
 		var game_id = socket.room_id;
 		var user_id = socket.username;
 
-		games[game_id].playerRemove(user_id)
+			games[game_id].playerRemove(user_id)
 
 	});
 });

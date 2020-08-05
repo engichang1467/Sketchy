@@ -106,7 +106,7 @@ body {
     font-weight: bold;
     color: #222;
     text-align: left;
-    align-self: start;
+    align-self: center;
 }
 
 #game-status {
@@ -114,7 +114,7 @@ body {
     font-family: 'Articulat CF';
     font-size: 18px;
     text-align: left;
-    align-self: start;
+    align-self: center;
 }
 
 #profile-card {
@@ -348,8 +348,8 @@ input:focus {
     margin: 0px 0px 0px 0px;
     min-height: 100%;
     display: flex;
+    justify-content: flex-start;
     flex-direction: column;
-    justify-content: flex-end;
     flex-grow: 0;
     flex-basis: 380px;
     min-width: 380px;
@@ -728,4 +728,51 @@ input:focus {
 
 .disabled > div {
     opacity: 0.5;
+}
+
+.word-box {
+    background-color: #eee;
+    width: 100%;
+    padding: 25px;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;
+    border-radius: 5px;
+}
+
+.word-box h2 {
+    text-align: center;
+    margin: 0px;
+    margin-bottom: 5px;
+    color: #222;
+}
+
+.word-choices {
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.word-choice {
+    background-color: #E16A94;
+    border-radius: 3px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 16px;
+    margin: 10px 10px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.word-choice:hover {
+    background-color: #E16A94;
+    background-color: #E8C300;
+    transition: all 0.4s cubic-bezier(.49,1.09,.89,1.01);
+}
+
+.chat-main {
+    margin-top: auto;
 }

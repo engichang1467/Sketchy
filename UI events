@@ -1,12 +1,12 @@
 Event-based:
 
-- player joins game
-    - update the player list for all players
-    - send the chat message (do it from prototypes)
+- player joins game 
+    - update the player list for all players ✓
+    - send the chat message (do it from prototypes) ✓
 
-- player leaves game
-    - update the player list 
-    - send the chat message (do it from prototypes)
+- player leaves game 
+    - update the player list ✓
+    - send the chat message (do it from prototypes) ✓
 
 - player starts game
 
