@@ -348,7 +348,15 @@ async function getWords(word_count){
 	}
 	return words;
 }
+function checkWord(word,game){
 
+	if(word == game.rounds['1'].turns[0].word_chosen){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
 async function getWordTest() {
 	// Getting the wiki link for the first word
 	var word = "A";
@@ -448,20 +456,16 @@ describe("Checking creation of game",function(done){
         // This should equal 20 when drawing timer starts
         expect(games['1'].timer_seconds).to.be.equal(20); 
         
-
         setTimeout(()=>{
             //THis should equal 19 after one second
             expect(games['1'].timer_seconds).to.be.equal(19); 
 			// games['1'].start
-
-			
 			done();
         },1010)
         
     })
 })
 
-//I'm honestly not sure what to do with this right now
 
 describe("Tests the user choosing a word",function(done){
 
@@ -472,7 +476,6 @@ describe("Tests the user choosing a word",function(done){
         testGame.gameStartTest();
         setTimeout(()=>{
 			testGame.chooseWordTest('apple'); 
-			
 		},100);
 		setTimeout(()=>{
 			expect(testGame.rounds['1'].turns[0].word_chosen).to.be.equal("apple");
@@ -483,6 +486,57 @@ describe("Tests the user choosing a word",function(done){
         // var turn_id = testGame.rounds[round_id].current_turn_id;
         // expect(testGame.rounds[current_round_id].word_chosen).to.be.equal(game.rounds[current_round_id].turns[turn_id].word_list[1].word)
     })
+})
+
+describe ("Test if a guesser guesses the right word",function(done){
+
+	var socket1;
+	var testGame2 = new Game(1,2);
+	it("The user should guess the right word", function(done){
+
+		socket1 = io.connect(socket_url,property);
+
+		socket1.on('message', function(msg){
+			console.log("Hello")
+			expect(true).to.equal(checkWord(msg.content,testGame2))
+			done();   
+			
+		  })
+		var session = {username: "tester1", currentRoom: 3}
+		socket1.emit('addUserToRoom',{session});
+		socket1.on('connect', function(done){
+		
+			socket2 = io.connect(socket_url,property)
+			var session = {username: "tester2", currentRoom: 3}
+			socket2.emit('addUserToRoom',{session})
+			socket2.on('connect',function(done){
+
+				
+				testGame2.playerAdd(new Player('tester1'));
+				testGame2.playerAdd(new Player('tester2'));
+				testGame2.gameStartTest();
+				setTimeout(()=>{
+					testGame2.chooseWordTest('apple'); 
+				},20);
+				setTimeout(()=>{
+
+					var msg_to_send = 'apple'
+					socket2.emit('chatMessage',msg_to_send)
+				},50)
+				
+
+
+			})
+			
+
+						
+		})
+
+
+	})
+
+
+
 })
 
 
