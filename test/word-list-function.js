@@ -4,6 +4,8 @@ var assert = chai.assert;
 var should = chai.should();
 var supertest = require('supertest');
 var randomPictionaryList = require('word-pictionary-list');
+var checkWord = require('check-word'); 
+word_lang = checkWord('en'); 
 
 
 const wordListPath = require('word-list');
@@ -34,15 +36,14 @@ async function getWords(word_count){
 		try {
 			word = await getWord();
 			words.push(word);
-		} catch {
-			console.log('Error getting word')
+			// console.log(word); 
+ 		} catch {
+			// console.log('Error getting word')
 			i--;
 		}
 	}
 	return words;
 }
-
-
 
 
 describe('Wikipedia API testing', function(done) {
@@ -63,25 +64,29 @@ describe('Wikipedia API testing', function(done) {
 });
 
 
-describe('Random-word-generating function', function(done) {
+describe('Random-word-generating function (testing with word_count = 2)', function(done) {
 	this.timeout(5000);
     it('Return type: not null', async () => { 
-        const result = await getWord();
+		let word_count = 2;
+        const result = await getWords(word_count);
         assert.isNotNull(result);
 	});
 	
-	it('Return type: returned words are valid strings (testing with word_count = 2)', async () => { 
+	it('Return type: returned words are valid strings', async () => { 
 		let word_count = 2; 
 		var test = await getWords(word_count);
 		for(let i = 0; i < word_count; i++) {
-
 			assert.isString(test[i].word);
-			// var n = Math.floor(Math.random() * Math.floor(wordArray.length - 1));
-			// random_word = wordArray[n]; 
-			// assert.isString(random_word); 
+		}	
+	});
+
+	it('Return type: returned strings are valid English words', async () => { 
+		let word_count = 2; 
+		var test = await getWords(word_count);
+		for(let i = 0; i < word_count; i++) {
+			const res = word_lang.check((test[i].word).toLowerCase()); 
+			assert.strictEqual(res, true); 
 		}	
 	});
 });
-
-
 

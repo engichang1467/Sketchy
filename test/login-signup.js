@@ -22,6 +22,7 @@ before(function(done) {
 });
 
 describe('Check User Status / Login Function', function(done){
+
     it('Join game room: return successful(code 200) if user is logged in', function(done) {
       loginUser.get('/game/:id')
       .expect(200, done);
