@@ -722,13 +722,10 @@ input:focus {
   }
 
 .disabled {
-    pointer-events: none;
     cursor: not-allowed;
+    opacity: 0.25;
 }
 
-.disabled > div {
-    opacity: 0.5;
-}
 
 .word-box {
     background-color: #eee;
@@ -771,6 +768,23 @@ input:focus {
     background-color: #E16A94;
     background-color: #E8C300;
     transition: all 0.4s cubic-bezier(.49,1.09,.89,1.01);
+}
+
+.word-name {
+    text-align: left;
+}
+
+.placeholders {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    text-align: center;
+    font-size: 34px;
+}
+
+.placeholder {
+    margin: 0px 3px;
+    text-align: center;
 }
 
 .chat-main {

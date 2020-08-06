@@ -16,6 +16,14 @@ socket.emit('addUserToRoom', {session})
 // 	socket.emit('getUiUpdate', {session})
 // }, 500);
 
+// document.addEventListener("click", function(e) {
+//   if((e.target) && (e.target.classList.contains('word-choice'))) {
+//     word_chosen_id = e.target.getAttribute('data-id')
+//     console.log(`Word chosen onclick event fired with id: ${word_chosen_id}`)
+//     socket.emit('chooseWord', word_chosen_id)
+//   }
+// });
+
 var artist = ""
 
 // Function to update the player list in the game sidebar.
@@ -123,25 +131,24 @@ socket.on('clearCanvas', message => {
   canvas.clear();
 });
 
-// // Receive UI Update event from server, and update client UI accordingly.
-// socket.on('uiUpdate', game => {
 
-//   renderUI(game);
 
-// });
-
-socket.on('updateTimer', game => {
+socket.on('updateTimer', game_data => {
+  var game = JSON.parse(game_data)
   updateRoundTimer(game);
-  updateRoundNumber(game);
+  updateRoundNumber(game);5
 });
 
-socket.on('updatePregameInfo', game => {
+socket.on('updatePregameInfo', game_data => {
+  var game = JSON.parse(game_data)
   updateGameStatus(game);
   updateGameName(game);
 });
 
 
-socket.on('updateSidebarContainers', game => {
+socket.on('updateSidebarContainers', game_data => {
+
+  var game = JSON.parse(game_data)
 
   // Render containers for pregame game info sidebar
   if(game.phase == 'pregame') {
@@ -152,8 +159,8 @@ socket.on('updateSidebarContainers', game => {
         <div id="players-list"></div>
       `;
 
+      updateStartButton(game);
       updatePlayerList(game);
-
       updateGameStatus(game);
       updateGameName(game);
 
@@ -171,13 +178,25 @@ socket.on('updateSidebarContainers', game => {
 
       updateGameStatus(game);
       updatePlayerList(game);
-
       renderRoleUI(game);
 
   }
 
 });
 
+function updateStartButton(game) {
+  
+  players = game.players
+  first_player_key = Object.keys(players)[0]
+  first_player_id = players[first_player_key].id;
+  button = document.querySelector('.start-button')
+
+  if (session.username == first_player_id && Object.keys(players).length > 1) {
+    button.classList.remove('disabled')
+  } else {
+    button.classList.add('disabled')
+  }
+}
 
 function renderRoleUI(game) {
 
@@ -192,8 +211,26 @@ function renderRoleUI(game) {
   if ( role == 'guesser') {
     var word_box = document.querySelector('.word-box')
     word_box.innerHTML = `
-    <div class="placeholders">
+    <div class="placeholders"></div>
     `
+    canvas.isDrawingMode = false;
+
+    if (turn.phase == 'drawing') {
+      var placeholders = document.querySelector('.placeholders')
+      var word = turn.word_chosen
+      var word_letter = word.split('')
+      for(let i = 0; i < word.length; i++) {
+        var placeholder = document.createElement('div');
+        placeholder.classList.add('placeholder')
+        if (word_letter[i] != ' ') {
+          placeholder.innerHTML = `<span>_</span>`
+        } else {
+          placeholder.innerHTML = `<span>&nbsp</span>`
+        }
+        placeholders.appendChild(placeholder);
+      }
+    }
+
   }
   // If artist: 
   else if (role == 'artist') {
@@ -208,27 +245,52 @@ function renderRoleUI(game) {
       `
       var word_choices = document.querySelector('.word-choices')
 
-      // Add word choices to the word box.
-      var i = 0;
-      for (word in turn.word_list) {
-        var choice = document.createElement('div');
-        choice.classList.add('word-choice')
-        choice.setAttribute('data-word', i)
-        choice.innerHTML = `<span>${turn.word_list[word].word}</span>`
-        word_choices.appendChild(choice);
-        i++;
-      }
+      // // Add word choices to the word box.
+      // for (let i = 0; i < turn.word_list.length; i++) {
+      //   var choice = document.createElement('div');
+      //   choice.classList.add('word-choice')
+      //   choice.setAttribute('data-id', i)
+      //   choice.innerHTML = `<span>${turn.word_list[i].word}</span>`
+      //   createListener(choice)
+      //   word_choices.appendChild(choice);
+      // }
 
-      // word_choices.addEventListener("click",function(e) {
-      //   if (e.target && e.target.matches("div.word-choice")) {
-      //       word_chosen_id = e.target.getAttribute('data-word')
-      //       socket.emit('wordChosen', word_chosen_id)
-      //     }
-      // });
+      var choice0 = document.createElement('div');
+      choice0.classList.add('word-choice')
+      choice0.setAttribute('data-id', 0)
+      choice0.innerHTML = `<span>${turn.word_list[0].word}</span>`
+      choice0.onclick = function() {
+        console.log(`Word chosen onclick event fired with id: 0`)
+        socket.emit('chooseWord', 0)
+      }
+      word_choices.appendChild(choice0);
+
+      var choice1 = document.createElement('div');
+      choice1.classList.add('word-choice')
+      choice1.setAttribute('data-id', 1)
+      choice1.innerHTML = `<span>${turn.word_list[1].word}</span>`
+      choice1.onclick = function() {
+        console.log(`Word chosen onclick event fired with id: 1`)
+        socket.emit('chooseWord', 1)
+      }
+      word_choices.appendChild(choice1);
+
+      var choice2 = document.createElement('div');
+      choice2.classList.add('word-choice')
+      choice2.setAttribute('data-id', 2)
+      choice2.innerHTML = `<span>${turn.word_list[2].word}</span>`
+      choice2.onclick = function() {
+        console.log(`Word chosen onclick event fired with id: 2`)
+        socket.emit('chooseWord', 2)
+      }
+      word_choices.appendChild(choice2);
 
     }
 
     if (turn.phase == 'drawing') {
+
+      var word_chosen_id = turn.word_chosen_id
+
       //Create containers for word box children
       var word_box = document.querySelector('.word-box')
       word_box.innerHTML = `
@@ -241,20 +303,47 @@ function renderRoleUI(game) {
       var word_name = document.querySelector('.word-name')
       var word_def = document.querySelector('.word-def')
       var word_link = document.querySelector('.word-link')
+
+      word_name.innerHTML = `<h2 class='word-name'>${turn.word_chosen}</h2>`
+      word_def.innerHTML = `<span class='word-definition'>${turn.word_list[word_chosen_id].definition}</span>`
+      word_link.innerHTML = `<a class='read-more' href='${turn.word_list[word_chosen_id].link}'>Read More</a>`
+
+
     }
   }
 }
 
-document.addEventListener("click", function(e) {
-  if((e.target) && (e.target.classList.contains('word-choice'))) {
-    word_chosen_id = e.target.getAttribute('data-word')
-    console.log(`Word chosen event fired`)
-    socket.emit('chooseWord', word_chosen_id)
-  }
-});
+// function createListener(choice) {
+//   choice.addEventListener("click", onChooseWord(choice));
+// }
+
+// function onChooseWord(choice) {
+//   console.log(`Word chosen onclick event fired with id: ${choice.getAttribute('data-id')}`)
+//   socket.emit('chooseWord', choice.getAttribute('data-id'))
+// }
+
+
+// function handleChoice(e) {
+//   var choice = e.target
+//   var choice_id = choice.getAttribute('data-id')
+//   console.log(`Word chosen onclick event fired with id: ${choice_id}`)
+//   socket.emit('chooseWord', choice_id)
+// }
+
+// function attachClickEvent(){
+//   // get all the elements with className 'btn'. It returns an array
+//   var choice_list = document.getElementsByClassName('word-choice');
+//   // run the for look for each element in the array
+//   for(var i = 0; i<choice_list.length;i++){
+//       // attach the event listener
+//       choice_list[i].addEventListener("click", handleChoice);
+//   }                                                                             
+// }
+
 
 // Player List Handling //
-socket.on('updatePlayerList', game => {
+socket.on('updatePlayerList', game_data => {
+  var game = JSON.parse(game_data)
   updatePlayerList(game);
 });
 
@@ -325,6 +414,15 @@ socket.on('welcome-message',message => {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 });
 
+socket.on('guess-message', message => {
+  outputGuessMessage(message);
+  var chime = new Audio('/sound/positive-alert.wav')
+  chime.volume = 0.5
+  chime.play();
+  //Scroll down the chatbox automatically
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+});
+
 socket.on('disconnect-message', message => {
   outputDisconnectMessage(message);
   var chime = new Audio('/sound/negative-alert.wav')
@@ -342,7 +440,7 @@ chatForm.addEventListener('submit',(e)=>{
 
   if (msg != '') {
   // Emit message to server
-  socket.emit('chatMessage',msg);
+  socket.emit('chatMessage', msg);
 
   // Clear input
   e.target.elements.msg.value = '';
@@ -361,6 +459,16 @@ function outputMessage(message) {
 }
 
 function outputWelcomeMessage(message) {
+  const div = document.createElement('div');
+  var style = message.style
+  if (style != '') {div.classList.add('style');}
+  div.classList.add('message', style); // create div class 'message'
+  div.innerHTML = `<p>${message.content}</p>`;
+  document.querySelector('.chat-messages').appendChild(div);
+
+}
+
+function outputGuessMessage(message) {
   const div = document.createElement('div');
   var style = message.style
   if (style != '') {div.classList.add('style');}
@@ -523,12 +631,12 @@ function changeContextTop(input){
 
 canvas.on(
   'object:added', function(){
-    if(artist == session.username) {
+    if (!canvasLock) {
       updateCanvasState();
       if( undoOrRedoLock === false) { 
         var data = canvas.toJSON()
         var canvas_data = {data: data, game_id: session.room_id}
-        socket.emit('mouse',canvas_data)
+        socket.emit('mouse', canvas_data)
       }
     }
   }
@@ -563,12 +671,13 @@ clearEl.click(function() {
  })
 
 
-socket.on('receive_mouse',(data)=>{
-  // canvasLock = true
+socket.on('receive_mouse', (data) => {
+  console.log('received mouse event from server')
+  canvasLock = true
   var canvasAsJson = JSON.stringify(data);
   canvas.loadFromJSON(canvasAsJson)
   canvas.renderAll();
-  // canvasLock = false
+  canvasLock = false
 })
 
 //    END OF CANVAS

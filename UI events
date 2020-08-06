@@ -15,20 +15,25 @@ Event-based:
 - turn starts
     - switch the ui for guessers to the midgame-guesser UI.
         - render containers for all content
-            - letter placeholder
-            - "static" canvas
+            - letter placeholder ✓
+            - "static" canvas ✓
+            - disable toolbar
 
     - switch the ui for artist to the midgame-artist UI. 
-    - update the current round text
-    - update the game status (x is choosing!)
+        - show word choices in choosing phase ✓
+        - show chosen word in drawing phase ✓
+
+    - update the current round text ✓ (through updateTimer event)✓
+
+    - update the game status (x is choosing!) - NEEDS FIXES
 
 - turn choosing phase starts
-    - display choosing UI for artist (div overtop of the canvas with clickable word choices)
-    - update the game status (x is choosing!)
+    - display choosing UI for artist (div overtop of the canvas with clickable word choices) ✓
+    - update the game status (x is choosing!) 
 
 - turn drawing phase starts
-    - display drawing UI for artist (canvas, toolbar, word at the top of the screen - with description and link)
-    - display guessing UI for guessers (not interactable canvas, letter placeholders)
+    - display drawing UI for artist (canvas, toolbar, word at the top of the screen - with description and link) ✓
+    - display guessing UI for guessers (not interactable canvas, letter placeholders) ✓
     - update the game status (x is drawing!)
 
 - turn ending phase starts
