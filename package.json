@@ -20,6 +20,7 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "fs": "0.0.1-security",
+    "is-word": "^1.0.4",
     "mocha": "^8.1.0",
     "moment": "^2.27.0",
     "node-fetch": "^2.6.0",
