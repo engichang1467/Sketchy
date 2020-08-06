@@ -7,7 +7,6 @@ var randomPictionaryList = require('word-pictionary-list');
 var checkWord = require('check-word'); 
 word_lang = checkWord('en'); 
 
-
 const wordListPath = require('word-list');
 const fs = require('fs');
 const fetch = require("node-fetch");
