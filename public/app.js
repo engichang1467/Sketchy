@@ -159,6 +159,9 @@ socket.on('updateSidebarContainers', game_data => {
         <div id="players-list"></div>
       `;
 
+      var word_box = document.querySelector('.word-box')
+      word_box.innerHTML = ``
+
       updateStartButton(game);
       updatePlayerList(game);
       updateGameStatus(game);
@@ -200,10 +203,12 @@ function updateStartButton(game) {
 
 function renderRoleUI(game) {
 
+
   // get players username
   var round = game.rounds[game.current_round_id]
   var turn = round.turns[round.current_turn_id]
   var role = game.players[session.username].current_role
+  var player = game.players[session.username]
 
   console.log(`I am ${role}`)
 
@@ -213,36 +218,70 @@ function renderRoleUI(game) {
     word_box.innerHTML = `
     <div class="placeholders"></div>
     `
+    word_box.style.backgroundColor = '#eee'
     canvas.isDrawingMode = false;
 
     if (turn.phase == 'drawing') {
-      var placeholders = document.querySelector('.placeholders')
-      var word = turn.word_chosen
-      var word_letter = word.split('')
-      for(let i = 0; i < word.length; i++) {
-        var placeholder = document.createElement('div');
-        placeholder.classList.add('placeholder')
-        if (word_letter[i] != ' ') {
-          placeholder.innerHTML = `<span>_</span>`
-        } else {
-          placeholder.innerHTML = `<span>&nbsp</span>`
+      
+
+      if (player.guessed_correctly_this_turn) {
+        var word_chosen_id = turn.word_chosen_id
+
+      //Create containers for word box children
+      word_box = document.querySelector('.word-box')
+      word_box.innerHTML = `
+      <div class="word-info">
+        <div class="word-name"></div>
+        <div class="word-def"></div>
+        <div class="word-link"></div>
+        <div class="word-image-container"></div>
+      </div>
+      `
+      word_box.style.backgroundColor = '#E1FFE2'
+
+      var word_name = document.querySelector('.word-name')
+      var word_def = document.querySelector('.word-def')
+      var word_link = document.querySelector('.word-link')
+      var word_image = document.querySelector('.word-image-container')
+
+      word_name.innerHTML = `<h2 class='word-name'>${turn.word_chosen}</h2>`
+      word_def.innerHTML = `<span class='word-definition'>${turn.word_list[word_chosen_id].definition}</span>`
+      word_link.innerHTML = `<a class='read-more' href='${turn.word_list[word_chosen_id].link}'>Read More</a>`
+      if (turn.word_list[word_chosen_id].src != '') {
+        word_image.innerHTML = `<img class='word-image' src='${turn.word_list[word_chosen_id].src}'>`
+      }
+
+      } else {
+        var placeholders = document.querySelector('.placeholders')
+        var word = turn.word_chosen
+        var word_letter = word.split('')
+        for(let i = 0; i < word.length; i++) {
+          var placeholder = document.createElement('div');
+          placeholder.classList.add('placeholder')
+          if (word_letter[i] != ' ') {
+            placeholder.innerHTML = `<span>_</span>`
+          } else {
+            placeholder.innerHTML = `<span>&nbsp</span>`
+          }
+          placeholders.appendChild(placeholder);
         }
-        placeholders.appendChild(placeholder);
       }
     }
-
   }
   // If artist: 
   else if (role == 'artist') {
+
+    canvas.isDrawingMode = false;
 
     if (turn.phase == 'choosing') {
 
       //Create containers for word box children
       var word_box = document.querySelector('.word-box')
       word_box.innerHTML = `
-      <h2>Choose a Word</h2>
+      <h2 class='choose-a-word'>Choose a Word</h2>
       <div class="word-choices"></div>
       `
+      word_box.style.backgroundColor = '#eee'
       var word_choices = document.querySelector('.word-choices')
 
       // // Add word choices to the word box.
@@ -289,6 +328,8 @@ function renderRoleUI(game) {
 
     if (turn.phase == 'drawing') {
 
+      canvas.isDrawingMode = true;
+
       var word_chosen_id = turn.word_chosen_id
 
       //Create containers for word box children
@@ -298,17 +339,21 @@ function renderRoleUI(game) {
         <div class="word-name"></div>
         <div class="word-def"></div>
         <div class="word-link"></div>
+        <div class="word-image-container"></div>
       </div>
       `
+      word_box.style.backgroundColor = '#eee'
       var word_name = document.querySelector('.word-name')
       var word_def = document.querySelector('.word-def')
       var word_link = document.querySelector('.word-link')
+      var word_image = document.querySelector('.word-image-container')
 
       word_name.innerHTML = `<h2 class='word-name'>${turn.word_chosen}</h2>`
       word_def.innerHTML = `<span class='word-definition'>${turn.word_list[word_chosen_id].definition}</span>`
       word_link.innerHTML = `<a class='read-more' href='${turn.word_list[word_chosen_id].link}'>Read More</a>`
-
-
+      if (turn.word_list[word_chosen_id].src != '') {
+        word_image.innerHTML = `<img class='word-image' src='${turn.word_list[word_chosen_id].src}'>`
+      }
     }
   }
 }
@@ -515,6 +560,7 @@ var undoButton = $(document.getElementById('tool-undo'));
 var redoButton = $(document.getElementById('tool-redo'));
 var fillButton = $(document.getElementById('tool-fill'));
 var colorButton = document.getElementById('tool-color-wheel');
+var colorTool = document.getElementById('tool-color');
 var eraserButton = $(document.getElementById('tool-eraser'));
 var sizeSlider = document.getElementById('tool-size-slider');
 var undoLock =true; //A lock for the undo status to solve the spamming of undo
@@ -531,6 +577,10 @@ canvas.freeDrawingBrush.color = color;
 colorButton.addEventListener('input', function(evt){
 
     canvas.freeDrawingBrush.color = this.value;
+})
+
+colorTool.click(function(){  
+  canvas.freeDrawingBrush.color = color;
 })
 
 sizeSlider.addEventListener('input', function(evt){

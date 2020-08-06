@@ -14,6 +14,8 @@ pool = new Pool ({
 	connectionString: process.env.LOCALDB
 });
 
+var intervals = {}
+
 // for heroku deployment:
 //const io = require('socket.io')(server);
 // must also change socket.js
@@ -25,6 +27,7 @@ class Player {
 		this.current_role = 'guesser' // default role
 		this.score = 0 // placeholder
 		this.place = 'gold' // placeholder
+		this.guessed_correctly_this_turn = false;
 	}	
 }
 
@@ -39,7 +42,7 @@ class Game {
 
 		this.timer_seconds = 10;
 
-		this.choosing_duration = 10 //seconds
+		this.choosing_duration = 15 //seconds
 		this.drawing_duration = 20 //seconds
 		this.ending_duration = 5
 	}
@@ -89,7 +92,7 @@ Game.prototype.ChoosingTimer = function() {
 			this.chooseRandomWord();
 		}
 
-		clearInterval(countdownTimer);
+		clearInterval(intervals.choosingCountdownTimer);
 		this.turnStartDrawingPhase()
 		var emit_data = JSON.stringify(this)
 		io.to(this.game_id).emit('updateSidebarContainers', emit_data);
@@ -105,14 +108,14 @@ Game.prototype.startChoosingTimer = function() {
 	io.to(this.game_id).emit('clearCanvas');
 	this.timer_seconds = this.choosing_duration
 	console.log(`Starting choosing timer with duration: ${this.timer_seconds}`)
-	countdownTimer = setInterval(this.ChoosingTimer.bind(this), 1000);
+	intervals.choosingCountdownTimer = setInterval(this.ChoosingTimer.bind(this), 1000);
 }
 
 Game.prototype.DrawingTimer = function() {
 	if (this.timer_seconds == 0) {
 		var emit_data = JSON.stringify(this)
 		io.to(this.game_id).emit('updateTimer', emit_data);
-		clearInterval(countdownTimer);
+		clearInterval(intervals.drawingCountdownTimer);
 		this.turnStartEndingPhase()
 	} else {
 		var emit_data = JSON.stringify(this)
@@ -124,7 +127,7 @@ Game.prototype.DrawingTimer = function() {
 Game.prototype.startDrawingTimer = function() {
 	this.timer_seconds = this.drawing_duration
 	console.log(`Starting drawing timer with duration: ${this.timer_seconds}`)
-	countdownTimer = setInterval(this.DrawingTimer.bind(this), 1000);
+	intervals.drawingCountdownTimer = setInterval(this.DrawingTimer.bind(this), 1000);
 }
 
 Game.prototype.EndingTimer = function() {
@@ -134,7 +137,7 @@ Game.prototype.EndingTimer = function() {
 
 		this.addTurnPointsToPlayers();
 
-		clearInterval(countdownTimer);
+		clearInterval(intervals.endingCountdownTimer);
 		var round_id = this.current_round_id
 		if (this.rounds[round_id].current_turn_id == (this.rounds[round_id].turns.length) - 1) {
 			// on end of the last turn of the last round
@@ -157,7 +160,7 @@ Game.prototype.EndingTimer = function() {
 Game.prototype.startEndingTimer = function() {
 	this.timer_seconds = this.ending_duration
 	console.log(`Starting ending timer with duration: ${this.timer_seconds}`)
-	countdownTimer = setInterval(this.EndingTimer.bind(this), 1000);
+	intervals.endingCountdownTimer = setInterval(this.EndingTimer.bind(this), 1000);
 }
 
 // when the turn starts
@@ -174,8 +177,9 @@ Game.prototype.turnStart = async function() {
 
 	for (var player in this.players) { // for each player
 
-		// otherwise the player is a guesser.
+
 		this.players[player].current_role = 'guesser'
+		this.players[player].guessed_correctly_this_turn = false;
 
 		// if player is the artist for the next turn
 		if (player == this.rounds[round_id].turns[turn_id].artist_id) {
@@ -248,10 +252,18 @@ Game.prototype.gameStart = function() {
 Game.prototype.gameEnd = function() {
 	// set winner = player id of winner
 	// if only 1 player left in game, winner = the last player left
+	for (let i = 0; i < Object.keys(intervals).length; i++) {
+		clearInterval(intervals[Object.keys(intervals)[i]])
+	}
+	
 	this.phase = 'pregame'
 	this.rounds = {}
 	this.current_round_id = 1;
-	this.timer_seconds = 10;
+	this.timer_seconds = 15;
+
+	var emit_data = JSON.stringify(this)
+	io.to(this.game_id).emit('updatePlayerList', emit_data);
+	io.to(this.game_id).emit('updateSidebarContainers', emit_data);
 
 }
 
@@ -280,7 +292,8 @@ Game.prototype.playerRemove = function(player_id) {
 		var turn_id = this.rounds[round_id].current_turn_id
 		// if one of last two players leaves: 
 		if (Object.keys(this.players).length <= 2) {
-			this.gameEnd(); // then end the game
+			this.gameEnd()
+			delete this.players[player_id] // This player is no longer in the game.
 		} else {
 			// otherwise just remove them from the players list
 			delete this.players[player_id] // This player is no longer in the game.
@@ -288,26 +301,17 @@ Game.prototype.playerRemove = function(player_id) {
 			if (this.rounds[round_id]) {
 				var i = 0;
 				for (var turn in this.rounds[round_id].turns) {
-
 					if (turn.artist_id == player_id) {
-						if (this.rounds[round_id].turns[i] == this.rounds[round_id].turns[turn_id]) {
-							this.turnStartEndingPhase()
-						} else {
 							delete this.rounds[round_id].turns[i]
-						}
-						
 					}
 					i++;
 				}
 			}
+
 		}
-
-
-
-		this.turnStartEndingPhase()
-
 		
 	} else {
+
 		delete this.players[player_id]
 	}
 	var emit_data = JSON.stringify(this)
@@ -362,10 +366,14 @@ Game.prototype.createWordList = async function(word_count){
 
 
 Game.prototype.addPointsForGuess = function (username) {
+
 	var round_id = this.current_round_id;
 	var turn_id = this.rounds[round_id].current_turn_id
 	if (!(this.rounds[round_id].turns[turn_id].points).includes(username)) {
 		this.rounds[round_id].turns[turn_id].points.push(username)
+		this.players[username].guessed_correctly_this_turn = true;
+		var emit_data = JSON.stringify(this)
+		io.to(this.game_id).emit('updateSidebarContainers', emit_data);
 		return 1;
 	} else {
 		return 0;
@@ -405,17 +413,37 @@ const fetch = require("node-fetch");
 const wordArray = fs.readFileSync(wordListPath, 'utf8').split('\n');
 
 async function getWord() {
-	// Getting the wiki link for the first word
+	// Getting the wiki link for the word
 	var word = randomPictionaryList(1);
 	const word_data = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${word}`)
 	const word_data_json = await word_data.json()
 	const link = await word_data_json[3][0]
-	// Getting the definition for the first word
+	// Getting the definition for the word
 	const word_def_data = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
 	const word_def_data_json = await word_def_data.json()
 	const word_def = await word_def_data_json[0]['meanings'][0]['definitions'][0]["definition"]
+	// Getting the image for the word
+	var src = '';
+	const word_image_data = await fetch(`https://en.wikipedia.org/w/api.php?action=query&pilicense=any&format=json&prop=pageimages&pithumbsize=500&generator=search&gsrsearch=${word}&gsrlimit=15`)
+	const word_image_data_json = await word_image_data.json()
+
+	
+
+	//for each page of images in the result
+	if (Object.keys(word_image_data_json.query.pages).length > 0) {
+		for (let i = 0; i < Object.keys(word_image_data_json.query.pages).length; i++) {
+			const PageKey = Object.keys(word_image_data_json.query.pages)[i]
+			if(word_image_data_json.query.pages[PageKey].thumbnail.source) {
+				src = word_image_data_json.query.pages[PageKey].thumbnail.source
+				break
+			}
+		}
+	}
+	
+	console.log(src)
+	
 	// Put into an object
-	const output = {word: word[0].toLowerCase(), definition: word_def, link: link}
+	const output = {word: word[0].toLowerCase(), definition: word_def, link: link, src: src}
 	// console.log(output);
 	return output;
 	
@@ -597,6 +625,7 @@ io.on('connection', (socket) => {
 		// check if its midgame and the the sender is a guesser, and the guess is correct
 		// ... then we edit the game scores
 		if (game.phase == 'midgame') {
+			// on correct guess:
 			if (game.players[username].current_role == 'guesser') {
 				if (msg.toLowerCase() == turn.word_chosen.toLowerCase()) {
 
@@ -622,17 +651,14 @@ io.on('connection', (socket) => {
 		socket.disconnect()
 	});
 
+	socket.on('disconnect', function() {
+		if(socket.username) {
+			var game_id = socket.room_id;
+			var user_id = socket.username;
+			games[game_id].playerRemove(user_id)
+		}
+	});
+
 
 })
-
-io.sockets.on('connection', function (socket) {
-	//Runs when client disconnects
-	socket.on('disconnect', function() {
-		var game_id = socket.room_id;
-		var user_id = socket.username;
-
-			games[game_id].playerRemove(user_id)
-
-	});
-});
 

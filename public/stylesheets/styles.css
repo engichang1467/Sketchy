@@ -737,7 +737,7 @@ input:focus {
     border-radius: 5px;
 }
 
-.word-box h2 {
+.word-box .choose-a-word {
     text-align: center;
     margin: 0px;
     margin-bottom: 5px;
@@ -774,12 +774,34 @@ input:focus {
     text-align: left;
 }
 
+.word-name h2 {
+    margin: 0px;
+}
+
+.word-def {
+    margin-bottom: 5px;
+}
+
+.word-link a {
+    color: #E16A94;
+}
+
+.word-image-container img {
+    max-width: 100%;
+    border-radius: 5px;
+    max-height: 300px;
+}
+
+.word-image-container {
+    margin-top: 20px;
+}
+
 .placeholders {
     display: flex;
     justify-content: center;
     flex-direction: row;
     text-align: center;
-    font-size: 34px;
+    font-size: 30px;
 }
 
 .placeholder {
@@ -789,4 +811,25 @@ input:focus {
 
 .chat-main {
     margin-top: auto;
+    padding-top: 25px;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box; 
+}
+
+
+#tool-color-wheel {
+    width: 20px;
+    height: 20px;
+}
+
+input[type="color"] {
+	-webkit-appearance: none;
+	border: none;
+}
+input[type="color"]::-webkit-color-swatch-wrapper {
+	padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+	border: none;
 }
