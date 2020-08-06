@@ -476,12 +476,12 @@ describe("Tests the user choosing a word",function(done){
         testGame.gameStartTest();
         setTimeout(()=>{
 			testGame.chooseWordTest('apple'); 
-		},100);
+		},10);
 		setTimeout(()=>{
 			expect(testGame.rounds['1'].turns[0].word_chosen).to.be.equal("apple");
 			done(); 
 			
-		},500);
+		},50);
 		
         // var turn_id = testGame.rounds[round_id].current_turn_id;
         // expect(testGame.rounds[current_round_id].word_chosen).to.be.equal(game.rounds[current_round_id].turns[turn_id].word_list[1].word)
