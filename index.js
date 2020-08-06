@@ -372,12 +372,15 @@ const loadAdmin = (request, response) => { // Path: /game/:id
 				if (error) throw error;
 
 				var data = result.rows
-				response.render('pages/admin',{session: request.session, user_data: data});			
+				response.render('pages/admin',{session: request.session, user_data: data});	
+				
+				//200
 			});
 			
 		} else {
 			request.session.alerts = [[`No Privileges`, 'alert-failure', 'exclamation-triangle']]
 			response.redirect('/');
+			//302
 		}			
 				
     } else {
