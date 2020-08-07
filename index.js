@@ -647,6 +647,9 @@ io.on('connection', (socket) => {
 			}
 		}
 	});
+	//This listener below is purely for our test functions. Removing this will not impact our game at all.
+    //The real version is above but it integrates game logic as well
+
 	socket.on('chatMessageTest', (msg) => {
 
         message = {username: socket.username, content: msg, style: ''}
