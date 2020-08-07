@@ -55,7 +55,7 @@ describe('Testing Game Room Sockets', function() {
 
         socket2.emit('addUserToRoom',{session});
 
-        socket2.emit('chatMessage',msg_to_send)
+        socket2.emit('chatMessageTest',msg_to_send)
 
       })
       
@@ -86,9 +86,9 @@ describe('Testing Game Room Sockets', function() {
         socket2.on('connect',function(done){
           var session = {username: "tester2", currentRoom: 2}
           socket2.emit('addUserToRoom',{session});
-          socket2.emit('chatMessage',msg_to_send);
+          socket2.emit('chatMessageTest',msg_to_send);
           shouldEnd = true;
-          socket1.emit('chatMessage',msg_to_send2)
+          socket1.emit('chatMessageTest',msg_to_send2)
         })
         
 

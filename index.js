@@ -647,6 +647,12 @@ io.on('connection', (socket) => {
 			}
 		}
 	});
+	socket.on('chatMessageTest', (msg) => {
+
+        message = {username: socket.username, content: msg, style: ''}
+                    io.to(socket.room_id).emit('message', message);
+    });
+
 
 	socket.on('leaveGame', () => {
 		socket.disconnect()
