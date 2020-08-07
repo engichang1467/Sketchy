@@ -19,10 +19,6 @@ pool = new Pool ({
 
 var intervals = {}
 
-// for heroku deployment:
-//const io = require('socket.io')(server);
-// must also change socket.js
-const io = require('socket.io')(server);
 
 class Player {
 	constructor(player_id) {
@@ -588,6 +584,10 @@ const app = express()
 	const server = app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
 
 
+// for heroku deployment:
+//const io = require('socket.io')(server);
+// must also change socket.js
+const io = require('socket.io')(server);
 
 
 String.prototype.capitalize = function() {
