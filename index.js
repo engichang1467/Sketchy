@@ -220,7 +220,13 @@ Game.prototype.turnStartEndingPhase = function() {
 	var turn_id = this.rounds[round_id].current_turn_id
 	this.rounds[round_id].turns[turn_id].phase = 'ending'
 
+	var emit_data = JSON.stringify(this)
+	io.to(this.game_id).emit('updateSidebarContainers', emit_data);
+	io.to(this.game_id).emit('updatePlayerList', emit_data);
+
 	this.startEndingTimer();
+
+
 }
 
 Game.prototype.startGameEndingTimer = function() {
