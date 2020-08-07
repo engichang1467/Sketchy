@@ -657,10 +657,6 @@ io.on('connection', (socket) => {
 		var game_id = socket.room_id
 		var game = games[game_id]
 		var username = socket.username;
-		var round_id = game.current_round_id
-		var round = game.rounds[round_id]
-		var turn_id = round.current_turn_id
-		var turn = round.turns[turn_id]
 
 		// console.log(game.phase)
 		// console.log(game.players[username].current_role)
@@ -669,6 +665,12 @@ io.on('connection', (socket) => {
 		// check if its midgame and the the sender is a guesser, and the guess is correct
 		// ... then we edit the game scores
 		if (game.phase == 'midgame') {
+
+			var round_id = game.current_round_id
+			var round = game.rounds[round_id]
+			var turn_id = round.current_turn_id
+			var turn = round.turns[turn_id]
+
 			// on correct guess:
 			if (game.players[username].current_role == 'guesser') {
 				if (msg.toLowerCase() == turn.word_chosen.toLowerCase()) {
@@ -690,7 +692,12 @@ io.on('connection', (socket) => {
 					io.to(socket.room_id).emit('message', message);
 				}
 			}
+		} else {
+			// Send back the message to all Clients
+			message = {username: socket.username, content: msg, style: ''}
+			io.to(socket.room_id).emit('message', message);
 		}
+
 	});
 
 	socket.on('leaveGame', () => {
