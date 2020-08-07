@@ -10,8 +10,11 @@ const { Pool } = require('pg');
 var pool; 
 //  for heroku use:
 // process.env.DATABASE_URL
+
+// for dev use : process.env.LOCALDB
+
 pool = new Pool ({
-	connectionString: process.env.LOCALDB
+	connectionString: process.env.DATABASE_URL
 });
 
 var intervals = {}
@@ -19,7 +22,7 @@ var intervals = {}
 // for heroku deployment:
 //const io = require('socket.io')(server);
 // must also change socket.js
-const io = require('socket.io')(3000);
+const io = require('socket.io')(server);
 
 class Player {
 	constructor(player_id) {
