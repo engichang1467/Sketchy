@@ -442,8 +442,8 @@ const auth = require('./authentication')
 
 
 var games = {};
-games['1'] = new Game(1, 3)
-games['2'] = new Game(2, 3)
+games['1'] = new Game(1, 1)
+games['2'] = new Game(2, 2)
 games['3'] = new Game(3, 3)
 
 
