@@ -46,6 +46,19 @@ async function getWords(word_count){
 	}
 	return words;
 }
+
+async function safeParseJSON(response) {
+    const body = await response.text();
+    try {
+        return JSON.parse(body);
+    } catch (err) {
+        console.error("Error:", err);
+        console.error("Response body:", body);
+        // throw err;
+        return ReE(response, err.message, 500)
+    }
+}
+
 describe('Wikipedia API testing', function(done) {
 	this.timeout(5000);
 	it('Fetching API link: API link successfully fetched and returns content', async () => { 
@@ -56,13 +69,12 @@ describe('Wikipedia API testing', function(done) {
 		expect(result_json).to.be.an('array'); 
 	}); 
 
-	// it('Fetching API link: returned array contains a valid Wikipedia link', async () => { 
-	// 	random_word = "pear";
-	// 	const word_data = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${random_word}`)
-	// 	const word_data_json = await word_data.json()
-	// 	// const link = await word_data_json[3][0]
-	// 	assert.isNotNull(word_data_json); 
-	// }); 
+	it('Fetching API link: returned array contains a valid Wikipedia link', async () => { 
+		random_word = "apple";
+		const word_data = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${random_word}`)
+		assert.isNotEmpty(word_data); 
+		expect(word_data.url).to.match(/en.wikipedia.org/); 
+	}); 
 });
 
 describe('Random-word-generating function (testing with word_count = 2)', function(done) {
@@ -85,7 +97,7 @@ describe('Random-word-generating function (testing with word_count = 2)', functi
 		var test = await randomPictionaryList(word_count);
 		for(let i = 0; i < word_count; i++) {
 			const res = word_lang.check((test[i]).toLowerCase()); 
-			assert.isTrue(true); 
+			assert.isTrue(res); 
 		}	
 	});
 });
