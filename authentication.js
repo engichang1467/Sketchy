@@ -12,7 +12,7 @@ var pool;
 const session = require('express-session');
 // process.env.DATABASE_URL
 pool = new Pool ({
-	connectionString: process.env.LOCALDB
+	connectionString: process.env.DATABASE_URL
 });
 const loginUser = (request, response) => {
 	var username = request.body.uname.trim();
