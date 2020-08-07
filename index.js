@@ -534,6 +534,8 @@ const app = express()
 	/* Signup User */
 	app.post('/signup', auth.signupUser)
 
+	app.get('/logout', auth.logoutUser)
+
 	// Routes 
 	/* Home */
 	app.get('/', auth.loadHome)

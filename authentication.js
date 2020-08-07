@@ -14,6 +14,7 @@ const session = require('express-session');
 pool = new Pool ({
 	connectionString: process.env.LOCALDB
 });
+
 const loginUser = (request, response) => {
 	var username = request.body.uname.trim();
     var password = request.body.pwd.trim(); 
@@ -65,6 +66,17 @@ const signupUser = (request, response) => {
 	}
 }
 
+const logoutUser = (request, response) => {
+  request.session.alerts = (request.session.alerts) ? request.session.alerts : []
+  if (request.session.loggedin == true) {
+    request.session.destroy()
+    response.redirect('/');
+  } else {
+    request.session.alerts = [[`You are already logged out!`, 'alert-warning', 'exclamation-triangle']]
+    response.redirect('/');
+    return false;
+  }
+}
 
 const loadHome = (request, response) => {
     request.session.alerts = (request.session.alerts) ? request.session.alerts : []
@@ -91,5 +103,6 @@ const loadHome = (request, response) => {
 module.exports = {
     loginUser,
     signupUser,
+    logoutUser,
     loadHome
   }
