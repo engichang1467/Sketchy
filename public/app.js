@@ -54,7 +54,7 @@ function updateGameStatus(game) {
     let current_artist_id = game.rounds[current_round_id].turns[current_turn_id].artist_id
 
     if (current_turn_phase == 'ending') {
-      current_turn_phase = 'drawing'
+      current_turn_phase = 'finishing their turn!'
     } // We don't want to show the user "Ending" as the current status in the UI (its just a backend var)
       //so instead we say "Drawing"
 
@@ -82,7 +82,7 @@ socket.on('clearCanvas', message => {
 socket.on('updateTimer', game_data => {
   var game = JSON.parse(game_data)
   updateRoundTimer(game);
-  updateRoundNumber(game);5
+  updateRoundNumber(game);
 });
 
 socket.on('updatePregameInfo', game_data => {
@@ -138,7 +138,7 @@ socket.on('updateSidebarContainers', game_data => {
     // Render midgame containers.
     var gameinfo = document.getElementById('game-info')
     gameinfo.innerHTML = `
-        <div id="round-timer"><span>${game.choosing_duration}</span></div>
+        <div id="round-timer"><span>${game.timer_seconds}</span></div>
         <div id="round-number"><span>Round <strong>${game.current_round_id}</strong> of <strong>${game.max_rounds}</strong></span></div>
         <div id="game-status"></div>
         <div id="players-list"></div>
