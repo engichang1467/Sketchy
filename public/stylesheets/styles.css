@@ -407,6 +407,16 @@ input:focus {
     width: 100%;
 }
 
+.logout-button {
+    align-self: flex-end;
+    justify-self: flex-end;
+    color: #222;
+    background-color: #ddd;
+    height: 50px;
+    width: 100%;
+    margin-top: auto;
+}
+
 .start-button {
     align-self: flex-end;
     justify-self: flex-end;
@@ -832,4 +842,43 @@ input[type="color"]::-webkit-color-swatch-wrapper {
 }
 input[type="color"]::-webkit-color-swatch {
 	border: none;
+}
+
+
+.canvas-off {
+    display: none;
+}
+
+.tool-off {
+    pointer-events: none;
+    opacity: 0.25;
+}
+
+.canvas-guesser {
+    cursor: not-allowed !important;
+}
+
+
+.end-screen-container {
+    width: 840px;
+    height: 640px;
+    text-align: center;
+}
+
+.end-screen-container h2 {
+    font-size: 30px;
+}
+
+.end-scores {
+    font-size: 22px;
+    display: flex;
+    flex-direction: column;
+}
+
+.end-score {
+    margin: 5px 0px;
+}
+
+.ending-message {
+    margin-top: 25px;
 }

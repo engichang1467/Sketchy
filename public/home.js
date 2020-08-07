@@ -13,6 +13,14 @@ room3.addEventListener('click',function(evt){
     window.location.href = './game/3';
 })
 
+var logoutbutton = document.querySelector('.logout-button')
+logoutbutton.addEventListener('click',function(evt){
+    var chime = new Audio('/sound/negative-alert.wav')
+    chime.volume = 0.5
+    chime.play();
+    window.location.href = './logout';
+})
+
 function makeid(length) {
     var result           = '';
     var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

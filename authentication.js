@@ -65,6 +65,18 @@ const signupUser = (request, response) => {
 	}
 }
 
+const logoutUser = (request, response) => {
+  request.session.alerts = (request.session.alerts) ? request.session.alerts : []
+  if (request.session.loggedin == true) {
+    request.session.destroy()
+    response.redirect('/');
+  } else {
+    request.session.alerts = [[`You are already logged out!`, 'alert-warning', 'exclamation-triangle']]
+    response.redirect('/');
+    return false;
+  }
+  
+}
 
 const loadHome = (request, response) => {
     request.session.alerts = (request.session.alerts) ? request.session.alerts : []
@@ -91,5 +103,6 @@ const loadHome = (request, response) => {
 module.exports = {
     loginUser,
     signupUser,
+    logoutUser,
     loadHome
   }

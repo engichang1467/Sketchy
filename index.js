@@ -42,9 +42,11 @@ class Game {
 
 		this.timer_seconds = 10;
 
-		this.choosing_duration = 15 //seconds
-		this.drawing_duration = 20 //seconds
-		this.ending_duration = 5
+		this.choosing_duration = 15 // turn choosing duration
+		this.drawing_duration = 20 // turn drawing 
+		this.ending_duration = 5 // turn ending duration
+
+		this.game_ending_duration = 10 // game ending screen duration
 	}
 }
 
@@ -222,12 +224,58 @@ Game.prototype.turnStartEndingPhase = function() {
 	this.startEndingTimer();
 }
 
+Game.prototype.startGameEndingTimer = function() {
+	this.phase = 'endgame'
+	this.timer_seconds = this.game_ending_duration
+	console.log(`Starting Game ending timer with duration: ${this.timer_seconds}`)
+	intervals.gameEndingCountdownTimer = setInterval(this.gameEndingTimer.bind(this), 1000);
+}
+
+Game.prototype.gameEndingTimer = function() {
+	if (this.timer_seconds == 0) {
+		var emit_data = JSON.stringify(this)
+		clearInterval(intervals.gameEndingCountdownTimer);
+
+		this.phase = 'pregame'
+		this.rounds = {}
+		this.current_round_id = 1;
+		this.timer_seconds = 15;
+
+		this.resetScores();
+	
+		var emit_data = JSON.stringify(this)
+		io.to(this.game_id).emit('updatePlayerList', emit_data);
+		io.to(this.game_id).emit('updateSidebarContainers', emit_data);
+
+		
+	} else {
+		var emit_data = JSON.stringify(this)
+		this.timer_seconds = this.timer_seconds - 1;
+
+		// when timer ticks
+
+	}
+}
+
+Game.prototype.resetScores = function () {
+	for (let i = 0; i < Object.keys(this.players).length; i++) {
+		var player = Object.keys(this.players)[i]
+		this.players[player].score = 0;
+		this.players[player].guessed_correctly_this_turn = false;
+		this.players[player].role = 'guesser'
+	}
+}
+
 
 Game.prototype.roundEnd = function() {
 	if (this.current_round_id == this.max_rounds) {
-		this.phase = 'ending'
 
 		this.gameEnd();
+		var emit_data = JSON.stringify(this)
+		io.to(this.game_id).emit('updatePlayerList', emit_data);
+		io.to(this.game_id).emit('updateSidebarContainers', emit_data);
+		
+
 	} else {
 		this.current_round_id++;
 		this.roundStart();
@@ -255,15 +303,8 @@ Game.prototype.gameEnd = function() {
 	for (let i = 0; i < Object.keys(intervals).length; i++) {
 		clearInterval(intervals[Object.keys(intervals)[i]])
 	}
-	
-	this.phase = 'pregame'
-	this.rounds = {}
-	this.current_round_id = 1;
-	this.timer_seconds = 15;
 
-	var emit_data = JSON.stringify(this)
-	io.to(this.game_id).emit('updatePlayerList', emit_data);
-	io.to(this.game_id).emit('updateSidebarContainers', emit_data);
+	this.startGameEndingTimer();
 
 }
 
@@ -402,8 +443,8 @@ const auth = require('./authentication')
 
 
 var games = {};
-games['1'] = new Game(1, 3)
-games['2'] = new Game(2, 3)
+games['1'] = new Game(1, 1)
+games['2'] = new Game(2, 2)
 games['3'] = new Game(3, 3)
 
 
@@ -424,21 +465,19 @@ async function getWord() {
 	const word_def = await word_def_data_json[0]['meanings'][0]['definitions'][0]["definition"]
 	// Getting the image for the word
 	var src = '';
-	const word_image_data = await fetch(`https://en.wikipedia.org/w/api.php?action=query&pilicense=any&format=json&prop=pageimages&pithumbsize=500&generator=search&gsrsearch=${word}&gsrlimit=15`)
-	const word_image_data_json = await word_image_data.json()
 
-	
-
-	//for each page of images in the result
-	if (Object.keys(word_image_data_json.query.pages).length > 0) {
-		for (let i = 0; i < Object.keys(word_image_data_json.query.pages).length; i++) {
-			const PageKey = Object.keys(word_image_data_json.query.pages)[i]
-			if(word_image_data_json.query.pages[PageKey].thumbnail.source) {
-				src = word_image_data_json.query.pages[PageKey].thumbnail.source
-				break
-			}
-		}
-	}
+	// const word_image_data = await fetch(`https://en.wikipedia.org/w/api.php?action=query&pilicense=any&format=json&prop=pageimages&pithumbsize=500&generator=search&gsrsearch=${word}&gsrlimit=15`)
+	// const word_image_data_json = await word_image_data.json()
+	// //for each page of images in the result
+	// if (Object.keys(word_image_data_json.query.pages).length > 0) {
+	// 	for (let i = 0; i < Object.keys(word_image_data_json.query.pages).length; i++) {
+	// 		const PageKey = Object.keys(word_image_data_json.query.pages)[i]
+	// 		if(word_image_data_json.query.pages[PageKey].thumbnail.source) {
+	// 			src = word_image_data_json.query.pages[PageKey].thumbnail.source
+	// 			break
+	// 		}
+	// 	}
+	// }
 	
 	console.log(src)
 	
@@ -532,6 +571,8 @@ const app = express()
 	app.post('/login', auth.loginUser)
 	/* Signup User */
 	app.post('/signup', auth.signupUser)
+
+	app.get('/logout', auth.logoutUser)
 
 	// Routes 
 	/* Home */

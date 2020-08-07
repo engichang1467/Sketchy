@@ -36,7 +36,7 @@ function updateRoundTimer(game) {
 // Function to update the player list in the game sidebar.
 function updateRoundNumber(game) {
   var round_container = document.getElementById('round-number')
-  round_container.innerHTML = `<div id="round-number"><span>Round <strong>${game.current_round_id}</strong> of <strong>3</strong></span></div>`;
+  round_container.innerHTML = `<div id="round-number"><span>Round <strong>${game.current_round_id}</strong> of <strong>${game.max_rounds}</strong></span></div>`;
 }
 
 // Function to update the player list in the game sidebar.
@@ -61,6 +61,8 @@ function updateGameStatus(game) {
     var status = `<span>${current_artist_id} is ${current_turn_phase}!</span>`
   }
 
+  if (game.phase == 'endgame') { var status = `<span>Game Finished!</span>` }
+
   status_container.innerHTML = status;
     
 }
@@ -70,62 +72,6 @@ function updateGameName(game) {
   game_name_container.innerHTML = `<span>Game ${game.game_id}</span>`
 }
 
-
-// function renderUI(game) {
-
-//   if(game.phase == 'pregame') {
-
-//     // Render pregame sidebar containers.
-//     var gameinfo = document.getElementById('game-info')
-//     gameinfo.innerHTML = `
-//         <div id="game-name"></div>
-//         <div id="game-status"></div>
-//         <div id="players-list"></div>
-//     `;
-
-//     updateGameName(game);
-//     updateGameStatus(game);
-//     updatePlayerList(game);
-
-//   }
-
-//   if(game.phase == 'midgame') {
-
-//     // Render sidebar midgame containers.
-//     var gameinfo = document.getElementById('game-info')
-//     gameinfo.innerHTML = `
-//         <div id="round-timer"></div>
-//         <div id="round-number"></div>
-//         <div id="game-status"></div>
-//         <div id="players-list"></div>
-//       `;
-
-
-    
-//     // Update individual UI components.
-//     updatePlayerList(game);
-//     updateRoundTimer(game);
-//     updateRoundNumber(game);
-
-//     // Render Artist UI
-//     if (session.username == artist_id) {
-//       canvas.isDrawingMode = true
-//       var toolbar = document.getElementById('canvas-toolbar')
-//       if (toolbar.classList.contains('disabled')) {
-//         toolbar.classList.remove('disabled')
-//       }
-//       // TODO: renderArtistUI(updateX...updateY...)
-
-//     // Render Guesser UI
-//     } else {
-//       canvas.isDrawingMode = false
-//       var toolbar = document.getElementById('canvas-toolbar')
-//       toolbar.classList.add('disabled')
-//       // TODO: renderGuesserUI(updateX...updateY...)
-//     }
-
-//   }
-// }
 
 socket.on('clearCanvas', message => {
   canvas.clear();
@@ -150,6 +96,10 @@ socket.on('updateSidebarContainers', game_data => {
 
   var game = JSON.parse(game_data)
 
+  var canvas_container = document.querySelector(".canvas-container")
+  var tools = document.getElementsByClassName("tool")
+  var end_screen = document.querySelector('.end-screen-container')
+
   // Render containers for pregame game info sidebar
   if(game.phase == 'pregame') {
     var gameinfo = document.getElementById('game-info')
@@ -159,8 +109,17 @@ socket.on('updateSidebarContainers', game_data => {
         <div id="players-list"></div>
       `;
 
+      end_screen.innerHTML = ``
+      
+      canvas_container.classList.add('canvas-off')
+
+      for (let i = 0; i < tools.length; i++) {
+        tools[i].classList.add('tool-off')
+      }
+
       var word_box = document.querySelector('.word-box')
       word_box.innerHTML = ``
+      word_box.classList.add('canvas-off')
 
       updateStartButton(game);
       updatePlayerList(game);
@@ -170,11 +129,15 @@ socket.on('updateSidebarContainers', game_data => {
   }
 
   if(game.phase == 'midgame') {
+
+    end_screen.classList.add('canvas-off')
+    end_screen.innerHTML = ``
+    
     // Render midgame containers.
     var gameinfo = document.getElementById('game-info')
     gameinfo.innerHTML = `
-        <div id="round-timer"></div>
-        <div id="round-number"></div>
+        <div id="round-timer"><span>${game.choosing_duration}</span></div>
+        <div id="round-number"><span>Round <strong>${game.current_round_id}</strong> of <strong>${game.max_rounds}</strong></span></div>
         <div id="game-status"></div>
         <div id="players-list"></div>
       `;
@@ -182,6 +145,78 @@ socket.on('updateSidebarContainers', game_data => {
       updateGameStatus(game);
       updatePlayerList(game);
       renderRoleUI(game);
+
+  }
+
+  if(game.phase == 'endgame') {
+
+    canvas_container.classList.add('canvas-off')
+
+
+    var word_box = document.querySelector('.word-box')
+    word_box.innerHTML = ``
+    word_box.classList.add('canvas-off')
+    
+    // Render midgame containers.
+    var gameinfo = document.getElementById('game-info')
+    gameinfo.innerHTML = `
+        <div id="game-name"></div>
+        <div id="game-status"></div>
+        <div id="players-list"></div>
+      `;
+
+      updatePlayerList(game);
+      updateGameStatus(game);
+      updateGameName(game);
+
+      var canvas_container = document.querySelector('#canvas-container')
+
+      if (end_screen.classList.contains('canvas-off')) {
+        end_screen.classList.remove('canvas-off')
+      }
+      
+      // Create Winner message div
+      var winners = [];
+      var players = game.players;
+      var playercount = Object.keys(players).length
+      var highestScore = 0;
+
+      for (let i = 0; i < playercount; i++ ) {
+        var username = Object.keys(players)[i]
+        if (players[username].score >= highestScore && players[username].score != 0) {
+          if (players[username].score == highestScore) {
+            winners.push(players[username].id)
+          } else {
+            winners = [players[username].id]
+          }
+          highestScore = players[username].score
+        }
+      }
+
+      var winner_string = ''
+      var winner_count = winners.length
+      if (winner_count != 0) {
+        winner_string = winners.join(', ')
+      } else {
+        winner_string = 'Nobody'
+      }
+
+      var scores = document.createElement('div')
+
+      for (let i = 0; i < playercount; i++) {
+        var username = Object.keys(players)[i]
+        var score = document.createElement('div')
+        score.classList.add('end-score')
+        score.innerHTML = `<span><strong>${players[username].id}:</strong> ${players[username].score} points</span>`
+        scores.appendChild(score)
+      }
+
+      var winner_message = document.createElement('div')
+      winner_message.classList.add('winner-message')
+      winner_message.innerHTML = `<h2>${winner_string} won the game!</h2>`
+
+      end_screen.innerHTML = winner_message.innerHTML + `<div class='end-scores'>${scores.innerHTML}</div>` + `<div class='ending-message'><span>The game will end in ${game.timer_seconds} seconds.</span></div>`
+
 
   }
 
@@ -203,6 +238,9 @@ function updateStartButton(game) {
 
 function renderRoleUI(game) {
 
+  var canvas_container = document.querySelector(".canvas-container")
+
+  var word_box = document.querySelector('.word-box')
 
   // get players username
   var round = game.rounds[game.current_round_id]
@@ -218,11 +256,22 @@ function renderRoleUI(game) {
     word_box.innerHTML = `
     <div class="placeholders"></div>
     `
+
     word_box.style.backgroundColor = '#eee'
     canvas.isDrawingMode = false;
+    
 
     if (turn.phase == 'drawing') {
+
+      if (word_box.classList.contains('canvas-off')) {
+        word_box.classList.remove('canvas-off')
+      }
       
+      canvas_container.classList.add('canvas-guesser')
+
+      if (canvas_container.classList.contains('canvas-off')) {
+        canvas_container.classList.remove('canvas-off')
+      }
 
       if (player.guessed_correctly_this_turn) {
         var word_chosen_id = turn.word_chosen_id
@@ -246,7 +295,7 @@ function renderRoleUI(game) {
 
       word_name.innerHTML = `<h2 class='word-name'>${turn.word_chosen}</h2>`
       word_def.innerHTML = `<span class='word-definition'>${turn.word_list[word_chosen_id].definition}</span>`
-      word_link.innerHTML = `<a class='read-more' href='${turn.word_list[word_chosen_id].link}'>Read More</a>`
+      word_link.innerHTML = `<a class='read-more' target='_blank' href='${turn.word_list[word_chosen_id].link}'>Read More</a>`
       if (turn.word_list[word_chosen_id].src != '') {
         word_image.innerHTML = `<img class='word-image' src='${turn.word_list[word_chosen_id].src}'>`
       }
@@ -274,6 +323,10 @@ function renderRoleUI(game) {
     canvas.isDrawingMode = false;
 
     if (turn.phase == 'choosing') {
+
+      if (word_box.classList.contains('canvas-off')) {
+        word_box.classList.remove('canvas-off')
+      }
 
       //Create containers for word box children
       var word_box = document.querySelector('.word-box')
@@ -330,7 +383,22 @@ function renderRoleUI(game) {
 
       canvas.isDrawingMode = true;
 
+      if (canvas_container.classList.contains('canvas-off')) {
+        canvas_container.classList.remove('canvas-off')
+      }
+
+      if (canvas_container.classList.contains('canvas-guesser')) {
+        canvas_container.classList.remove('canvas-guesser')
+      }
+
       var word_chosen_id = turn.word_chosen_id
+
+      var tools = document.getElementsByClassName("tool")
+
+      for (let i = 0; i < tools.length; i++) {
+        if (tools[i].classList.contains('tool-off'))
+        tools[i].classList.remove('tool-off')
+      }
 
       //Create containers for word box children
       var word_box = document.querySelector('.word-box')
@@ -358,32 +426,6 @@ function renderRoleUI(game) {
   }
 }
 
-// function createListener(choice) {
-//   choice.addEventListener("click", onChooseWord(choice));
-// }
-
-// function onChooseWord(choice) {
-//   console.log(`Word chosen onclick event fired with id: ${choice.getAttribute('data-id')}`)
-//   socket.emit('chooseWord', choice.getAttribute('data-id'))
-// }
-
-
-// function handleChoice(e) {
-//   var choice = e.target
-//   var choice_id = choice.getAttribute('data-id')
-//   console.log(`Word chosen onclick event fired with id: ${choice_id}`)
-//   socket.emit('chooseWord', choice_id)
-// }
-
-// function attachClickEvent(){
-//   // get all the elements with className 'btn'. It returns an array
-//   var choice_list = document.getElementsByClassName('word-choice');
-//   // run the for look for each element in the array
-//   for(var i = 0; i<choice_list.length;i++){
-//       // attach the event listener
-//       choice_list[i].addEventListener("click", handleChoice);
-//   }                                                                             
-// }
 
 
 // Player List Handling //
@@ -540,6 +582,7 @@ function outputDisconnectMessage(message) {
 //    CANVAS
 
 var canvas = new fabric.Canvas('draw-area');
+
 var canvasHtml = document.getElementById('draw-area');
 var context = canvasHtml.getContext("2d");
 
