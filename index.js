@@ -442,8 +442,8 @@ const auth = require('./authentication')
 
 
 var games = {};
-games['1'] = new Game(1, 1)
-games['2'] = new Game(2, 2)
+games['1'] = new Game(1, 3)
+games['2'] = new Game(2, 3)
 games['3'] = new Game(3, 3)
 
 
@@ -681,7 +681,7 @@ io.on('connection', (socket) => {
 						message = {username: socket.username, content: `${msg} is correct!`, style: 'm-green'}
 						socket.emit('guess-message', message);
 						msg = {username: socket.username, content: `${socket.username} guessed the word!`, style: 'm-green'}
-						socket.broadcast.to(game.game_id).emit('user-guess-message', msg);
+						socket.broadcast.to(game_id).emit('user-guess-message', msg);
 					}
 
 				} else {
