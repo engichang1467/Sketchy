@@ -1,8 +1,6 @@
 var io = require('socket.io-client')
 var expect = require('chai').expect;
-
-
-
+var app = require('../index');
 
 var property = {'reconnection delay':  0
 , 'reopen delay': 0
