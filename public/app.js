@@ -499,7 +499,7 @@ function updatePlayerList(game) {
     var player_score = game.players[player].score;
     var player_place = game.players[player].place;
     var player_initial = game.players[player].id.charAt(0).toUpperCase();
-    div.innerHTML = `<div class="place"> <div class="medal ${player_initial}"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1</font></font></span></div></div><div class="player-details"> <div class="player-details-name"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_name}</font></font></span></div><div class="player-details-points"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_score} points</font></font></span></div></div>`;
+    div.innerHTML = `<div class="place"> <div class="medal runner-up"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_initial}</font></font></span></div></div><div class="player-details"> <div class="player-details-name"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_name}</font></font></span></div><div class="player-details-points"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_score} points</font></font></span></div></div>`;
     players_list_container.appendChild(div);
   });
 }
