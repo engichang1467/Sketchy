@@ -628,15 +628,21 @@ describe("Checking creation of game",function(done){
 
 describe("Tests the user choosing a word",function(done){
 
-    it("User will choose a word",function(done){
+    it("User will choose a word and it game should store the correct word",function(done){
+
+        //New game and test1 and tester2 comes joins
         var testGame = new Game(1,2);
         testGame.playerAdd(new Player('tester1'));
         testGame.playerAdd(new Player('tester2'));
+
+        //Game starts
         testGame.gameStartTest();
         setTimeout(()=>{
+            //Drawer chooses APple
 			testGame.chooseWordTest('apple'); 
 		},10);
 		setTimeout(()=>{
+            //A
 			expect(testGame.rounds['1'].turns[0].word_chosen).to.be.equal("apple");
 			done(); 
 			
@@ -653,8 +659,8 @@ describe ("Test if a guesser guesses the right word",function(done){
 	var testGame2 = new Game(1,2);
 	it("The user should guess the right word", function(done){
 
+        //Socket 1 and 2 connects
 		socket1 = io.connect(socket_url,property);
-
 		socket1.on('message', function(msg){
 			console.log("Hello")
             expect(true).to.equal(checkWord(msg.content,testGame2))

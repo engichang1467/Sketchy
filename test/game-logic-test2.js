@@ -676,10 +676,14 @@ describe("Add and record points for guesser(s) based on how fast they have guess
 describe("Determine the winner of the game", function(done){
     var testGame = new Game(1,2)
     it("Determine the winner of the game of these 2 players", function(done){
+
+		//Imitates 2 player joining a game since the logic will be done with front-end triggers
         testGame.playerAdd(new Player('tester1'))
-        testGame.playerAdd(new Player('tester2'))
+		testGame.playerAdd(new Player('tester2'))
+		//Pretend players got the respective score
         testGame.players['tester1'].score = 200
-        testGame.players['tester2'].score = 300
+		testGame.players['tester2'].score = 300
+		//Testing the find winner function
         var winner = testGame.FindWinnerTest()
         setTimeout(() => {
             expect(winner).to.be.equal('tester2')
