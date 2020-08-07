@@ -42,7 +42,7 @@ class Game {
 		this.timer_seconds = 10;
 
 		this.choosing_duration = 15 // turn choosing duration
-		this.drawing_duration = 20 // turn drawing 
+		this.drawing_duration = 60 // turn drawing 
 		this.ending_duration = 5 // turn ending duration
 
 		this.game_ending_duration = 10 // game ending screen duration
