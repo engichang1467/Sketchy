@@ -329,7 +329,6 @@ Game.prototype.playerAdd = function(player) {
 
 Game.prototype.playerRemove = function(player_id) {
 
-	
 	var message = {username: this.players[player_id].id, content: this.players[player_id].id + ` has left the game!`, style: 'm-red'}
 
 	// if leaving mid-game
@@ -341,18 +340,27 @@ Game.prototype.playerRemove = function(player_id) {
 			this.gameEnd()
 			delete this.players[player_id] // This player is no longer in the game.
 		} else {
-			// otherwise just remove them from the players list
-			delete this.players[player_id] // This player is no longer in the game.
-
 			if (this.rounds[round_id]) {
 				var i = 0;
 				for (var turn in this.rounds[round_id].turns) {
 					if (turn.artist_id == player_id) {
+
+						if (turn_id == i) {
+							if (this.rounds[round_id].turns[i].phase == 'choosing') {
+								clearInterval(intervals.choosingCountdownTimer);
+								this.turnStartEndingPhase()
+							} else if (this.rounds[round_id].turns[i].phase == 'drawing') {
+								clearInterval(intervals.drawingCountdownTimer);
+								this.turnStartEndingPhase()
+							}
+						} else {
 							delete this.rounds[round_id].turns[i]
+						}
 					}
 					i++;
 				}
 			}
+			delete this.players[player_id] // This player is no longer in the game.
 
 		}
 		

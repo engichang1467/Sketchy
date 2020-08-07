@@ -886,3 +886,7 @@ input[type="color"]::-webkit-color-swatch {
 .ending-message {
     margin-top: 25px;
 }
+
+#tableContainer {
+    margin: 30px;
+}
