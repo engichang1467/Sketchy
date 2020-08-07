@@ -687,7 +687,7 @@ io.on('connection', (socket) => {
 
 			// on correct guess:
 			if (game.players[username].current_role == 'guesser') {
-				if (msg.toLowerCase() == turn.word_chosen.toLowerCase()) {
+				if (msg.toLowerCase() == turn.word_chosen.toLowerCase() && turn.phase == 'drawing') {
 
 
 					// do the point logic
