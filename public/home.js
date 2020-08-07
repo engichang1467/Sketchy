@@ -1,3 +1,6 @@
+// Parse the user session that was passed from the server into the HTML ...
+var session = JSON.parse($('#sessionJSON').text());
+$('#sessionJSON').remove(); // .. then remove the JSON from the document.
 
 var room1 = document.getElementById('lobby-1');
 var room2 = document.getElementById('lobby-2');
@@ -13,13 +16,16 @@ room3.addEventListener('click',function(evt){
     window.location.href = './game/3';
 })
 
-var logoutbutton = document.querySelector('.logout-button')
-logoutbutton.addEventListener('click',function(evt){
-    var chime = new Audio('/sound/negative-alert.wav')
-    chime.volume = 0.5
-    chime.play();
-    window.location.href = './logout';
-})
+if (session.loggedin) {
+    var logoutbutton = document.querySelector('.logout-button')
+    logoutbutton.addEventListener('click',function(evt){
+        var chime = new Audio('/sound/negative-alert.wav')
+        chime.volume = 0.5
+        chime.play();
+        window.location.href = './logout';
+    })
+}
+
 
 function makeid(length) {
     var result           = '';
