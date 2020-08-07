@@ -5,11 +5,13 @@ var should = chai.should();
 var request = require('supertest');
 var app = require('../index');
 
+// credentials for admin 
 const adminInfo = {
     uname: "master",
     pwd: "imurfather"
 }
 
+// credentials for a normal user
 const userInfo = {
     uname: "test",
     pwd: "test"
@@ -17,7 +19,6 @@ const userInfo = {
 
 var loginAdmin = request.agent(app); 
 
-// admin log in before testing
 before(function(done) {
   loginAdmin
     .post('/login')
@@ -31,7 +32,6 @@ before(function(done) {
 
 var loginUser = request.agent(app); 
 
-// normal user log in
 before(function(done) {
   loginUser
     .post('/login')

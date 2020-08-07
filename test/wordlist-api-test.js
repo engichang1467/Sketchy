@@ -4,8 +4,8 @@ var assert = chai.assert;
 var should = chai.should();
 var supertest = require('supertest');
 var randomPictionaryList = require('word-pictionary-list');
-var checkWord = require('check-word'); 
-word_lang = checkWord('en'); 
+var checkWord = require('is-word'); 
+word_lang = checkWord('american-english', 'british-english'); 
 
 const wordListPath = require('word-list');
 const fs = require('fs');
@@ -18,6 +18,7 @@ async function getWord() {
 	const word_data = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${word}`)
 	const word_data_json = await word_data.json()
 	const link = await word_data_json[3][0]
+
 	// Getting the definition for the first word
 	const word_def_data = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
 	const word_def_data_json = await word_def_data.json()
