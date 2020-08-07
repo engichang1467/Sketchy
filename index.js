@@ -442,7 +442,7 @@ Game.prototype.addTurnPointsToPlayers = function () {
 	for(var i = 0; i < points.length; i++) {
 
 		var username = points[i]
-		this.players[username].score += (Math.ceil(400/(i+1)))
+		this.players[username].score += (Math.ceil(300/(i+1)))
 
 	}
 
