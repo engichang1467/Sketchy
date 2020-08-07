@@ -441,6 +441,7 @@ input:focus {
     margin-bottom: 15px;
     overflow-y: scroll;
     max-height: 600px;
+    max-width: 100%;
 }
 
 #browse-wrapper {

@@ -130,6 +130,8 @@ socket.on('updateSidebarContainers', game_data => {
 
   if(game.phase == 'midgame') {
 
+    canvas.calcOffset();
+
     end_screen.classList.add('canvas-off')
     end_screen.innerHTML = ``
     
@@ -324,6 +326,49 @@ function renderRoleUI(game) {
         }
       }
     }
+
+    if (turn.phase == 'ending') {
+
+      if (word_box.classList.contains('canvas-off')) {
+        word_box.classList.remove('canvas-off')
+      }
+      
+      canvas_container.classList.add('canvas-guesser')
+
+      if (canvas_container.classList.contains('canvas-off')) {
+        canvas_container.classList.remove('canvas-off')
+      }
+
+      var word_chosen_id = turn.word_chosen_id
+
+      //Create containers for word box children
+      word_box = document.querySelector('.word-box')
+      word_box.innerHTML = `
+      <div class="word-info">
+        <div class="word-name"></div>
+        <div class="word-def"></div>
+        <div class="word-link"></div>
+        <div class="word-image-container"></div>
+      </div>
+      `
+      word_box.style.backgroundColor = '#E1FFE2'
+
+      var word_name = document.querySelector('.word-name')
+      var word_def = document.querySelector('.word-def')
+      var word_link = document.querySelector('.word-link')
+      var word_image = document.querySelector('.word-image-container')
+
+      word_name.innerHTML = `<h2 class='word-name'>${turn.word_chosen}</h2>`
+      word_def.innerHTML = `<span class='word-definition'>${turn.word_list[word_chosen_id].definition}</span>`
+      word_link.innerHTML = `<a class='read-more' target='_blank' href='${turn.word_list[word_chosen_id].link}'>Read More</a>`
+      if (turn.word_list[word_chosen_id].src != '') {
+        word_image.innerHTML = `<img class='word-image' src='${turn.word_list[word_chosen_id].src}'>`
+      }
+
+    
+
+    }
+
   }
   // If artist: 
   else if (role == 'artist') {
@@ -453,7 +498,8 @@ function updatePlayerList(game) {
     if (game.players[player].id == session.username) {var player_name = game.players[player].id + ' (You)'}
     var player_score = game.players[player].score;
     var player_place = game.players[player].place;
-    div.innerHTML = `<div class="place"> <div class="medal ${player_place}"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1</font></font></span></div></div><div class="player-details"> <div class="player-details-name"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_name}</font></font></span></div><div class="player-details-points"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_score} points</font></font></span></div></div>`;
+    var player_initial = game.players[player].id.charAt(0).toUpperCase();
+    div.innerHTML = `<div class="place"> <div class="medal ${player_initial}"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1</font></font></span></div></div><div class="player-details"> <div class="player-details-name"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_name}</font></font></span></div><div class="player-details-points"><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${player_score} points</font></font></span></div></div>`;
     players_list_container.appendChild(div);
   });
 }
