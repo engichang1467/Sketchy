@@ -785,6 +785,7 @@ input:focus {
 
 .word-name {
     text-align: left;
+    margin-bottom: 5px;
 }
 
 .word-name h2 {

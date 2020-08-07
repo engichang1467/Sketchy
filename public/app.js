@@ -430,7 +430,7 @@ function renderRoleUI(game) {
 
       word_name.innerHTML = `<h2 class='word-name'>${turn.word_chosen}</h2>`
       word_def.innerHTML = `<span class='word-definition'>${turn.word_list[word_chosen_id].definition}</span>`
-      word_link.innerHTML = `<a class='read-more' href='${turn.word_list[word_chosen_id].link}'>Read More</a>`
+      word_link.innerHTML = `<a class='read-more' target='_blank' href='${turn.word_list[word_chosen_id].link}'>Read More</a>`
       if (turn.word_list[word_chosen_id].src != '') {
         word_image.innerHTML = `<img class='word-image' src='${turn.word_list[word_chosen_id].src}'>`
       }
