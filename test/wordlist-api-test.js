@@ -11,7 +11,7 @@ const wordListPath = require('word-list');
 const fs = require('fs');
 const fetch = require("node-fetch");
 const wordArray = fs.readFileSync(wordListPath, 'utf8').split('\n'); 
-
+ 
 async function getWord() {
 	// Getting the wiki link for the first word
 	var word = randomPictionaryList(1);
