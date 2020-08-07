@@ -439,6 +439,8 @@ input:focus {
 
 .chat-messages {
     margin-bottom: 15px;
+    overflow-y: scroll;
+    max-height: 600px;
 }
 
 #browse-wrapper {

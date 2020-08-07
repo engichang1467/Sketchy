@@ -254,6 +254,12 @@ function renderRoleUI(game) {
 
   // If player is a guesser this turn:
   if ( role == 'guesser') {
+
+    var tools = document.getElementsByClassName("tool")
+    for (let i = 0; i < tools.length; i++) {
+      tools[i].classList.add('tool-off')
+    }
+
     var word_box = document.querySelector('.word-box')
     word_box.innerHTML = `
     <div class="placeholders"></div>
@@ -398,8 +404,9 @@ function renderRoleUI(game) {
       var tools = document.getElementsByClassName("tool")
 
       for (let i = 0; i < tools.length; i++) {
-        if (tools[i].classList.contains('tool-off'))
-        tools[i].classList.remove('tool-off')
+        if (tools[i].classList.contains('tool-off')) {
+          tools[i].classList.remove('tool-off')
+        }
       }
 
       //Create containers for word box children
