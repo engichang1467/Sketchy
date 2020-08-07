@@ -343,7 +343,7 @@ Game.prototype.playerRemove = function(player_id) {
 			if (this.rounds[round_id]) {
 				var i = 0;
 				for (var turn in this.rounds[round_id].turns) {
-					if (turn.artist_id == player_id) {
+					if (this.rounds[round_id].turns[i].artist_id == player_id) {
 
 						if (turn_id == i) {
 							if (this.rounds[round_id].turns[i].phase == 'choosing') {
