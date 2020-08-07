@@ -565,6 +565,9 @@ const loadAdmin = (request, response) => { // Path: /game/:id
 }
 
 const app = express()
+
+	module.exports = app
+
 	app.use(session({
 		secret: '276isthebest',
 		resave: true,
@@ -609,6 +612,14 @@ String.prototype.capitalize = function() {
 }
 
 io.on('connection', (socket) => {
+
+	//This listener below is purely for our test functions. Removing this will not impact our game at all.
+    socket.on('chatMessageTest', (msg) => {
+        message = {username: socket.username, content: msg, style: ''}
+                    io.to(socket.room_id).emit('message', message);
+	});
+	//The real version is below but it integrates game logic as well
+
 	console.log(`${socket.id} connected.`)
 
 	// Listen for addUserToRoom event from client.

@@ -54,7 +54,7 @@ function updateGameStatus(game) {
     let current_artist_id = game.rounds[current_round_id].turns[current_turn_id].artist_id
 
     if (current_turn_phase == 'ending') {
-      current_turn_phase = 'finishing their turn!'
+      current_turn_phase = 'finishing their turn'
     } // We don't want to show the user "Ending" as the current status in the UI (its just a backend var)
       //so instead we say "Drawing"
 
