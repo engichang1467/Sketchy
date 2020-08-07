@@ -174,7 +174,7 @@ describe('Testing Game Room Sockets', function() {
             socket2.emit('leaveGame');
             socket3.emit('leaveGame');
           })
-        })
+        })  
       })
       setTimeout(function(){
 

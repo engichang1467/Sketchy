@@ -597,7 +597,7 @@ describe("Checking creation of game",function(done){
         //2 player joins room 1 would call this function
         games['1'].playerAdd(new Player('tester1'));
 		games['1'].playerAdd(new Player('tester2'));
-
+ 
 		//Checks if players 1 and 2 were added into the game
 		expect(true).to.be.equal('tester1' in games['1'].players);
 		expect(true).to.be.equal('tester2' in games['1'].players);
