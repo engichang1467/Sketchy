@@ -230,7 +230,9 @@ function updateStartButton(game) {
   button = document.querySelector('.start-button')
 
   if (session.username == first_player_id && Object.keys(players).length > 1) {
-    button.classList.remove('disabled')
+    if (game.phase != 'midgame') {
+      button.classList.remove('disabled')
+    }
   } else {
     button.classList.add('disabled')
   }
@@ -510,6 +512,15 @@ socket.on('guess-message', message => {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 });
 
+socket.on('user-guess-message', message => {
+  outputUserGuessMessage(message);
+  var chime = new Audio('/sound/positive-alert.wav')
+  chime.volume = 0.5
+  chime.play();
+  //Scroll down the chatbox automatically
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+});
+
 socket.on('disconnect-message', message => {
   outputDisconnectMessage(message);
   var chime = new Audio('/sound/negative-alert.wav')
@@ -556,6 +567,16 @@ function outputWelcomeMessage(message) {
 }
 
 function outputGuessMessage(message) {
+  const div = document.createElement('div');
+  var style = message.style
+  if (style != '') {div.classList.add('style');}
+  div.classList.add('message', style); // create div class 'message'
+  div.innerHTML = `<p>${message.content}</p>`;
+  document.querySelector('.chat-messages').appendChild(div);
+
+}
+
+function outputUserGuessMessage(message) {
   const div = document.createElement('div');
   var style = message.style
   if (style != '') {div.classList.add('style');}

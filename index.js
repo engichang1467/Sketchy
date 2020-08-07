@@ -680,6 +680,8 @@ io.on('connection', (socket) => {
 					if (added) {
 						message = {username: socket.username, content: `${msg} is correct!`, style: 'm-green'}
 						socket.emit('guess-message', message);
+						msg = {username: socket.username, content: `${socket.username} guessed the word!`, style: 'm-green'}
+						socket.broadcast.to(game.game_id).emit('user-guess-message', msg);
 					}
 
 				} else {
