@@ -504,7 +504,7 @@ async function getWords(word_count){
 
 const loadGame = (request, response) => { // Path: /game/:id
 
-	// If logged in:
+	/// If logged in: 
     if (request.session.loggedin) {
 
 		username = request.session.username; // Grab username from session.
