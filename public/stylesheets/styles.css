@@ -24,14 +24,16 @@ body {
     margin: 0;
     height: 100%;
     /*background-color: #fbefd8;*/
-    background-color: #222;
+    background: rgb(102,25,240);
+    background: linear-gradient(170deg, rgba(42, 39, 44, 0.9) 0%, rgb(149, 108, 148, 0.5) 100%), url("/images/background.png");
+    background-size: cover;
 }
 
 .page-container {
     display: flex;
     justify-content: left;
-    min-height:calc(100vh - 90px);
-    padding: 30px;
+    min-height:calc(100vh - 100px);
+    padding: 100px;
     padding-top: 0px;
     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
@@ -52,8 +54,7 @@ body {
   }
 
 #header {
-    height: 90px;
-    background-color: #222;
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -61,7 +62,7 @@ body {
 
 .logo {
     flex-grow: 0;
-    margin-left: 30px;
+    margin-left: 100px;
     display: block;
 }
 
@@ -419,7 +420,7 @@ input:focus {
     align-self: flex-end;
     justify-self: flex-end;
     color: #fff;
-    background-color: #50B84E;
+    background-color: #E16A94;
     height: 70px;
     width: 100%;
     font-size: 18px;
@@ -533,7 +534,7 @@ input:focus {
 
 .lobby-status {
     text-transform: uppercase;
-    background-color: #00ad00;
+    background-color: #50B84E;
     padding: 5px 0px;
     border-radius: 3px;
     color: #fff;
@@ -544,7 +545,7 @@ input:focus {
 
 
 
-#canvas-container {
+#game-container {
     background-color: #fff;
     width: 100%;
     min-height: 650px;
@@ -554,6 +555,7 @@ input:focus {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: 30px;
 }
 
 #draw-area {
@@ -887,4 +889,51 @@ input[type="color"]::-webkit-color-swatch {
 
 #tableContainer {
     margin: 30px;
+}
+
+.game-settings {
+    width: 100%;
+    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.setting-rounds, .setting-duration {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.setting-rounds input, .setting-duration input {
+    outline: none;
+    border: 0px;
+    padding: 10px 15px;
+    background-color: #eee;
+    font-size: 16px;
+    border-radius: 2px;
+}
+
+.setting-rounds input:focus, .setting-duration input:focus {
+    outline: none;
+    border: 0px;
+}
+
+.setting-rounds label, .setting-duration label {
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+/* Spin Buttons modified */
+input[type="number"].mod::-webkit-outer-spin-button, 
+input[type="number"].mod::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1em;
+    opacity: 1;
+    margin-right: 10px;
 }

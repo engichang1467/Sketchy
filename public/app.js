@@ -99,9 +99,28 @@ socket.on('updateSidebarContainers', game_data => {
   var canvas_container = document.querySelector(".canvas-container")
   var tools = document.getElementsByClassName("tool")
   var end_screen = document.querySelector('.end-screen-container')
+  var settings_container = document.querySelector('.game-settings')
 
   // Render containers for pregame game info sidebar
   if(game.phase == 'pregame') {
+
+    if (settings_container.classList.contains('canvas-off')) {
+      settings_container.classList.remove('canvas-off')
+    }
+    
+    settings_container.innerHTML = `
+      <form>
+        <div class='setting-rounds'>
+          <label for="rounds">Rounds</label>
+          <input type="number" name="rounds" min="1" max="5" value="3">
+        </div>
+        <div class='setting-duration'>
+          <label for="duration">Drawing Time</label>
+          <input type="number" name="duration" min="30" max="120" step="30" value="60">
+        </div>
+      </form>
+    `
+
     var gameinfo = document.getElementById('game-info')
     gameinfo.innerHTML = `
         <div id="game-name"></div>
@@ -129,6 +148,9 @@ socket.on('updateSidebarContainers', game_data => {
   }
 
   if(game.phase == 'midgame') {
+
+    settings_container.innerHTML = ''
+    settings_container.classList.add('canvas-off')
 
     canvas.calcOffset();
 
@@ -230,13 +252,18 @@ function updateStartButton(game) {
   first_player_key = Object.keys(players)[0]
   first_player_id = players[first_player_key].id;
   button = document.querySelector('.start-button')
+  settings = document.querySelector('.game-settings')
 
-  if (session.username == first_player_id && Object.keys(players).length > 1) {
+  if (session.username == first_player_id) {
     if (game.phase != 'midgame') {
-      button.classList.remove('disabled')
+      if (Object.keys(players).length > 1) {
+        button.classList.remove('disabled')
+      }
+      settings.classList.remove('disabled')
     }
   } else {
     button.classList.add('disabled')
+    settings.classList.add('disabled')
   }
 }
 

@@ -13,15 +13,16 @@
             <div id="players-list"></div>
         </div>
         <div id='options'>
+          <div class="game-settings disabled"></div>
           <button class="button start-button disabled">Start Game</button>
           <button class="button leave-button">Leave Game</button>
         </div>
       </div>
         
             <div id='canvas-wrapper'>
-                <div class='card' id='canvas-container'>
+                <div class='card' id='game-container'> 
                     <canvas id="draw-area" width="840" height="640"></canvas>
-                    <div class="end-screen-container"></div>
+                    <div class="end-screen-container canvas-off"></div>
                 </div>
                 <div class='card' id='canvas-toolbar'>
                       <div id='tool-color' class='tool'>
